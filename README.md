@@ -1,5 +1,5 @@
 # Intelligent-QA-System
-the knowledge base management base on NPL
+the knowledge base management base on NLP
 
 智能问答系统分为两部分，一是知识库的构建（建立问题到答案的关系），二是建议问题的生成以方便后台增删查改，三是抽取答案返回用户
 
