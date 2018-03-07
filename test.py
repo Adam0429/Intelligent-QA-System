@@ -1,15 +1,11 @@
 import re
+from jieba import analyse
 import jieba.posseg as pseg
-import jieba.analyse
 
 # jieba.load_userdict(file_name) 
 # question_word = ['谁','何','什么','哪儿','哪里','几时','几','多少','怎','怎么','怎的','怎样','怎么样','怎么着','如何','为什么','高']
 
 # 这里还得附上词性，不然抽取疑问词时仍然在用jieba库的词性标注
-def extract_keyword(text,withWeight=False):
-	tags = jieba.analyse.extract_tags(text,withWeight=withWeight)
-	return tags
-
 def question_keyword(text,question_word): 
 	words = pseg.cut(text)
 	wds = {}
@@ -20,7 +16,7 @@ def question_keyword(text,question_word):
 		w.append(word)
 		wds[word] = flag
 	print(wds)
-	if '多少' in w:		#判断疑问词的顺序也有讲究,通常出现多少就可以判断为多少是疑问词.这里因为多少是作为量词出现,所以加一步判断
+	if '多少' in wds.keys():
 		return ['多少']
 	if '什么' in w:
 		index = w.index('什么')
@@ -59,11 +55,14 @@ def question_type(text):
 		return ('描述')
 	    # 实体 
 
-text = "这个班有多少人"
-keywords = question_keyword(text,[])
+text = "基于 TF-IDF 算法的关键词抽取"
+questionwords = question_keyword(text,[])
+# print(questionwords)
+questiontype = question_type(questionwords)
+# print(questiontype)
+keywords = analyse.extract_tags(text,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
 print(keywords)
-questiontype = question_type(keywords)
-print(questiontype)
+
 
 
 
