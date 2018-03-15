@@ -17,6 +17,7 @@ path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 files = os.listdir(path)
 
 for file in tqdm(files):
+	data = {}
 	if not 'developer' in file:
 		f = open(path + file,mode = 'r')
 		text = f.read()
@@ -28,19 +29,20 @@ for file in tqdm(files):
 			t.remove(t[len(t)-1])
 		if "下一篇" in text:
 			t.remove(t[len(t)-1])
-		eles = soup.select('.topictitle1')
-		eles = del_tag(eles)
+		ele = soup.select('.topictitle1')
+		ele = del_tag(ele)
+		if len(ele) == 1:
+			data['title'] = ele[0]
+			t.append(data['title'])
+		else:
+			data['title'] = 'null'
+		data['desc'] = t
 		details = soup.select('.help-details')
 		soup2 = BeautifulSoup(str(details),'lxml')
 		p = soup2.select('p')	
 		p = del_tag(p)
-		content = ''
+		string = ''
 		for i in p:
-			content = content + i
-		print(eles + t + [content])
-
-
-	# print(elements)
-	# if '华为云帮助中心' not in t:
-	# 	print(t)
-
+			string = string + i
+		data['content'] = string
+		print(data)
