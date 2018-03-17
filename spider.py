@@ -25,18 +25,19 @@ for file in tqdm(files):
 	if not 'developer' in file:
 		f = open(path + file,mode = 'r')
 		text = f.read()
-		# print(file)
+		print(file)
 		soup = BeautifulSoup(text,'lxml')
 		elements = soup.select('.help-link')
+		h1s = soup.select('h1')
 		t = del_tag(elements)
 		if "上一篇" in text:
 			t.remove(t[len(t)-1])
 		if "下一篇" in text:
 			t.remove(t[len(t)-1])
 		ele = soup.select('.topictitle1')
-		ele = del_tag(ele)
-		if len(ele) == 1:
-			data['title'] = ele[0]
+		title = del_tag(ele)
+		if len(title) == 1:
+			data['title'] = title[0]
 			t.append(data['title'])
 		else:
 			data['title'] = 'null'
@@ -46,44 +47,39 @@ for file in tqdm(files):
 		if len(details) == 0:
 			details = soup.select('div[id^="body"]') 
 		if len(details) == 0:
-			print(file)
-		# 正常是所有页面都有这个div，如果没有要去找以body开头的
-		# soup2 = BeautifulSoup(str(details),'lxml')
-		# p = soup2.select('p')	
-		# p = del_tag(p)
-		# sections = []
-		# divs = soup2.select('div[id^="body"]') 
-		# # 理想中是每个div里有一个h4作为主题,but有8个超过1个h4,要分情况处理
-		# print(len(divs))
-		# if len(divs) == 0:
-		# 	print(file)
-		# 	divs = soup2.select('div[id^="body"]')
-		# 	print(del_tag(divs))
-		# break
-		# sections = {}
-		# divs = del_tag(divs)
-		# for div in divs:
-		# 	soup3 = BeautifulSoup(str(div),'lxml')
-		# 	h4s = soup3.select('h4')
-		# 	h4s = del_tag(h4s)
+			details = soup.select('.beg-text')
+		if len(details) == 0:	
+			details = soup.select('.periods')
+		if len(details) == 0:	
+			details = soup.select('.helpContent')	
+		if len(details) == 0:	
+			details = soup.select('.record-content')
+		if len(details) == 0:
+			continue
+		# 正常是所有页面都有一个div储存问答信息,类名不一定是什么，大概就上面几种
 
-		# 	lis = soup3.select('li')
-		# 	# lis = del_tag(lis)
-		# 	soup4 = BeautifulSoup(str(lis),'lxml')  
-		# 	li_as = soup4.select('p')
-		# 	li_as = del_tag(li_as)
-			# for li_a in li_as:
-			# 	print(li_a)
-		# for div in divs:
-		# 	print('----------')
-		# 	print(div)
-		# break
-		# string = ''
-		# for i in p:
-		# 	string = string + i
-		# data['content'] = string
-		# print(details)
+		qas = []
+		soup2 = BeautifulSoup(str(details),'lxml')
+		sections = soup2.select('.section')	
+		# 分两类,有无section的情况
+		# print(len(sections))
+		string1 = str(details).split('<div')[2]
+		data['intro'] = (del_tag(['<'+string1]))
+		# 这是总标题的解释，位于总标题的下端
+		if len(sections) > 0:
+			# 每个<h4>和<p><table>等一些列作为答案的标签一一对应
+			for section in sections:
+				soup3 = BeautifulSoup(str(section),'lxml')
+				h4s = soup3.select('h4')
+				if len(h4s) != 0 :
+					for h4 in h4s:
+						answer = str(section).split(str(h4))[1]
+						answer = del_tag([answer])
+						h4 = del_tag([h4])
+						qa = {'question':h4[0],'answer':answer}
+						qas.append(qa)
+		data['qa'] = qas
+		print(data)
 
-
-
+		# else: 
 
