@@ -10,7 +10,7 @@ from pyltp import NamedEntityRecognizer
 from pyltp import Parser
 
 #分隔标签
-def splitor(sentence='帮助中心 > 数据仓库服务 > 用户指南 > 简介 > 数据仓库服务简介'):
+def splitor(sentence='帮助中心 > 数据仓库服务 > 购买指南 > 续费'):
     labels_list = list(sentence.split(' > '))
 #   for label in labels_list:
 #       print(label + ' ', end = '')
@@ -43,31 +43,55 @@ def posttagger(words):
     postagger = Postagger() # 初始化实例
     postagger.load('/Users/zhangqinyuan/Downloads/ltp_data_v3.4.0/pos.model')  # 加载模型
     postags = postagger.postag(words)  # 词性标注
-    for word,tag in zip(words,postags):
-        print (word+'/'+tag)
+#   for word,tag in zip(words,postags):
+#       print (word+'/'+tag)
+    postags_list = list(postags)
     postagger.release()  # 释放模型
-    return postags
+    return postags_list
 
-print('******************测试将会顺序执行：**********************')
-labels = splitor()
+#生成问句
+def generator(sentence):
+    labels = splitor(sentence)
+    useful_labels = filter(labels)
+    #找到最后一个标签
+    last_label = segmentor(useful_labels[-1])
+    #记录最后一个标签的所有词性
+    last_label_postages = posttagger(last_label)
+
+    #假如最后一个标签的开头是动词，则用“怎么... ...”生成问句
+    if last_label_postages[0] is 'v':
+        #假如最后一个标签只有一个动词，例如“入门”
+        if len(last_label_postages) == 1:
+            print('怎么' + last_label[0] + useful_labels[0] + '？')
+        else:
+            #假如只有一个动词加其他词，例如“管理集群”
+            if '和' not in last_label:
+                str = ''
+                print('怎么' + last_label.pop(0) + useful_labels[0] + '的' + str.join(last_label) + '？')
+            #假如超过一个动词，例如“访问和使用DWS”
+            else:
+                last_label_postages.reverse()
+                index_of_last_v = len(last_label_postages) - last_label_postages.index('v')
+                last_label_postages.reverse()
+                str = ''
+                print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
+
+
+
+print('******************整体测试：**********************')
+generator('帮助中心 > 数据仓库服务 > 用户指南 > 设置数据库审计日志')
+
+#print('******************分部份测试，将会顺序执行：**********************')
+#labels = splitor()
 #筛选
-useful_labels = filter(labels)
-print('###############以上为筛选结果###############')
+#useful_labels = filter(labels)
+#print('###############以上为筛选结果###############')
 #测试分词
-for label in useful_labels:
-    words = segmentor(label)
-    tags = posttagger(words)
-    print()
-print('###############以上为分词测试###############')
-#测试标注
-#tags = posttagger(words)
-#print('###############以上为词性标注测试###############')
-#命名实体识别
-#netags = ner(words,tags)
-#print('###############以上为命名实体识别测试###############')
-#依存句法识别
-#arcs = parse(words,tags)
-#print('###############以上为依存句法测试###############')
-#角色标注
-#roles = role_label(words,tags,netags,arcs)
-#print('###############以上为角色标注测试###############')
+#for label in useful_labels:
+#    words = segmentor(label)
+#    tags = posttagger(words)
+#    print()
+#print('###############以上为分词测试###############')
+
+#难以处理的标签：
+#"续费"：被标记名词
