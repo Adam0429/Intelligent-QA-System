@@ -1,8 +1,7 @@
-
 # -*- coding: utf-8 -*-
 #作者：Zhang Qinyuan
 #python 版本：3.6
-#建立时间 2018/3/17
+#更新时间 2018/3/18
 from pyltp import SentenceSplitter
 from pyltp import Segmentor
 from pyltp import Postagger

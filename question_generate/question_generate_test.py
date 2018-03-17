@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+#作者：Zhang Qinyuan
+#python 版本：3.6
+#更新时间 2018/3/18
 import jieba.posseg as pseg
 
 #def title_changing(sentence):
