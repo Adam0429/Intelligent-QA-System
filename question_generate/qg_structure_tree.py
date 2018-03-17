@@ -29,7 +29,7 @@ def filter(List):
     return nList;
 
 #分词
-def segmentor(sentence='镜像'):
+def segmentor(sentence=''):
     segmentor = Segmentor()  # 初始化实例
     segmentor.load('/Users/zhangqinyuan/Downloads/ltp_data_v3.4.0/cws.model')  # 加载模型
     words = segmentor.segment(sentence)  # 分词
