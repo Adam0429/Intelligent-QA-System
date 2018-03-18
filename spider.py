@@ -21,11 +21,11 @@ path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 files = os.listdir(path)
 
 for file in tqdm(files):
-	data = {}		
+	data = {}	
+	f = open(path + file,mode = 'r')
+	text = f.read()
+	# print(file) 	
 	if not 'developer' in file:
-		f = open(path + file,mode = 'r')
-		text = f.read()
-		print(file) 
 		soup = BeautifulSoup(text,'lxml')
 		elements = soup.select('.help-link')
 		h1s = soup.select('h1')
@@ -99,8 +99,35 @@ for file in tqdm(files):
 		
 		qas.append(qa)	
 		data['qas'] = qas
-		print(data)
-
+		# print(data)
 	
+	else:
+		soup = BeautifulSoup(text,'lxml')
+		details = soup.select('#content')
+		soup = BeautifulSoup(str(details),'lxml')
+		block_titles = soup.select('block-title')
+		descs = soup.select('.crumbs')
+		titles = soup.select('span')
+		# 找到所有h3作为问题，再找他的兄弟节点作为答案
+		if len(descs) == 0:
+			captions = soup.select('.caption-main')
+			for caption in captions:
+				for s in caption.next_siblings:
+					print(s) 
+					
+			data['title'] = del_tag(soup.select('.poster-caption'))[0]
+			# h1s = soup. 
+			pass
+		else:
+			print(file)
+			texts = soup.select('.text')
+			desc = descs[0].get_text()
+			texts = del_tag(texts)
+			data['desc'] = desc
+			data['title'] = del_tag(titles)[0]
+			data['qas'] = {'question':desc,'answer':texts[0]}
+			# print(data['title'])
+			# print(file)
+
 
 
