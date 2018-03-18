@@ -21,11 +21,11 @@ path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 files = os.listdir(path)
 
 for file in tqdm(files):
-	data = {}
+	data = {}		
 	if not 'developer' in file:
 		f = open(path + file,mode = 'r')
 		text = f.read()
-		print(file)
+		print(file) 
 		soup = BeautifulSoup(text,'lxml')
 		elements = soup.select('.help-link')
 		h1s = soup.select('h1')
@@ -55,6 +55,8 @@ for file in tqdm(files):
 		if len(details) == 0:	
 			details = soup.select('.record-content')
 		if len(details) == 0:
+			details = soup.select('.help-main')
+		if len(details) == 0:
 			continue
 		# 正常是所有页面都有一个div储存问答信息,类名不一定是什么，大概就上面几种
 
@@ -63,8 +65,12 @@ for file in tqdm(files):
 		sections = soup2.select('.section')	
 		# 分两类,有无section的情况
 		# print(len(sections))
-		string1 = str(details).split('<div')[2]
-		data['intro'] = (del_tag(['<'+string1]))
+		data['intro'] = []	
+		string1 = str(details).split('<div')
+		if len(string1) > 2:
+			data['intro'] = (del_tag(['<'+string1[2]]))
+		else:
+			data['intro'] = (del_tag(['<'+string1[len(string1)-1]]))
 		# 这是总标题的解释，位于总标题的下端
 		if len(sections) > 0:
 			# 每个<h4>和<p><table>等一些列作为答案的标签一一对应
@@ -78,8 +84,23 @@ for file in tqdm(files):
 						h4 = del_tag([h4])
 						qa = {'question':h4[0],'answer':answer}
 						qas.append(qa)
-		data['qa'] = qas
+		else:
+			uls = soup2.select('ul')	
+			ps = soup2.select('p')
+			tables = soup2.select('table')
+			pres = soup2.select('pre')
+			uls = del_tag(uls)
+			ps = del_tag(ps)
+			pres = del_tag(pres)
+			tables = del_tag(tables)
+			if len(ps) > 0:
+				del ps[0]
+			qa = {'question':data['title'],'answer':{'table':tables,'ul':uls,'p':ps,'pre':pres}}
+		
+		qas.append(qa)	
+		data['qas'] = qas
 		print(data)
 
-		# else: 
+	
+
 
