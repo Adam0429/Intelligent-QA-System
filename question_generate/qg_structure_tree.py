@@ -29,7 +29,7 @@ def filter(List):
     return nList;
 
 #分词
-def segmentor(sentence='镜像'):
+def segmentor(sentence=''):
     segmentor = Segmentor()  # 初始化实例
     segmentor.load('/Users/zhangqinyuan/Downloads/ltp_data_v3.4.0/cws.model')  # 加载模型
     words = segmentor.segment(sentence)  # 分词
@@ -58,8 +58,17 @@ def generator(sentence):
     #记录最后一个标签的所有词性
     last_label_postages = posttagger(last_label)
 
+    #假如最后一个标签的开头是“什么”，则不需要生成问题
+    if (
+        last_label[0] == '什么' or
+        last_label[0] == '怎么' or
+        last_label[0] == '如何'
+        ):
+        str = ''
+        print(str.join(last_label))
+
     #假如最后一个标签的开头是动词，则用“怎么... ...”生成问句
-    if last_label_postages[0] is 'v':
+    elif last_label_postages[0] is 'v':
         #假如最后一个标签只有一个动词，例如“入门”
         if len(last_label_postages) == 1:
             print('怎么' + last_label[0] + useful_labels[0] + '？')
@@ -76,10 +85,12 @@ def generator(sentence):
                 str = ''
                 print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
 
+    #假如最后一个标签的开头是名词，则用“... ...有哪些”生成问句
+
 
 
 print('******************整体测试：**********************')
-generator('帮助中心 > 数据仓库服务 > 用户指南 > 设置数据库审计日志')
+generator('帮助中心 > 云容器引擎 > 用户指南 > FAQ > 如何绑定弹性IP？')
 
 #print('******************分部份测试，将会顺序执行：**********************')
 #labels = splitor()
@@ -95,3 +106,5 @@ generator('帮助中心 > 数据仓库服务 > 用户指南 > 设置数据库审
 
 #难以处理的标签：
 #"续费"：被标记名词
+#"使用限制"：不同于其他动词开头
+#"计费方式"：不同于其他动词开头
