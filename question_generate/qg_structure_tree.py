@@ -63,7 +63,7 @@ def generator(sentence):
         last_label[0] == '什么' or
         last_label[0] == '怎么' or
         last_label[0] == '如何'
-        ):
+    ):
         str = ''
         print(str.join(last_label))
 
@@ -74,7 +74,10 @@ def generator(sentence):
             print('怎么' + last_label[0] + useful_labels[0] + '？')
         else:
             #假如只有一个动词加其他词，例如“管理集群”
-            if '和' not in last_label:
+            if (
+                '和' not in last_label and
+                '或' not in last_label
+            ):
                 str = ''
                 print('怎么' + last_label.pop(0) + useful_labels[0] + '的' + str.join(last_label) + '？')
             #假如超过一个动词，例如“访问和使用DWS”
@@ -83,14 +86,25 @@ def generator(sentence):
                 index_of_last_v = len(last_label_postages) - last_label_postages.index('v')
                 last_label_postages.reverse()
                 str = ''
-                print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
+                #假如只有动词
+                if last_label_postages[-1] is 'v':
+                    print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '？')
+                #假如有其他词
+                else:
+                    print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
 
     #假如最后一个标签的开头是名词，则用“... ...有哪些”生成问句
-
+    elif (
+        last_label_postages[0] is 'n' or
+        last_label_postages[0] is 'a' or
+        last_label_postages[0] is 'b'
+    ):
+        str = ''
+        print(useful_labels[0] + '的' + str.join(last_label) + '有哪些？')
 
 
 print('******************整体测试：**********************')
-generator('帮助中心 > 云容器引擎 > 用户指南 > FAQ > 如何绑定弹性IP？')
+generator('帮助中心 > 镜像服务 > 用户指南 > 管理 > 共享镜像 > 附录')
 
 #print('******************分部份测试，将会顺序执行：**********************')
 #labels = splitor()
@@ -108,3 +122,8 @@ generator('帮助中心 > 云容器引擎 > 用户指南 > FAQ > 如何绑定弹
 #"续费"：被标记名词
 #"使用限制"：不同于其他动词开头
 #"计费方式"：不同于其他动词开头
+#"操作指南"：不同于其他动词开头
+#"准备工作"：不同于其他动词开头
+
+#词性表：
+#http://ltp.readthedocs.io/zh_CN/latest/appendix.html#id3
