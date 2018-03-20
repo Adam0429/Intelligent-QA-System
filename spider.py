@@ -68,34 +68,43 @@ for file in tqdm(files):
 		if len(descs) == 0:
 			h1 = soup.h1
 			siblings = []
-			if len(h1) > 0:
-				for s in h1.next_siblings:
-					siblings.append(s)
-			h4s = soup.select('h4')
-			h3s = soup.select('h3')
-			hs = h3s + h4s
-			qas = []
-			if len(hs) > 0:
-				for h in hs:
-					for s in h.next_siblings:
-						if not s.isspace:
-							qas.append({'question':del_tag(h),'answer':del_tag(s)})
-			dls = soup.select('dl')
-			if len(dls) > 0:
-				for dl in dls:
-					for s in dl.next_siblings:
-						if not s.isspace:
-							soup2 = BeautifulSoup(str(dl),'lxml')
-							dts = soup2.dt
-							dds = soup2.select('dd')
-							dds = del_tag(dds)
-							qas.append({'question':del_tag(dts),'answer':del_tag(s)}) 
-			data['qas'] = qas						
-			print(data)
 
-			break
+			if h1 is None:
+			# some index pages
+				soup2 = BeautifulSoup(text,'lxml')
+				descs = soup2.select('.crumbs')
+				data['desc'] = del_tag(descs[0])
+				ps = soup.select('p')
+				data['qas'] = {'question':del_tag(soup2.select('.text')[0]),'answer':del_tag(ps[1:])}
+				if len(soup2.select('.beg-title')) == 0:
+					continue
+				data['title'] = del_tag(soup2.select('.beg-title')[0])
+				# print(data)
 
-
+			else:
+				if len(h1) > 0:
+					for s in h1.next_siblings:
+						siblings.append(s)
+				h4s = soup.select('h4')
+				h3s = soup.select('h3')
+				hs = h3s + h4s
+				qas = []
+				if len(hs) > 0:
+					for h in hs:
+						for s in h.next_siblings:
+							if not s.isspace:
+								qas.append({'question':del_tag(h),'answer':del_tag(s)})
+				dls = soup.select('dl')
+				if len(dls) > 0:
+					for dl in dls:
+						for s in dl.next_siblings:
+							if not s.isspace:
+								soup2 = BeautifulSoup(str(dl),'lxml')
+								dts = soup2.dt
+								dds = soup2.select('dd')
+								dds = del_tag(dds)
+								qas.append({'question':del_tag(dts),'answer':del_tag(s)}) 
+				data['qas'] = qas			
 
 	# developer
 	else:
@@ -108,6 +117,8 @@ for file in tqdm(files):
 		if len(descs) == 0:
 			h1 = soup.h1
 			siblings = []
+			if h1 is None:
+				continue
 			if len(h1) > 0:
 				for s in h1.next_siblings:
 					siblings.append(s)
@@ -143,5 +154,4 @@ for file in tqdm(files):
 			# data['title'] = del_tag(titles[0])
 			# data['qas'] = {'question':desc,'answer':del_tag(texts[0])}
 			# print(data)
-
 
