@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #作者：Zhang Qinyuan
 #python 版本：3.6
-#更新时间 2018/3/18
+#更新时间 2018/3/23
 from pyltp import SentenceSplitter
 from pyltp import Segmentor
 from pyltp import Postagger
@@ -18,7 +18,7 @@ def splitor(sentence='帮助中心 > 数据仓库服务 > 购买指南 > 续费'
 
 #筛选有用数据
 def filter(List):
-    useless_labels = ['简介','帮助中心','概览','产品简介','价格说明','快速入门','FAQ','用户指南','概述','购买指南']
+    useless_labels = ['简介','帮助中心','概览','产品简介','快速入门','FAQ','用户指南']
     nList = list()
     for label in List:
         if label not in useless_labels:
@@ -57,15 +57,32 @@ def generator(sentence):
     last_label = segmentor(useful_labels[-1])
     #记录最后一个标签的所有词性
     last_label_postages = posttagger(last_label)
+    #动词做定语
+    adjVlist = ["使用限制","计费方式","操作指南","准备工作","使用限制"]
 
-    #假如最后一个标签的开头是“什么”，则不需要生成问题
+    #假如只有一个有用标签或最后一个标签包含简介
     if (
+        len(useful_labels) == 1 or
+        useful_labels[-1].find('简介') != -1
+    ):
+        print('什么是' + useful_labels[0] + '?')
+
+    #假如最后一个标签的开头是“什么”或介词如"与"，则不需要生成问题
+    elif (
         last_label[0] == '什么' or
         last_label[0] == '怎么' or
         last_label[0] == '如何'
     ):
         str = ''
-        print(str.join(last_label))
+        print(str.join(last_label) + '？')
+
+    #假如最后一个标签就是概述
+    elif useful_labels[-1] == '概述':
+        print(useful_labels[0] +'的' + useful_labels[-2] + '？')
+
+    #假如最后一个标签在例外情况（动词开头）之中
+    elif useful_labels[-1] in adjVlist:
+        print(useful_labels[0] +'的' + useful_labels[-1] + '有哪些？')
 
     #假如最后一个标签的开头是动词，则用“怎么... ...”生成问句
     elif last_label_postages[0] is 'v':
@@ -76,7 +93,9 @@ def generator(sentence):
             #假如只有一个动词加其他词，例如“管理集群”
             if (
                 '和' not in last_label and
-                '或' not in last_label
+                '或' not in last_label and
+                '并' not in last_label and
+                '与' not in last_label
             ):
                 str = ''
                 print('怎么' + last_label.pop(0) + useful_labels[0] + '的' + str.join(last_label) + '？')
@@ -93,18 +112,17 @@ def generator(sentence):
                 else:
                     print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
 
+    #假如最后一个标签为"与... ..."
+    elif last_label[0] == '与':
+        print(useful_labels[0] + useful_labels[-1] + '？')
+
     #假如最后一个标签的开头是名词，则用“... ...有哪些”生成问句
-    elif (
-        last_label_postages[0] is 'n' or
-        last_label_postages[0] is 'a' or
-        last_label_postages[0] is 'b'
-    ):
+    else:
         str = ''
         print(useful_labels[0] + '的' + str.join(last_label) + '有哪些？')
 
-
 print('******************整体测试：**********************')
-generator('帮助中心 > 镜像服务 > 用户指南 > 管理 > 共享镜像 > 附录')
+generator('帮助中心 > 数据仓库服务 > 价格说明 > 免费试用')
 
 #print('******************分部份测试，将会顺序执行：**********************')
 #labels = splitor()
@@ -124,6 +142,10 @@ generator('帮助中心 > 镜像服务 > 用户指南 > 管理 > 共享镜像 > 
 #"计费方式"：不同于其他动词开头
 #"操作指南"：不同于其他动词开头
 #"准备工作"：不同于其他动词开头
+#"续费"：被标记名词
+#"使用限制"：不同于其他动词开头
+#"免费试用"：不同于其他动词开头
+#“弹性云服务器 P1型云服务器安装NVIDIA GPU驱动和CUDA工具包 ”：复杂的句式（谓语滞后）
+#“镜像服务的镜像服务有哪些？”：第二个label和最后一个label是同一个label
 
 #词性表：
-#http://ltp.readthedocs.io/zh_CN/latest/appendix.html#id3
