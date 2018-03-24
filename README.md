@@ -45,9 +45,50 @@ D = ( O , T , E )
 
 
 
-### 建议问题的生成
+### QA对自动生成
 
-## 生成问题
+目前打算先使用基本的NLP和规则来自动生成问题。[PYLTP](https://github.com/HIT-SCIR/pyltp)是哈工大的一个开源中文文本处理python库，我们目前需要用到其中的中文分词和中文词性标注功能。我们目前只对页面进行问题自动生成处理，使用华为云帮助中心每个页面顶部的结构说明（多个标签）为每个页面生成单个问题。
+
+处理方法为：
+
+#### 分标签
+
+这一步可能在spider.py中已经处理了。
+
+#### 筛除对问题生成无用的标签
+
+有些标签对问题生成美元意义，例如第一个永远是“帮助中心”。
+
+另外如“概览”，“FAQ”这样的文字不太可能出现在问题中。
+
+#### 使用PYLTP的分词和词性标注
+
+需要引用PYLTP库和下载模型。
+
+```python
+#分词
+def segmentor(sentence=''):
+    segmentor = Segmentor()  # 初始化实例
+    segmentor.load('/Users/zhangqinyuan/Downloads/ltp_data_v3.4.0/cws.model')  # 加载模型
+    words = segmentor.segment(sentence)  # 分词
+    # 可以转换成List 输出
+    words_list = list(words)
+    segmentor.release()  # 释放模型
+    return words_list
+
+#获取分词后词性
+def posttagger(words):
+    postagger = Postagger() # 初始化实例
+    postagger.load('/Users/zhangqinyuan/Downloads/ltp_data_v3.4.0/pos.model')  # 加载模型
+    postags = postagger.postag(words)  # 词性标注
+#   for word,tag in zip(words,postags):
+#       print (word+'/'+tag)
+    postags_list = list(postags)
+    postagger.release()  # 释放模型
+    return postags_list
+```
+
+#### 生成问题
 
 这一步最为重要，基于规则我们目前考虑了一下几种情况：
 
@@ -64,6 +105,8 @@ D = ( O , T , E )
 二、有些标签以名词、形容词开头但是不能用“… ...有哪些”来问。如“可视化”，“场景说明”。解决方法有待研究。
 
 三、某些标签以其他词开头，如英文。解决方法有待研究。
+
+
 
 ### 推理机
 
