@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #作者：Zhang Qinyuan
 #python 版本：3.6
-#更新时间 2018/3/23
+#更新时间 2018/3/25
 from pyltp import SentenceSplitter
 from pyltp import Segmentor
 from pyltp import Postagger
@@ -76,13 +76,21 @@ def generator(sentence):
         str = ''
         print(str.join(last_label) + '？')
 
-    #假如最后一个标签就是概述
-    elif useful_labels[-1] == '概述':
+    #假如最后一个标签就是概述或者产品概述
+    elif (
+        useful_labels[-1] == '概述' or
+        useful_labels[-1] == '产品概述'
+    ):
         print(useful_labels[0] +'的' + useful_labels[-2] + '？')
 
     #假如最后一个标签在例外情况（动词开头）之中
     elif useful_labels[-1] in adjVlist:
         print(useful_labels[0] +'的' + useful_labels[-1] + '有哪些？')
+
+    #假如最后一个标签的最后一个词为管理
+    elif last_label[-1] == '管理':
+        str = ''
+        print('怎么管理' + useful_labels[0] + '的' + str.join(last_label[:-1]))
 
     #假如最后一个标签的开头是动词，则用“怎么... ...”生成问句
     elif last_label_postages[0] is 'v':
@@ -112,17 +120,17 @@ def generator(sentence):
                 else:
                     print('怎么' + str.join(last_label[:index_of_last_v]) + useful_labels[0] + '的' + str.join(last_label[index_of_last_v:]) + '？')
 
-    #假如最后一个标签为"与... ..."
+    #假如最后一个标签为"与... ..."，使用第一个标签和最后一个标签形成问句
     elif last_label[0] == '与':
         print(useful_labels[0] + useful_labels[-1] + '？')
 
-    #假如最后一个标签的开头是名词，则用“... ...有哪些”生成问句
+    #假如最后一个标签的开头是其他词汇，则用“... ...有哪些”生成问句
     else:
         str = ''
         print(useful_labels[0] + '的' + str.join(last_label) + '有哪些？')
 
 print('******************整体测试：**********************')
-generator('帮助中心 > 数据仓库服务 > 价格说明 > 免费试用')
+generator('帮助中心 > 云容器引擎 > 产品介绍 > 产品功能')
 
 #print('******************分部份测试，将会顺序执行：**********************')
 #labels = splitor()
@@ -138,14 +146,9 @@ generator('帮助中心 > 数据仓库服务 > 价格说明 > 免费试用')
 
 #难以处理的标签：
 #"续费"：被标记名词
-#"使用限制"：不同于其他动词开头
-#"计费方式"：不同于其他动词开头
-#"操作指南"：不同于其他动词开头
-#"准备工作"：不同于其他动词开头
-#"续费"：被标记名词
-#"使用限制"：不同于其他动词开头
 #"免费试用"：不同于其他动词开头
 #“弹性云服务器 P1型云服务器安装NVIDIA GPU驱动和CUDA工具包 ”：复杂的句式（谓语滞后）
-#“镜像服务的镜像服务有哪些？”：第二个label和最后一个label是同一个label
+#“镜像服务有哪些？”：第二个label和最后一个label是同一个label
+#"命名空间管理"："空间管理"被当作一个词处理
 
 #词性表：
