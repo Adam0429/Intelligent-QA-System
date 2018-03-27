@@ -7,6 +7,7 @@ import os
 from tqdm import tqdm
 from bs4 import BeautifulSoup
 
+
 def del_tag(strings):
 	dr = re.compile(r'<[^>]+>',re.S)
 	if type(strings) == type([]): 
@@ -42,12 +43,16 @@ for file in tqdm(files):
 			t.remove(t[len(t)-1])
 		ele = soup.select('.topictitle1')
 		title = del_tag(ele)
+		soup2 = BeautifulSoup(text,'lxml')
+		# descs = soup2.select('.crumbs')
+		# data['desc'] = del_tag(descs)
+
 		if len(title) == 1:
 			data['title'] = title[0]
 			t.append(data['title'])
 		else:
 			data['title'] = 'null'
-		data['desc'] = t
+		# data['desc'] = t
 		details = soup.select('.help-details')
 		if len(details) == 0:
 			details = soup.select('div[id^="body"]') 
@@ -64,29 +69,34 @@ for file in tqdm(files):
 		if len(details) == 0:
 			continue
 		# 正常是所有页面都有一个div储存问答信息,类名不一定是什么，大概就上面几种
+
 		soup = BeautifulSoup(str(details),'lxml')
+		soup2 = BeautifulSoup(text,'lxml')
+		descs = soup2.select('.crumbs')
+		#----------------------
+		soup3 = BeautifulSoup(str(descs[0]),'lxml')
+		aa = soup3.select('a')
+		data['desc'] = del_tag(aa)
 		if len(descs) == 0:
 			h1 = soup.h1
 			siblings = []
-
 			if h1 is None:
 			# some index pages
 				soup2 = BeautifulSoup(text,'lxml')
-				descs = soup2.select('.crumbs')
-				data['desc'] = del_tag(descs[0])
 				ps = soup.select('p')
 				data['qas'] = {'question':del_tag(soup2.select('.text')[0]),'answer':del_tag(ps[1:])}
 				if len(soup2.select('.beg-title')) == 0:
-					continue
-				data['title'] = del_tag(soup2.select('.beg-title')[0])
-				# print(data)
-
+					data['title'] = 'null'
+				else:
+					data['title'] = del_tag(soup2.select('.beg-title')[0])
+				print(data)
 			else:
 				if len(h1) > 0:
 					for s in h1.next_siblings:
 						siblings.append(s)
 				h4s = soup.select('h4')
 				h3s = soup.select('h3')
+
 				hs = h3s + h4s
 				qas = []
 				if len(hs) > 0:
@@ -105,7 +115,31 @@ for file in tqdm(files):
 								dds = del_tag(dds)
 								qas.append({'question':del_tag(dts),'answer':del_tag(s)}) 
 				data['qas'] = qas			
-
+				print(data['desc'])
+		else:
+			soup2 = BeautifulSoup(text,'lxml')
+			descs = soup2.select('.crumbs')
+			ps = soup.select('p')
+			h4s = soup.select('h4')
+			h3s = soup.select('h3')
+			hs = h3s + h4s
+			qas = []
+			if len(hs) > 0:
+				for h in hs:
+					for s in h.next_siblings:
+						if not s.isspace:
+							qas.append({'question':del_tag(h),'answer':del_tag(s)})
+			dls = soup.select('dl')
+			if len(dls) > 0:
+				for dl in dls:
+					for s in dl.next_siblings:
+						if not s.isspace:
+							soup2 = BeautifulSoup(str(dl),'lxml')
+							dts = soup2.dt
+							dds = soup2.select('dd')
+							dds = del_tag(dds)
+							qas.append({'question':del_tag(dts),'	answer':del_tag(s)}) 
+			print(data['desc'])
 	# developer
 	else:
 		soup = BeautifulSoup(text,'lxml')
@@ -145,6 +179,7 @@ for file in tqdm(files):
 			data['qas'] = qas						
 			data['title'] = del_tag(soup.select('.poster-caption'))[0]
 			data['desc'] = data['title']
+			print(data['desc'])
 		else:
 			pass
 			# print(file)
