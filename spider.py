@@ -28,32 +28,6 @@ path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 files = os.listdir(path)
 # txt = open('1.txt','w+')
 for file in tqdm(files):
-	data = {}	import re
-import os
-from tqdm import tqdm
-from bs4 import BeautifulSoup
-
-
-def del_tag(strings):
-	dr = re.compile(r'<[^>]+>',re.S)
-	if type(strings) == type([]): 
-		strs = []
-		for string in strings:
-			string = str(string)
-			s = dr.sub('',string)
-			strs.append(s)
-		return strs
-	else:
-		strings= str(strings)
-		s = dr.sub('',strings)
-		return s
-
-
-path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
-
-files = os.listdir(path)
-# txt = open('1.txt','w+')
-for file in tqdm(files):
 	data = {}	
 	f = open(path + file,mode = 'r')
 	text = f.read()
@@ -124,8 +98,6 @@ for file in tqdm(files):
 					qas[data['title']] = del_tag(ps[1:])
 				else:
 					qas[data['desc'][len(data['desc'])-1]] = del_tag(ps[1:])
-			# print(file)
-			# print(qas)
 			if len(data['desc']) == 0:
 				data['desc'] = data['title']
 
@@ -156,7 +128,7 @@ for file in tqdm(files):
 				for h in hs:
 					for s in h.next_siblings:
 						if not s.isspace:
-							if del_tag(h) not in qas.keys():
+							if del_tag(h) not in qas.keys():	
 								qas[del_tag(h)] = del_tag(s)
 			# dls = soup.select('dl')
 			# if len(dls) > 0:
@@ -175,7 +147,7 @@ for file in tqdm(files):
 			# 	print(value)
 			# txt.writelines("".join(str(data['desc'])))
 			# txt.writelines('\n')
-			
+
 	# developer
 	else:
 		soup = BeautifulSoup(text,'lxml')
@@ -184,6 +156,8 @@ for file in tqdm(files):
 		descs = soup.select('.crumbs')
 		titles = soup.select('span')
 		h1 = soup.h1
+		qas = {}
+
 		# 找到所有h3作为问题，再找他的兄弟节点作为答案
 		if len(descs) == 0:
 			descs = soup.select('.position')
@@ -192,34 +166,35 @@ for file in tqdm(files):
 				if not c.isspace:
 					desc.append(del_tag(c))
 			data['desc'] = desc
-		if h1 is None:
-			continue
-			h5s = soup.select('h5')
-			h4s = soup.select('h4')
-			h3s = soup.select('h3')
-			h1s = soup.select('h1')
-			hs = h1s + h3s + h4s + h5s
-			qas = []
-			if len(hs) > 0:
-				for h in hs:
-					for s in h.next_siblings:
-						if not s.isspace:
-							qas.append({'question':del_tag(h),'answer':del_tag(s)})
-			dls = soup.select('dl')
-			# if len(dls) > 0:
-			# 	for dl in dls:
-			# 		for s in dl.next_siblings:
-			# 			if not s.isspace:
-			# 				soup2 = BeautifulSoup(str(dl),'lxml')
-			# 				dts = soup2.dt
-			# 				dds = soup2.select('dd')
-			# 				dds = del_tag(dds)
-			# 				qas.append({'question':del_tag(dts),'answer':del_tag(s)}) 
-		# data['qas'] = qas						
+		# if h1 is None:
+		h5s = soup.select('h5')
+		h4s = soup.select('h4')
+		h3s = soup.select('h3')
+		h1s = soup.select('h1')
+		hs = h1s + h3s + h4s + h5s
+		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
+		if len(hs) > 0:
+			for h in hs:
+				for s in h.next_siblings:
+					if not s.isspace:
+						qas[del_tag(h)] = del_tag(s)
+		dls = soup.select('dl')
+		if len(dls) > 0:
+			for dl in dls:
+				for s in dl.next_siblings:
+					if not s.isspace:
+						soup2 = BeautifulSoup(str(dl),'lxml')
+						dts = soup2.dt
+						dds = soup2.select('dd')
+						dds = del_tag(dds)
+						qas[del_tag(dts)] = del_tag(s) 
+		data['qas'] = qas						
 		data['title'] = del_tag(soup.select('.poster-caption'))[0]
 			# if len(data['desc']) == 0:
 		data['desc'] = [data['title']]
 			# print(data['qas'])
 			# txt.writelines("-".join(str(data['desc'])))
 			# txt.writelines('\n')
-	print(data['desc'])
+	print(file)
+	print(data['qas'])
