@@ -28,10 +28,36 @@ path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 files = os.listdir(path)
 # txt = open('1.txt','w+')
 for file in tqdm(files):
+	data = {}	import re
+import os
+from tqdm import tqdm
+from bs4 import BeautifulSoup
+
+
+def del_tag(strings):
+	dr = re.compile(r'<[^>]+>',re.S)
+	if type(strings) == type([]): 
+		strs = []
+		for string in strings:
+			string = str(string)
+			s = dr.sub('',string)
+			strs.append(s)
+		return strs
+	else:
+		strings= str(strings)
+		s = dr.sub('',strings)
+		return s
+
+
+path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
+
+files = os.listdir(path)
+# txt = open('1.txt','w+')
+for file in tqdm(files):
 	data = {}	
 	f = open(path + file,mode = 'r')
 	text = f.read()
-	print(file)
+	# print(file)
 	if not 'developer' in file:
 		soup = BeautifulSoup(text,'lxml')
 		elements = soup.select('.help-link')
@@ -71,6 +97,8 @@ for file in tqdm(files):
 		descs = soup2.select('.crumbs')
 		# soup3 = BeautifulSoup(str(descs),'lxml')
 		desc = []
+		qas = {}
+
 		if len(descs) == 0:
 			descs = soup2.select('.position')
 		if len(descs) != 0:
@@ -78,24 +106,34 @@ for file in tqdm(files):
 				if not c.isspace:
 					desc.append(del_tag(c))
 			data['desc'] = desc
+		if 'desc' not in data:
+			data['desc'] = ['null'] 
+
 		h1 = soup.h1
+		# print(data['desc'])
 
 		if h1 is None:
-		# some index pages
+		# some index and faq pages
 
-			ps = soup.select('p')
-			data['qas'] = {data['desc'][len(data['desc'])-1]:del_tag(ps[1:])}
 			if len(soup2.select('.beg-title')) == 0:
 				data['title'] = 'null'
 			else: 
 				data['title'] = del_tag(soup2.select('.beg-title')[0])
-			
+			if ps[1:] != []:
+				if len(data['desc']) == 0:
+					qas[data['title']] = del_tag(ps[1:])
+				else:
+					qas[data['desc'][len(data['desc'])-1]] = del_tag(ps[1:])
+			# print(file)
+			# print(qas)
+			if len(data['desc']) == 0:
+				data['desc'] = data['title']
+
 			h5s = soup.select('h5')
 			h4s = soup.select('h4')
 			h3s = soup.select('h3')
 			h1s = soup.select('h1')
 			hs = h1s + h3s + h4s + h5s
-			qas = {}
 			if len(hs) > 0:
 				for h in hs:
 					for s in h.next_siblings:
@@ -104,7 +142,7 @@ for file in tqdm(files):
 								qas[del_tag(h)] = del_tag(s)
 			# txt.writelines("-".join(str(data['desc'])))
 			# txt.writelines('\n')
-			# data['qas'] = qas			
+			data['qas'] = qas			
 			# print(data['qas'])
 		else:
 			ps = soup.select('p')
@@ -137,6 +175,7 @@ for file in tqdm(files):
 			# 	print(value)
 			# txt.writelines("".join(str(data['desc'])))
 			# txt.writelines('\n')
+			
 	# developer
 	else:
 		soup = BeautifulSoup(text,'lxml')
@@ -184,4 +223,3 @@ for file in tqdm(files):
 			# txt.writelines("-".join(str(data['desc'])))
 			# txt.writelines('\n')
 	print(data['desc'])
-
