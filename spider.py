@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 #作者：Wang Feihong
 #python 版本：3.6
-#更新时间 2018/3/18
+#更新时间 2018/3/28
 import re
 import os
 from tqdm import tqdm
 from bs4 import BeautifulSoup
-
-
 def del_tag(strings):
 	dr = re.compile(r'<[^>]+>',re.S)
 	if type(strings) == type([]): 
@@ -174,6 +172,7 @@ for file in tqdm(files):
 		hs = h1s + h3s + h4s + h5s
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
+		# 如果小标题都没有，直接拿h1做问题，剩下的都是答案		
 		if len(hs) > 0:
 			for h in hs:
 				for s in h.next_siblings:
@@ -198,3 +197,4 @@ for file in tqdm(files):
 			# txt.writelines('\n')
 	print(file)
 	print(data['qas'])
+
