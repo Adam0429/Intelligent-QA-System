@@ -1,13 +1,28 @@
 # -*- coding: utf-8 -*-
 #作者：Zhang Qinyuan
 #python 版本：3.6
-#更新时间 2018/3/25
+#更新时间 2018/3/23
 from pyltp import SentenceSplitter
 from pyltp import Segmentor
 from pyltp import Postagger
 from pyltp import SementicRoleLabeller
 from pyltp import NamedEntityRecognizer
 from pyltp import Parser
+
+def readFile():
+    file_object = open('/Users/zhangqinyuan/Documents/Mac_Projects/Intelligent-QA-System/descs.txt','rU', encoding="utf-8")
+    postingDict = dict()
+    try:
+        key = 0
+        for line in file_object:
+            nLine = line.strip().replace("['","").replace("']","")
+            nList = list(nLine.split("', '"))
+            postingDict[key] = nList
+            key += 1
+    finally:
+#       print(postingList[1])
+        return postingDict
+        file_object.close()
 
 #分隔标签
 def splitor(sentence='帮助中心 > 数据仓库服务 > 购买指南 > 续费'):
@@ -23,9 +38,9 @@ def filter(List):
     for label in List:
         if label not in useless_labels:
             nList.append(label)
-    for label in nList:
-        print(label + ' ', end = '')
-    print()
+#    for label in nList:
+#        print(label + ' ', end = '')
+#    print()
     return nList;
 
 #分词
@@ -50,8 +65,8 @@ def posttagger(words):
     return postags_list
 
 #生成问句
-def generator(sentence):
-    labels = splitor(sentence)
+def generator(List):
+    labels = List
     useful_labels = filter(labels)
     #找到最后一个标签
     last_label = segmentor(useful_labels[-1])
@@ -130,7 +145,11 @@ def generator(sentence):
         print(useful_labels[0] + '的' + str.join(last_label) + '有哪些？')
 
 print('******************整体测试：**********************')
-generator('帮助中心 > 云容器引擎 > 产品介绍 > 产品功能')
+questionDict = readFile()
+k = 0
+while k < 100:
+    generator(questionDict[k])
+    k += 1
 
 #print('******************分部份测试，将会顺序执行：**********************')
 #labels = splitor()
@@ -150,5 +169,6 @@ generator('帮助中心 > 云容器引擎 > 产品介绍 > 产品功能')
 #“弹性云服务器 P1型云服务器安装NVIDIA GPU驱动和CUDA工具包 ”：复杂的句式（谓语滞后）
 #“镜像服务有哪些？”：第二个label和最后一个label是同一个label
 #"命名空间管理"："空间管理"被当作一个词处理
+#"购买指南"：
 
 #词性表：
