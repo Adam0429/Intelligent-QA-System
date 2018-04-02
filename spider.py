@@ -100,7 +100,6 @@ for file in tqdm(files):
 		data['qas'] = qas
 		print(data)
 
-		break
 			# for key,value in qas.items():
 			# 	print(key)
 			# 	print('========================================')
@@ -124,6 +123,8 @@ for file in tqdm(files):
 				if not c.isspace:
 					desc.append(del_tag(c))
 			data['desc'] = desc
+		else:
+			data['desc'] = del_tag(str(soup.h1))
 		# if h1 is None:
 		h5s = soup.select('h5')
 		h4s = soup.select('h4')
@@ -147,7 +148,10 @@ for file in tqdm(files):
 			content = details.split(str(questions[i][0]))[1]
 			content = content.split(str(questions[i+1][0]))[0] 
 			qas[del_tag(questions[i][0])] = del_tag(content)
-		data['url'] = file		
+		data['url'] = file	
+		data['qas'] = qas	
 	# txt.writelines('\n')
 	# print(file)
-	# print(data)
+	print(data)
+	
+
