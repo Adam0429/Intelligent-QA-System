@@ -3,10 +3,11 @@
 #python 版本：3.6
 #更新时间 2018/3/18
 import re
+import jieba
 from jieba import analyse
 import jieba.posseg as pseg
 
-# jieba.load_userdict(file_name) 
+jieba.load_userdict('dict.txt') 
 # question_word = ['谁','何','什么','哪儿','哪里','几时','几','多少','怎','怎么','怎的','怎样','怎么样','怎么着','如何','为什么','高']
 
 # 这里还得附上词性，不然抽取疑问词时仍然在用jieba库的词性标注
@@ -59,13 +60,13 @@ def question_type(text):
 		return ('描述')
 	    # 实体 
 
-text = "基于 TF-IDF 算法的关键词抽取"
+text = input('input:')
 questionwords = question_keyword(text,[])
 # print(questionwords)
 questiontype = question_type(questionwords)
 # print(questiontype)
 keywords = analyse.extract_tags(text,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
-print(keywords)
+print(keywords)	
 
 
 
