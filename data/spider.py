@@ -15,7 +15,6 @@ import pymysql
 db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 cursor = db.cursor()
 idx = 1
-_max = 0
 _postagger = Postagger()  
 _postagger.load('/home/wangfeihong/桌面/ltp_data/pos.model')  
 _segmentor = Segmentor()  # 初始化实例
@@ -156,7 +155,6 @@ def generator(_segmentor,_postagger,List):
 path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
 
 files = os.listdir(path)
-# txt = open('1.txt','w+')
 for file in tqdm(files):
 	data = {}	
 	f = open(path + file,mode = 'r')
@@ -186,6 +184,7 @@ for file in tqdm(files):
 		if len(details) == 0:
 			details = soup.select('.help-main')
 		if len(details) == 0:
+			print(file)
 			continue
 		# 正常是所有页面都有一个div储存问答信息,类名不一定是什么，大概就上面几种
 		details = str(details)
@@ -194,7 +193,6 @@ for file in tqdm(files):
 		descs = soup2.select('.crumbs')
 		# soup3 = BeautifulSoup(str(descs),'lxml')
 		desc = []
-		qas = {}
 
 		if len(descs) == 0:
 			descs = soup2.select('.position')
@@ -214,21 +212,36 @@ for file in tqdm(files):
 		h2s = soup.select('h2')
 		h1s = soup.select('h1')
 		hs = h1s + h2s + h3s + h4s + h5s
-		questions = {}	
+		questions = {}
+		qas = {}	
 		for h in hs:
 			index = details.find(str(h))
 			questions[h] = index
+
 		questions = sorted(questions.items(),key=lambda abs:abs[1])# tuple
-		qas = {}
-		for i in range(len(questions)-1):
-			# print(questions[i][0])
-			# print(questions[i+1][0])
-			content = details.split(str(questions[i][0]))[1]
-			content = content.split(str(questions[i+1][0]))[0] 
-			qas[del_tag(questions[i][0])] = content
+		#还有种没标题的
+		if len(questions) == 1:
+			answer = details.split(str(h))[1]
+			answer = answer.replace('\n','')
+			answer = answer.replace("'","''")
+			if '父主题' in answer:
+				answer = answer.split('父主题')[0]
+			qas[del_tag(questions[0][0])] = answer
+		else:
+			for i in range(len(questions)-1):
+				# print(questions[i][0])
+				# print(questions[i+1][0])
+				content = details.split(str(questions[i][0]))[1]
+				content = content.split(str(questions[i+1][0]))[0] 
+				answer = content
+				answer = answer.replace('\n','')
+				answer = answer.replace("'","''")
+				if '父主题' in answer:
+					answer = answer.split('父主题')[0]
+				qas[del_tag(questions[i][0])] = answer
 		data['url'] = file
 		data['qas'] = qas
-	
+
 	# developer
 	else:
 		soup = BeautifulSoup(text,'lxml')
@@ -237,7 +250,6 @@ for file in tqdm(files):
 		descs = soup.select('.crumbs')
 		titles = soup.select('span')
 		h1 = soup.h1
-		qas = {}
 		if len(descs) == 0:
 			descs = soup.select('.position')
 		if len(descs) != 0:
@@ -256,46 +268,46 @@ for file in tqdm(files):
 		hs = h1s + h2s + h3s + h4s + h5s
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
-		# 如果小标题都没有，直接拿h1做问题，剩下的都是答案		
+		# 如果小标题都没有，直接拿h1做问题，剩下的都是答案
+		# 情况分为没标题的，有一个的，有多个的
+		qas = {}
 		questions = {}	
 		for h in hs:
 			index = details.find(str(h))
 			questions[h] = index
 		questions = sorted(questions.items(),key=lambda abs:abs[1])# tuple
 		# print(questions)
-		qas = {}
-		for i in range(len(questions)-1):
-			# print(questions[i][0])
-			# print(questions[i+1][0])
-			content = details.split(str(questions[i][0]))[1]
-			content = content.split(str(questions[i+1][0]))[0] 
-			qas[del_tag(questions[i][0])] = content
+		if len(questions) == 1:
+			answer = details.split(str(h))[1]
+			answer = answer.replace('\n','')
+			answer = answer.replace("'","''")
+			if '父主题' in answer:
+				answer = answer.split('父主题')[0]
+			qas[del_tag(questions[0][0])] = answer
+		else:
+			for i in range(len(questions)-1):
+				# print(questions[i][0])
+				# print(questions[i+1][0])
+				content = details.split(str(questions[i][0]))[1]
+				content = content.split(str(questions[i+1][0]))[0] 
+				answer = content
+				answer = answer.replace('\n','')
+				answer = answer.replace("'","''")
+				if '父主题' in answer:
+					answer = answer.split('父主题')[0]
+				qas[del_tag(questions[i][0])] = answer
 		# ------------------------------
 		data['url'] = file
 		data['qas'] = qas
 
-		print(data['qas'].keys())
-		print(data['desc'])
-
 	# print(generator(_segmentor,_postagger,data['desc']))
-	# for question,answer in data['qas'].items():
-	# 	# answer = '  1   1'
-	# 	# print('--------------')
-	# 	answer = answer.replace('\n','')
-	# 	answer = answer.replace("'","''")
-	# 	# print(answer)
-	# 	# print(len(answer))	
-	# 	sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + '-'.join(data['desc']) + "'" + ')'
-	# 	print(sql)
-	# 	cursor.execute(sql)
-	# 	db.commit()
-	# 	idx = idx + 1 
+	if len(data['qas']) == 0:
+		print(file)
 
-#难以处理的标签：
-#"续费"：被标记名词
-#"免费试用"：不同于其他动词开头
-#“弹性云服务器 P1型云服务器安装NVIDIA GPU驱动和CUDA工具包 ”：复杂的句式（谓语滞后）
-#“镜像服务有哪些？”：第二个label和最后一个label是同一个label
-#"命名空间管理"："空间管理"被当作一个词处理
-
-#词性表：
+	for question,answer in data['qas'].items():
+		idx = idx + 1
+		d = '-'.join(data['desc'])
+		sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')'
+		# print(sql)
+		cursor.execute(sql)
+		db.commit()
