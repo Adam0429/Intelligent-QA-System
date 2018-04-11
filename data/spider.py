@@ -153,7 +153,6 @@ def generator(_segmentor,_postagger,List):
         return useful_labels[0] + '的' + str.join(last_label) + '有哪些？'
 
 path = '/home/wangfeihong/桌面/support.huaweicloud.com/'
-
 files = os.listdir(path)
 for file in tqdm(files):
 	data = {}	
@@ -177,14 +176,16 @@ for file in tqdm(files):
 			details = soup.select('.beg-text')
 		if len(details) == 0:	
 			details = soup.select('.periods')
+		if len(details) == 0:
+			details = soup.select('.help-main')
 		if len(details) == 0:	
 			details = soup.select('.helpContent')	
 		if len(details) == 0:	
 			details = soup.select('.record-content')
 		if len(details) == 0:
-			details = soup.select('.help-main')
+			details = soup.select('.content-block')
 		if len(details) == 0:
-			print(file)
+			# print('!!!!!:'+file)
 			continue
 		# 正常是所有页面都有一个div储存问答信息,类名不一定是什么，大概就上面几种
 		details = str(details)
@@ -220,25 +221,31 @@ for file in tqdm(files):
 
 		questions = sorted(questions.items(),key=lambda abs:abs[1])# tuple
 		#还有种没标题的
-		if len(questions) == 1:
-			answer = details.split(str(h))[1]
-			answer = answer.replace('\n','')
-			answer = answer.replace("'","''")
-			if '父主题' in answer:
-				answer = answer.split('父主题')[0]
-			qas[del_tag(questions[0][0])] = answer
-		else:
-			for i in range(len(questions)-1):
-				# print(questions[i][0])
-				# print(questions[i+1][0])
-				content = details.split(str(questions[i][0]))[1]
-				content = content.split(str(questions[i+1][0]))[0] 
-				answer = content
+		try:	
+			if len(hs) == 0:
+				question = data['desc'][len(data['desc'])-1]
+				answer = details.split(str(descs[0]))
+				# print(answer[len(answer)-1])
+				qas[del_tag(question)] = answer[len(answer)-1]
+			if len(questions) == 1:
+				answer = details.split(str(h))[1]
 				answer = answer.replace('\n','')
 				answer = answer.replace("'","''")
 				if '父主题' in answer:
 					answer = answer.split('父主题')[0]
-				qas[del_tag(questions[i][0])] = answer
+				qas[del_tag(questions[0][0])] = answer
+			else:
+				for i in range(len(questions)-1):
+					# print(questions[i][0])
+					# print(questions[i+1][0])
+					content = details.split(str(questions[i][0]))[1]
+					content = content.split(str(questions[i+1][0]))[0] 
+					answer = content				
+					if '父主题' in answer:
+						answer = answer.split('父主题')[0]
+					qas[del_tag(questions[i][0])] = answer
+		except:
+			print(file+'=============')
 		data['url'] = file
 		data['qas'] = qas
 
@@ -268,8 +275,7 @@ for file in tqdm(files):
 		hs = h1s + h2s + h3s + h4s + h5s
 		# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 		# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
-		# 如果小标题都没有，直接拿h1做问题，剩下的都是答案
-		# 情况分为没标题的，有一个的，有多个的
+		# 如果小标题都没有，直接拿h1做问题，剩下的都是答案		
 		qas = {}
 		questions = {}	
 		for h in hs:
@@ -277,37 +283,57 @@ for file in tqdm(files):
 			questions[h] = index
 		questions = sorted(questions.items(),key=lambda abs:abs[1])# tuple
 		# print(questions)
-		if len(questions) == 1:
-			answer = details.split(str(h))[1]
-			answer = answer.replace('\n','')
-			answer = answer.replace("'","''")
-			if '父主题' in answer:
-				answer = answer.split('父主题')[0]
-			qas[del_tag(questions[0][0])] = answer
-		else:
-			for i in range(len(questions)-1):
-				# print(questions[i][0])
-				# print(questions[i+1][0])
-				content = details.split(str(questions[i][0]))[1]
-				content = content.split(str(questions[i+1][0]))[0] 
-				answer = content
-				answer = answer.replace('\n','')
-				answer = answer.replace("'","''")
+		try:
+			if len(hs) == 0:
+				question = data['desc'][len(data['desc'])-1]
+				answer = details.split(str(descs[0]))
+				# print(answer[len(answer)-1])
+				qas[del_tag(question)] = answer[len(answer)-1]
+			if len(questions) == 1:
+				answer = details.split(str(h))[1]
+				
 				if '父主题' in answer:
 					answer = answer.split('父主题')[0]
-				qas[del_tag(questions[i][0])] = answer
+				qas[del_tag(questions[0][0])] = answer
+			else:
+				for i in range(len(questions)-1):
+					# print(questions[i][0])
+					# print(questions[i+1][0])
+					content = details.split(str(questions[i][0]))[1]
+					content = content.split(str(questions[i+1][0]))[0] 
+					answer = content
+					answer = answer.replace('\n','')
+					answer = answer.replace("'","''")
+					if '父主题' in answer:
+						answer = answer.split('父主题')[0]
+					qas[del_tag(questions[i][0])] = answer
+		except:
+			continue
+			print('file'+'=====================')
 		# ------------------------------
 		data['url'] = file
 		data['qas'] = qas
 
 	# print(generator(_segmentor,_postagger,data['desc']))
-	if len(data['qas']) == 0:
-		print(file)
-
 	for question,answer in data['qas'].items():
 		idx = idx + 1
 		d = '-'.join(data['desc'])
-		sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')'
-		# print(sql)
+		answer = answer.replace('\n','')
+		answer = answer.replace("'",'"')
+		answer = answer.replace(';','')
+		answer = answer.replace('”','"')
+		answer = answer.replace('“','"')
+		# some limit signals in sql 
+		try:
+			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')'
+		except:
+			answer = del_tag(answer) 
+			# some limit signals in sql 
+			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')' 
+		print(sql)
 		cursor.execute(sql)
 		db.commit()
+
+# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
+# 如果小标题都没有，直接拿h1做问题，剩下的都是答案
+# 情况分为没标题的，有一个的，有多个的
