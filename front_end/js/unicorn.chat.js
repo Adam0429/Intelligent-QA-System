@@ -49,7 +49,7 @@ $(document).ready(function(){
     },'1000');
     */
     setTimeout(function(){
-        back_info('虚拟IP地址用于为网卡提供第二个IP地址，同时支持与多个弹性云服务器的网卡绑定，从而实现多个弹性云服务器之间的高可用性。')
+        back_info('<p>虚拟IP地址用于为网卡提供第二个IP地址。</p>')
     },'1000');
 
    	var i = 0;
@@ -89,7 +89,7 @@ $(document).ready(function(){
     function back_info(info) {
     	i = i + 1;
     	var id = 'msg-'+i;
-    	messages_inner.append('<p class="offline al" id="'+id+'"><span>'+info+'</span></p>');
+    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
     	$('#'+id).fadeOut(0).addClass('show');
     }
 });
