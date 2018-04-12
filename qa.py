@@ -1,7 +1,4 @@
-# -*- coding: utf-8 -*-
-#作者：Wang Feihong
-#python 版本：3.6
-#更新时间 2018/3/18
+import pymysql
 import re
 import jieba
 from jieba import analyse
@@ -33,10 +30,10 @@ def question_keyword(text,question_word):
 				return [n]
 	w1 = {}
 	w1 = wds
-	# for word in wds.keys():'
-			# if word in question_word:
-		# 	w1[word] = wds[word]
-		# print(w1)
+	# for word in wds.keys():
+	# 	if word in question_word:
+	# 		w1[word] = wds[word]
+	# 	print(w1)
 	if 'a' in w1.values() and 'r' not in w1.values():
 		for word in w1.keys():
 			if w1[word] == 'a':
@@ -61,29 +58,24 @@ def question_type(text):
 	    # 实体 
 
 text = input('input:')
-questionwords = question_keyword(text,[])
-# print(questionwords)
-questiontype = question_type(questionwords)
-# print(questiontype)
-keywords = analyse.extract_tags(text,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
-print(keywords)	
+# questionwords = question_keyword(text,[])
+# # print(questionwords)
+# questiontype = question_type(questionwords)
+# # print(questiontype)
+keywords = analyse.extract_tags(text,topK=20, withWeight=True,allowPOS=['ns','n','vn','v','nr','eng'])
 
-
-
-
-# words = pseg.cut("什么哪里?")
-# dict = {}
-# for word,flag in words:
-# 	print(word)
-# 	print(flag)
-# 	dict[word] = flag
-# # print(dict)
-# keys = dict.keys()
-# r = []
-# for key in keys:
-# 	if dict[key] == 'r':
-# 		r.append(key)
-# print(r)
-
-
-
+db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+cursor = db.cursor()
+print(keywords)
+first = True
+sql = 'select descs from QA where '
+for w in keywords:
+	if first: 	
+		sql = sql + 'descs like "%' + w + '%" '
+		first = False
+	else:
+		sql = sql + 'and descs like "%' + w + '%" '
+print(sql)
+cursor.execute(sql)
+result = cursor.fetchall()
+print(len(result))
