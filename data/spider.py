@@ -319,7 +319,9 @@ for file in tqdm(files):
 		idx = idx + 1
 		dd = []
 		for d in data['desc']:
-			dd.append(d)
+			if d != data['desc'][len(data['desc'])-1]:
+				dd.append(d)
+
 		dd.append(question)
 		d = '-'.join(dd)
 		answer = answer.replace('\n','')
@@ -337,8 +339,3 @@ for file in tqdm(files):
 		print(sql)
 		cursor.execute(sql)
 		db.commit()
-
-
-# 想法是找到每个h4的位置,每两个h4的之间的内容就是第一个h4的答案,原先找h4的子节点方法不可用，因为网页写得太乱,div有些包括答案和内容，有些不包括
-# 如果小标题都没有，直接拿h1做问题，剩下的都是答案
-# 情况分为没标题的，有一个的，有多个的
