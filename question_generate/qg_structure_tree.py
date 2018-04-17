@@ -13,7 +13,7 @@ from tqdm import tqdm
 import time
 
 def readFile():
-    file_object = open('/Users/zhangqinyuan/Documents/Mac_Projects/Intelligent-QA-System/descs.txt','rU', encoding="utf-8")
+    file_object = open('/Users/zhangqinyuan/Documents/Mac_Projects/Intelligent-QA-System/dict/descs.txt','rU', encoding="utf-8")
     postingDict = dict()
     try:
         key = 0
@@ -163,7 +163,7 @@ print('******************整体测试：**********************')
 questionDict = readFile()
 k = 0
 fo = codecs.open("/Users/zhangqinyuan/Documents/Mac_Projects/Intelligent-QA-System/question_generate/descs_demo.txt", 'r+', encoding = 'utf-8')
-for i in tqdm(range(100)):
+for i in tqdm(range(1000)):
     fo.write(generator(questionDict[i])+'\n')
     time.sleep(0.01)
 fo.close()

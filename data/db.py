@@ -192,6 +192,7 @@ for file in tqdm(files):
 
 	# print(generator(_segmentor,_postagger,data['desc']))
 	for question,answer in data['qas'].items():
+<<<<<<< HEAD:data/db.py
 		# idx = idx + 1	
 		dd = []
 		for d in data['desc']:
@@ -199,6 +200,14 @@ for file in tqdm(files):
 			dd.append(d)
 		question = question.replace('\n','')
 		question = question.strip()
+=======
+		idx = idx + 1
+		dd = []
+		for d in data['desc']:
+			if d != data['desc'][len(data['desc'])-1]:
+				dd.append(d)
+
+>>>>>>> d1994377a17f541fb5ac83788dbd968339d1e491:data/spider.py
 		dd.append(question)
 		d = '-'.join(dd)
 		answer = answer.replace('\n','')
@@ -209,6 +218,7 @@ for file in tqdm(files):
 		# some limit signals in sql 
 		sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"		
 		try:
+<<<<<<< HEAD:data/db.py
 			cursor.execute(sql)
 			db.commit()	
 		except Exception as e:	
@@ -246,3 +256,13 @@ for file in tqdm(files):
 				sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"
 				cursor.execute(sql)
 				db.commit() 
+=======
+			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')'
+		except:
+			answer = del_tag(answer) 
+			# some limit signals in sql 
+			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')' 
+		print(sql)
+		cursor.execute(sql)
+		db.commit()
+>>>>>>> d1994377a17f541fb5ac83788dbd968339d1e491:data/spider.py
