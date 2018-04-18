@@ -23,10 +23,10 @@ def del_tag(strings):
         s = dr.sub('',strings)
         return s
 
-db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
-cursor = db.cursor()
-cursor.execute('select answer from QA')
-result = cursor.fetchall()
+# db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+# cursor = db.cursor()
+# cursor.execute('select answer from QA')
+# result = cursor.fetchall()
 
 def tokenization(text):
     result = []
