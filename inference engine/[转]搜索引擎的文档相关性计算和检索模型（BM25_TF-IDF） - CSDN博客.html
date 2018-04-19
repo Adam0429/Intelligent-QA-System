@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="canonical" href="https://blog.csdn.net/heiyeshuwu/article/details/43429447"/> 
+    <script type="text/javascript">
+        var username = "heiyeshuwu";
+        var _blogger = username;
+        var blog_address = "https://blog.csdn.net/heiyeshuwu";
+        var static_host = "https://csdnimg.cn/release/phoenix/";
+        var currentUserName = ""; 
+        var fileName = '43429447';
+        var commentscount = 0;
+        var islock = false;
+        window.quickReplyflag = true;
+        var totalFloor = 0;
+        var isBole = false;
+        var isDigg = false;
+        var isExpert = false;
+        var isAdm = false;
+        var baiduKey = "%E6%96%87%E6%A1%A3+%E7%9B%B8%E5%85%B3%E6%80%A7";
+        var needInsertBaidu = false;
+        var isShowAds = true;
+        var ChannelId = 0;
+    </script>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="referrer" content="always">
+    <script src="https://csdnimg.cn/public/common/libs/jquery/jquery-1.9.1.min.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="https://csdnimg.cn/public/static/css/avatar.css">
+                <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/production/main-f869aa95a4.css">
+          <link rel="stylesheet" href="https://csdnimg.cn/public/common/toolbar/content_toolbar_css/content_toolbar.css">
+
+    <script src="https://csdnimg.cn/rabbit/exposure-click/main-1.0.5.js"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/pubfooter/js/tracking-1.0.2.js" charset="utf-8"></script>
+    <script type="text/javascript" src="https://csdnimg.cn/release/phoenix/production/main-e96db8abdf.js"></script>
+
+    <script src="https://dup.baidustatic.com/js/ds.js"></script>
+    <script type="text/javascript">
+        // Traffic Stats of the entire Web site By baidu
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "https://hm.baidu.com/hm.js?6bcd52f51e9b3dce32bec4a3997715ac";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+        // Traffic Stats of the entire Web site By baidu end
+    </script>
+    <meta name="description" content="搜索引擎的检索模型-查询与文档的相关度计算1. 检索模型概述      搜索结果排序时搜索引擎最核心的部分，很大程度度上决定了搜索引擎的质量好坏及用户满意度。实际搜索结果排序的因子有很多，但最主要的两个因素是用户查询和网页内容的相关度，以及网页链接情况。这里我们主要总结网页内容和用户查询相关的内容。       判断网页内容是否与用户査询相关，这依赖于搜索引擎所来用的检索模型。检索模型是搜索引擎的" />
+    <meta name="keywords" content="" />
+    <meta http-equiv="Cache-Control" content="no-siteapp" /><link rel="alternate" media="handheld" href="#" />
+    <meta name="shenma-site-verification" content="5a59773ab8077d4a62bf469ab966a63b_1497598848">
+    <title>[转]搜索引擎的文档相关性计算和检索模型（BM25/TF-IDF） - CSDN博客</title>
+    <link href="https://csdnimg.cn/public/favicon.ico" rel="SHORTCUT ICON">
+              <script src="https://csdnimg.cn/search/baidu_search-1.1.2.js?v=201802071056&autorun=true&install=true&keyword=%E6%96%87%E6%A1%A3+%E7%9B%B8%E5%85%B3%E6%80%A7"  type="text/javascript"></script>
+                      <link rel="stylesheet" href="https://csdnimg.cn/release/phoenix/production/htmledit_views-0a60691e80.css">
+            <style>
+            .MathJax, .MathJax_Message, .MathJax_Preview{
+                display: none
+            }
+      </style>
+</head>
+<body>
+<script id="toolbar-tpl-scriptId" prod="download" skin="black" src="https://csdnimg.cn/public/common/toolbar/js/content_toolbar.js" type="text/javascript" domain="https://blog.csdn.net/"></script>
+<div class="container clearfix">
+  <main>
+    <div style="display:none;">
+      <img src="" onerror='setTimeout(function(){if(!/(csdn.net|iteye.com|baiducontent.com|googleusercontent.com|360webcache.com|sogoucdn.com|bingj.com|baidu.com)$/.test(window.location.hostname)){window.location.href="\x68\x74\x74\x70\x73\x3a\x2f\x2f\x77\x77\x77\x2e\x63\x73\x64\x6e\x2e\x6e\x65\x74"}},3000);'>
+    </div>
+    <article>
+        <h1 class="csdn_top">[转]搜索引擎的文档相关性计算和检索模型（BM25/TF-IDF）</h1>
+        <div class="article_bar clearfix">
+            <div class="artical_tag">
+                <span class="original">
+                转载                </span>
+                <span class="time">2015年02月03日 01:14:18</span>
+            </div>
+
+            <ul class="article_tags clearfix csdn-tracking-statistics tracking-click" data-mod="popu_377" >
+                <li class="tit">标签：</li>
+
+<!--          [startarticletags]-->
+                <!--          [endarticletags]-->
+            </ul>
+            <ul class="right_bar">
+                <li><button class="btn-noborder"><i class="icon iconfont icon-read"></i><span class="txt">24458</span></button></li>
+                <li class="edit">
+                    <a class="btn-noborder" href="" >
+                        <i class="icon iconfont icon-bianji"></i><span class="txt">编辑</span>
+                    </a>
+                </li>
+                <li class="del">
+                    <a class="btn-noborder" onclick="javascript:deleteArticle(fileName);return false;">
+                        <i class="icon iconfont icon-shanchu"></i><span class="txt">删除</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div id="article_content" class="article_content csdn-tracking-statistics tracking-click" data-mod="popu_519" data-dsm="post">
+                            <div class="htmledit_views">
+                        <p><br /></p><p><br /></p><p><a href="http://blog.csdn.net/hguisu/article/details/7981145" style="text-decoration:none;font-family:'Microsoft YaHei';line-height:30px;"><span style="font-size:24px;color:#990000;">搜索引擎的检索模型-查询与文档的相关度计算</span></a><br /></p><p><br /></p><p></p><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;color:rgb(51,51,51);font-family:Arial;line-height:26px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">1. 检索模型概述</span></span></h2><p></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span style="font-size:18px;">      <span style="font-size:14px;"><strong>搜索结果排序时搜索引擎最核心的部分，</strong>很大程度度上决定了搜索引擎的质量好坏及用户满意度。实际搜索结果排序的因子有很多，但最主要的两个因素是用户查询和网页内容的相关度，以及网页链接情况。这里我们主要总结网页内容和用户查询相关的内容。</span></span></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">       判断网页内容是否与用户査询相关，这依赖于搜索引擎所来用的检索模型。检索模型是搜索引擎的理论基础，为量化相关性提供了一种数学模型，是对查询词和文档之间进行相似度计算的框架和方法。<span style="font-family:'宋体';">其本质就是相关度建模。如图所示，检索模型所在搜索引擎系统架构位置：</span></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span style="font-family:'宋体';">    <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347665474_7272.jpg" style="border:none;" /></span></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span style="font-family:'宋体';">    </span></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span style="font-family:'宋体';">    当然检索模型理论研究存在理想化的隐含假设，及即假设用户需求已经通过查询非常清晰明确地表达出来了，所以检索模型的任务不涉及到对用户需求建模。但实际上这个和实际相差较远，即使相同的查询词，不同用户的需求目的可能差异很大，而检索模型对此无能为力。</span></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span style="font-size:18px;"><span style="font-family:'宋体';">   </span></span></p><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;color:rgb(51,51,51);font-family:Arial;line-height:26px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t1" style="color:rgb(51,102,153);"></a><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">2. 检索模型分类</span></span></h2><div style="color:rgb(51,51,51);font-size:14px;line-height:26px;"><span style="font-family:Arial;font-size:18px;"><span style="font-family:'宋体';">   <span style="font-size:14px;">大学学习的《数学模型》（姜启源第三版），现在还有点印象。数学模型将现实问题归结为相应的数学问题，并在此基础上利用数学的概念、方法和理论进行深入的分析和研究，从而从定性或定量的角度来刻画实际问题，并为解决现实问题提供精确的数据或可靠的指导。<br />    所以我们从所使用的数学方法上分：</span></span></span><div style="font-family:Arial;">1）基于集合论的<strong>IR</strong>模型<strong>(Set Theoretic models)</strong></div><div style="font-family:Arial;">     <span style="color:rgb(255,0,0);">布尔模型</span></div><div style="font-family:Arial;">     基于模糊集的模型</div><div style="font-family:Arial;">     扩展布尔模型</div><div style="font-family:Arial;"><span style="color:rgb(0,0,0);">2）基</span>于代数论的<strong>IR</strong>模型<strong>(Algebraic models)</strong></div><div style="font-family:Arial;">     <span style="color:rgb(255,0,0);">向量空间模型</span></div><div style="font-family:Arial;">     潜性语义索引模型</div><div style="font-family:Arial;">     神经网络模型</div><div style="font-family:Arial;"><span style="color:rgb(0,0,0);">3）基</span>于概率统计的<strong>IR</strong>模型<strong>(Probabilistic models)</strong></div><div style="font-family:Arial;">     回归模型</div><div style="font-family:Arial;"><span style="color:rgb(204,0,102);">     </span><span style="color:rgb(255,0,0);">概率模型</span></div><div style="font-family:Arial;">    <span style="color:rgb(204,0,0);"> <span style="color:rgb(255,0,0);">语言模型建模<strong>IR</strong>模型</span></span></div><div style="font-family:Arial;">     推理网络模型</div><div style="font-family:Arial;">     信任度网络模型<br /><br />此外还有基于统计的<span style="color:rgb(255,0,0);">机器学习排序算法</span>。<br />这里主要介绍 布尔模型，向量空间模型，概率模型，语言模型，机器学习排序算法<br /><br /><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t2" style="color:rgb(51,102,153);"></a><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">3. 布尔模型</span></span></h2><p><span style="color:rgb(51,51,255);">布尔模型：</span><br /></p><p>        是最简单的信息检索模型，是基于集合理论和布尔代数的一种简单的检索模型。<span style="font-family:'宋体';"><br /></span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">基本思想：</span><br /></span></p><p><span style="font-family:'宋体';">    文档和用户<span style="background-color:rgb(136,0,0);color:#FFFFFF;">查询</span>由其包含的单词集合来表示，两者的相似性则通过布尔代数运算来进行判定；</span></p><p><span style="color:rgb(51,51,255);">相似度计算：</span><br /></p><p>         查询布尔表达式和所有文档的布尔表达式进行匹配，匹配成功的文档的得分为<strong>1</strong>，否则为<strong>0</strong>。 </p><p>         如查询词：</p><p>                 苹果 and （iphone OR Ipad2）</p><p>         文档集合：</p><p>         D1：IPhone 5于9月13号问世。</p><p>         D2: 苹果公司<span style="font-family:'宋体';">于9月13号</span><span style="font-family:'宋体';">发布</span>新一代IPhone。</p><p>         D3：Ipad2将于3月11日在美上市。</p><p>         D4：Iphone和ipad2的外观设计精美时尚</p><p>         D5：80后90后都喜欢iphone，但不喜欢吃苹果。</p><p>         那么单词与文档关系如下图:</p><p>     <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347673642_3912.jpg" style="border:none;" /><br /></p><div><span style="color:rgb(204,0,102);">         </span>检索结果就是D2和D5符合搜索条件。<br />       这类似于传统数据库检索，是精确匹。一些搜索引擎的高级检索往往是使用布尔模型的思想。如<strong>Google</strong>的高级检索。</div><br /><span style="color:rgb(51,51,255);">优点：</span><br />      在于形式简洁、结构简单。<p><span style="color:rgb(51,51,255);">缺点：</span><br /></p><p>     1）准确的匹配可能导致检出的文档过多或过少。因为布尔模型只是判断文档要么相关、要么不相关，它的检索策略基于二值判定标准，无法描述与查询条件部分匹配的情况。因此，布尔模型实际上是一个数值检索模型而不是信息检索模型。</p><p>     2）尽管布尔表达式有确切的语义，但通常很难将用户的信息需求转换成布尔表达式。如今，人们普遍认为，给索引词加权能极大地改善检索效果。从对索引词加权的方法中引出了向量模型。<br /></p><p><br /></p><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t3" style="color:rgb(51,102,153);"></a><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">4. 向量空间模型(Vector Space Model，VSM)</span></span></h2><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">向量空间模型：<br />    <span style="color:rgb(0,0,0);">康奈尔大学<strong>Salton</strong>等人上世纪<strong>70</strong>年代提出并倡导，原型系统<strong>SMART</strong>   </span></span></span><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">基本思想：</span><br /></span></p><p><span style="font-family:'宋体';">    把文档看成是由t维特征组成的一个向量，特征一般采用单词，每个特征会根据一定依据计算其权重，这t维带有权重的特征共同构成了一个文档，以此来表示文档的主题内容。</span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">相似性计算：</span><br /></span></p><p><span style="font-family:'宋体';">    计算文档的相似性可以采用Cosine计算定义，实际上是求文档在t维空间中<span style="background-color:rgb(136,0,0);color:#FFFFFF;">查询</span>词向量和文档向量的夹角，越小越相似；对于特征权重，可以采用Tf*IDF框架，Tf是词频，IDF是逆文档频率因子指的是同一个单词在文档集合范围的出现次数，这个是一种全局因子，其考虑的不是文档本身的特征，而是特征单词之间的相对重要性，特征词出现在其中的文档数目越多，IDF值越低，这个词区分不同文档的能力就越差，这个框架一般把Weight=Tf*IDF作为权重计算公式。</span></p><p><span style="font-family:'宋体';font-size:18px;"><span style="font-size:14px;color:rgb(51,51,255);">思路：</span><br /></span></p><div><span style="font-family:'宋体';"><span style="color:rgb(0,117,114);">1）向量表示：</span></span></div><div><div><span style="font-family:'宋体';">    文档Dj的向量可以表示为Dj(w1j， w2j ，⋯，wnj ) ，其中n是系统中的单词数目，wij 代表了标引词i在文档Dj中的权重。</span></div><div><span style="font-family:'宋体';">    查询Q的向量可以表示为Q(w1q， w2q ，⋯，wnq ) ，wiq代表了单词i在查询Q中的权重</span></div></div><div><span style="color:rgb(0,117,114);"> 2）文档</span><span style="color:rgb(0,117,114);"><strong>-</strong></span><span style="color:rgb(0,117,114);">单词矩阵</span><span style="color:rgb(0,117,114);"><strong>(Doc-Term Matrix)</strong></span><strong><em>：<br />   n</em></strong>篇文档，<strong><em>m</em></strong>个标引词构成的矩阵<strong><em>Am*n</em></strong>，每列可以看成每篇文档的向量表示，同时，每行也可以可以看成<span style="font-family:'宋体';">单词</span>的向量表示：</div>    <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347674095_3897.png" style="border:none;" /><br /><p><span style="font-family:'宋体';font-size:18px;">    </span></p><div><span style="font-family:'宋体';"><span style="color:rgb(0,117,114);">3）权重计算：<br /></span></span><div><div>       <span style="color:rgb(0,0,0);"><span style="color:rgb(51,153,153);">布尔权重</span>：标引词i在文档j中的权重wij =0或1（出现则取1，否则取0）</span></div><div><span style="color:rgb(0,0,0);">       <span style="color:rgb(51,153,153);">TF权重：</span>TF（Term Frequency）是单词在文档中出现的次数。权重wij = TFij或者归一化后的TF值</span></div></div><div>       <span style="color:rgb(0,0,0);"><span style="color:rgb(51,153,153);">TF的归一化（Normalization）</span>：将一篇文档中所有的标引词的TF值归一化到[0,1]之间。通常可以采用以下方式之一：</span><br />           <span style="color:rgb(51,153,153);">1： Wtf = 1 + log(TF)</span><br /></div>           <span style="color:rgb(51,153,153);">2：</span><span style="color:rgb(51,153,153);"><span style="font-family:'宋体';">Wtf = a + （1- a）*  TF /Max</span></span><span style="font-family:'宋体';color:rgb(51,153,153);">(TF)</span> 其中a为调节因子，经验取值a=0.5 最新研究表明是0.4效果更好。<br />   <div><div>       <span style="color:rgb(51,153,153);"><span style="font-family:'宋体';">单词</span></span><span style="color:rgb(51,153,153);">的文档频率DF（Document Frequency）</span>：<span style="font-family:'宋体';">单词</span>在整个文档集合中出现的文档篇数，DF反映了<span style="font-family:'宋体';">单词</span>的区分度， DF越高表示<span style="font-family:'宋体';">单词</span>越普遍，因此其区分度越低，其权重也越低。</div><div>        <span style="color:rgb(51,153,153);">逆文档频率（Inverse DF ，IDF）：</span>DF的倒数，通常采用如下公式计算：（N是文档集合中所有文档的数目）</div></div>          <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347674654_6299.gif" width="81" height="41" style="border:none;" /><br />    <div><span style="color:rgb(51,153,153);">3)<span style="font-family:'宋体';"> 计算权重</span>：<span style="color:rgb(0,0,0);">向量空间模型中通常采用TF* IDF的方式计算权重</span></span>，即标引词i在文档dj的权重Wij = TFij * IDFij .<br /><span style="color:rgb(0,117,114);">4)  相似度计算</span>：文档和查询词的相关程度(即相似度)可由它们各自向量在向量空问中的相对位置来决定。相似度计算函数有很多种，较常用的是两个向量夹角的余弦函数。<br />   <br /><div style="background-color:rgb(204,204,204);">     <a href="http://baike.baidu.com/view/77260.htm" style="color:rgb(51,102,153);text-decoration:none;"><span class="headline-content">由向量的数量积</span>定义</a>：两个向量的数量积（又称“内积”、“点积”，物理学上称为“标量积”。）是一个数量，记作<strong>a·b</strong>。若<strong>a</strong>、<strong>b</strong>不共线，则<strong>a·b</strong>=|<strong>a</strong>|·|<strong>b</strong>|·cos〈<strong>a</strong>，<strong>b</strong>〉。<br />     其意义：两向量的数量积等于其中一个向量的模与另一个向量在这个向量的方向上的投影的乘积。我们把|b|cosθ叫做向量b在向量a的方向上的投影。<br />     两向量<strong><span style="color:rgb(255,0,0);">a</span></strong>与<strong><span style="color:rgb(255,0,0);">b</span></strong>的数量积：<strong><span style="color:rgb(255,0,0);">a</span></strong>·<strong><span style="color:rgb(255,0,0);">b</span></strong>=|<strong><span style="color:rgb(255,0,0);">a</span></strong>|*|<strong><span style="color:rgb(255,0,0);">b</span></strong>|cosθ；其中|<strong><span style="color:rgb(255,0,0);">a</span></strong>|、|β|是两向量的模，θ是两向量之间的夹角(0≤θ≤π)。<br />     若有坐标<strong><span style="color:rgb(255,0,0);">a</span></strong>(x1,y1,z1) ；<strong><span style="color:rgb(255,0,0);">b</span></strong>(x2,y2,z2)，那么<strong><span style="color:rgb(255,0,0);">a</span></strong>·<strong><span style="color:rgb(255,0,0);">b</span></strong>=x1x2+y1y2+z1z2；　|<strong><span style="color:rgb(255,0,0);">a</span></strong>|=sqrt(x1^2+y1^2+z1^2)；|<strong><span style="color:rgb(255,0,0);">b</span></strong>|=sqrt(x2^2+y2^2+z2^2)。<br /><br />     <strong><span style="color:rgb(255,0,0);">依定义有：cos〈a，b〉=a·b / |a|·|b|）；若a、b共线，则a·b=+-∣a∣∣b∣。</span><br />     其性质：<br />     1）a</strong>·<strong>a</strong>=|<strong>a</strong>|的<a href="http://write.blog.csdn.net/view/33276.htm" style="color:rgb(51,102,153);text-decoration:none;">平方</a>。 　　<br />     2）<strong>a</strong>⊥<strong>b </strong>〈=〉<strong>a</strong>·<strong>b</strong>=0。 　　<br /><br /></div><div><div>     于是文档和提问的相似度值由以下公式获得：<br />     <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347676071_6897.jpg" style="border:none;" />  <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347677518_4024.jpg" style="border:none;" /><br /><span style="color:rgb(51,51,255);">        <span style="color:rgb(255,102,0);">理解Cosine相似性，可以讲每个文档以及查询看做t维特征空间的一个数值点。每个特征形成t维空间中的一个维度，链接特征空间原点和这个数值点形成一个向量，而Cosine相似性就是计算特征空间中两个向量之间的夹角。这个夹角越小，说明两个特征向量内容越相似。极端的情况就是两个完全相同的文档，其在向量空间中的两个向量是重叠的，Cosine相似性值为1.</span></span></div><div><span style="color:rgb(51,51,255);"></span> </div><div><span style="color:rgb(51,51,255);">举例：  </span></div><div><div>          查询<strong><em>q</em></strong>：<strong>(&lt;2006：1&gt;,&lt;</strong>世界杯<strong>：2&gt;)</strong></div><div>       文档<strong><em>d1</em></strong>：<strong>(&lt;2006：1&gt;,&lt;</strong>世界杯<strong>：3&gt;,&lt;</strong>德国<strong>：1&gt;,&lt;</strong>举行<strong>：1&gt;)</strong></div><div>       文档<strong><em>d2</em></strong>：<strong>(&lt;2002：1&gt;,&lt;</strong>世界杯<strong>：2&gt;,&lt;</strong>韩国<strong>：1&gt;,&lt;</strong>日本<strong>：1&gt; &lt;</strong>举行：<strong>1&gt;)<br />       倒排索引列表：<br />       <br /></strong></div></div><div>         <img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347677774_7522.gif" style="border:none;" /><br /></div></div>    <div>       查询和文档进行向量的相似度计算：</div><div><div><span style="color:rgb(51,153,255);">       </span>采用内积</div><div>       文档d1和q的内积：1*1+3*2=7</div><div>       文档d2和q的内积：2*2=4</div><div>       夹角余弦：</div><div>       文档d1和q的夹角余弦：<img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347678013_8951.png" width="54" height="28" style="border:none;" /></div><div>       文档d2和q的夹角余弦：<img alt="" src="http://img.my.csdn.net/uploads/201209/15/1347678042_7204.png" width="57" height="29" style="border:none;" /><br /><br /><div><div><span style="color:rgb(51,51,255);">优点：</span>1) 简洁直观，可以应用到很多其他领域<strong>(</strong>文本分类、生物信息学<strong>)，</strong>邮件过滤系统spamAssass。</div><div>           3) 支持部分匹配和近似匹配，结果可以排序</div><div>           4) 检索效果不错</div><div><span style="color:rgb(51,51,255);">缺点：</span>1) 计算量大</div><div>           2) 单词的不同位置会代表不同的权重，而不同的关键词长度也会影响权重的大小<br />           3) 单词之间的独立性假设与实际不符：实际上，<strong>单词</strong>的出现之间是有关系的，不是完全独立的。如：“王励勤”“乒乓球”的出现不是独立的<span style="color:rgb(204,0,102);">。</span></div></div><br /></div></div><br /></div><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t4" style="color:rgb(51,102,153);"></a><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">5. 概率模型</span></span></h2></div><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">概率模型：</span><br /></span></p><p><span style="font-family:'宋体';">    是目前效果最好的模型之一，okapi BM25这一经典概率模型计算公式已经在搜索引擎的网页排序中广泛使用。概率检索模型是从概率排序原理推导出来的。</span></p><p><span style="font-family:'宋体';">    <br /></span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">基本假设前提和理论：</span><br />    <strong>1).相关性独立原则：</strong>文献对一个检索式的相关性与文献集合中的其他文献是独立的。<br />    <strong>2).单词的独立性:</strong>单词和检索式中词与词之间是相互独立。即文档里出现的单词之间没有任何关联，任一单词在文档的分布概率不依赖其他单词是否出现<strong>。<br />    3).文献相关性是二值的</strong>:即只有相关和不相关两种。<br />    <strong>4).概率排序原则:</strong>该原则认为，检索系统应将文档按照与查 询的概率相关性的大小排序，那么排在最前面的是最有可能被获取的文档<br />   <strong> 5).贝叶斯(Bayes)定理</strong>:用公式表示为：<br />      P(R|d)=(d|R)·P(R)/P(d)</span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">基本思想是：</span><br /></span></p><p><span style="font-family:'宋体';">    是通过概率的方法将查询和文档联系起来,给定一个用户<span style="background-color:rgb(136,0,0);color:#FFFFFF;">查询</span>，如果搜索系统能够在搜索结果排序时按照文档和用户需求的相关性由高到底排序，那么这个搜索系统的准确性是最优的。在文档集合的基础上尽可能准确地对这种相关性进行估计就是其核心。</span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">相似度计算：</span><br />    将查询Q和文档D根据有没有单词表示为二值向量，Q={q1,q2,…}，D={d1,d2,…}，di=0或1表示文献中没有或有第i个单词. 用R表示文献相关，<img alt="" src="http://img.my.csdn.net/uploads/201209/17/1347861912_6912.jpg" width="12" height="13" style="border:none;" />表示文献不相关.<br />    条件概率P(R|dj )表示文档 dj与查询qi相关的概率</span></p><p><span style="font-family:'宋体';">    条件概率P(<img alt="" src="http://img.my.csdn.net/uploads/201209/17/1347861912_6912.jpg" width="12" height="13" style="border:none;" />|dj)表示文档dj与查询qi不相关的概率</span></p><p><span style="font-family:'宋体';">    利用它们的比值计算文档与查询的相似度。<br />    若P(R|d)&gt; P( <img alt="" src="http://img.my.csdn.net/uploads/201209/17/1347861912_6912.jpg" width="12" height="13" style="border:none;" />|d)，即比值大于1，则文献相关程度大于不相关程度，认为文献d是相关的，否则认为文献d不相关。在两者相等时，人为地认为它是不相关的。<br /></span></p><p><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">优点:</span><br />   1.采用严格的数学理论为依据，为人们提供了一种数学理论基础来进行检索决策；PubMed的related articles 。<br />   2.采用相关反馈原理<br />   3.在其中没有使用用户难以运用的布尔逻辑方法；<br />   4.在操作过程中使用了词的依赖性和相互关系。<br /><span style="color:rgb(51,51,255);">缺点：</span><br />   1.计算复杂度大,不适合大型网络<br />   2.参数估计难度较大<br />   3.条件概率值难估计<br />   4.系统的检索性能提高不明显，需与其他检索模型结合</span></p><p><span style="font-family:'宋体';"><br /><br /></span></p><h2 class="headline-1 bk-sidecatalog-title" style="margin:0px 0px 10px;padding:0px 0px 6px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t5" style="color:rgb(51,102,153);"></a><span style="font-size:14px;"><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">6. 语言模型</span></span></span></h2><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">语言模型：</span><br />    是借鉴了语音识别领域采用的语言模型技术，将语言模型和信息检索模型相互融合的结果<br /><span style="color:rgb(51,51,255);">基本思想：</span><br />    其他的检索模型的思考路径是从<strong>查询</strong>到文档，即给定用户<strong>查询</strong>，如何找出相关的文档，该模型的思路正好想法，是由文档到<strong>查询</strong>这个方向，即为每个文档建立不同的语言模型，判断由文档生成用户<strong>查询</strong>的可能性有多大，然后按照这种生成概率由高到低排序，作为搜索结果。语言模型代表了单词或者单词序列在文档中的分布情况；</span></div><div><span style="font-family:'宋体';"><br /></span><p style="font-family:Arial;"><span style="font-family:'宋体';"></span></p><h2 class="headline-1 bk-sidecatalog-title" style="font-family:Arial;margin:0px 0px 10px;padding:0px 0px 6px;border-bottom-color:rgb(222,223,225);border-bottom-width:1px;border-bottom-style:solid;clear:both;"><a name="t6" style="color:rgb(51,102,153);"></a><span style="font-size:14px;"><span style="color:rgb(51,102,153);"><span style="line-height:36px;font-size:22px;">7. 机器学习排序算法</span></span></span></h2><span style="font-family:'宋体';"><span style="color:rgb(51,51,255);">机器学习排序算法</span>：<br />    随着搜索引擎的发展，对于某个网页进行排序需要考虑的因素越来越多，这是无法根据人工经验完成的，这时候用机器学习就是非常合适的，例如Google目前的网页排序公式考虑了200多种因子。机器学习需要的数据源在搜索引擎中较好满足，例如用户的搜索点击记录。其分成人工标注训练、文档特征抽取、学习分类函数以及在实际搜索系统中采用机器学习模型等4个步骤组成。人工标注训练可由用户点击记录来模拟人为对文档相关打分的机制。</span></div></div><br /><p><br /></p><p>文章来源：<a href="http://blog.csdn.net/hguisu/article/details/7981145">http://blog.csdn.net/hguisu/article/details/7981145</a></p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p><a href="http://blog.csdn.net/chl033/article/details/2731701" style="text-decoration:none;font-family:'Microsoft YaHei';line-height:30px;"><strong><span style="font-size:32px;color:#990000;">文本特征提取方法研究</span></strong></a><br /></p><p><br /></p><p>参考URL：<a href="http://wenku.baidu.com/view/7cea98748e9951e79b89279e.html">http://wenku.baidu.com/view/7cea98748e9951e79b89279e.html</a> </p><p></p><h1><span style="font-family:Cambria;font-size:24px;color:#1f497d;">一、</span>课题背景概述</h1><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>文本挖掘是一门交叉性学科<span style="font-family:Calibri;">,</span>涉及数据挖掘、机器学习、模式识别、人工智能、统计学、计算机语言学、计算机网络技术、信息学等多个领域。文本挖掘就是从大量的文档中发现隐含知识和模式的一种方法和工具<span style="font-family:Calibri;">,</span>它从数据挖掘发展而来<span style="font-family:Calibri;">,</span>但与传统的数据挖掘又有许多不同。文本挖掘的对象是海量、异构、分布的文档<span style="font-family:Calibri;">(web);</span>文档内容是人类所使用的自然语言<span style="font-family:Calibri;">,</span>缺乏计算机可理解的语义。传统数据挖掘所处理的数据是结构化的<span style="font-family:Calibri;">,</span>而文档<span style="font-family:Calibri;">(web)</span>都是半结构或无结构的。所以<span style="font-family:Calibri;">,</span>文本挖掘面临的首要问题是如何在计算机中合理地表示文本<span style="font-family:Calibri;">,</span>使之既要包含足够的信息以反映文本的特征<span style="font-family:Calibri;">,</span>又不至于过于复杂使学习算法无法处理。在浩如烟海的网络信息中<span style="font-family:Calibri;">,80%</span>的信息是以文本的形式存放的，<span style="font-family:Calibri;">WEB</span>文本挖掘是<span style="font-family:Calibri;">WEB</span>内容挖掘的一种重要形式。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>文本的表示及其特征项的选取是文本挖掘、信息检索的一个基本问题，它把从文本中抽取出的特征词进行量化来表示文本信息。将它们从一个无结构的原始文本转化为结构化的计算机可以识别处理的信息，即对文本进行科学的抽象，建立它的数学模型，用以描述和代替文本。使计算机能够通过对这种模型的计算和操作来实现对文本的识别。由于文本是非结构化的数据<span style="font-family:Calibri;">,</span>要想从大量的文本中挖掘有用的信息就必须首先将文本转化为可处理的结构化形式。目前人们通常采用向量空间模型来描述文本向量<span style="font-family:Calibri;">,</span>但是如果直接用分词算法和词频统计方法得到的特征项来表示文本向量中的各个维<span style="font-family:Calibri;">,</span>那么这个向量的维度将是非常的大。这种未经处理的文本矢量不仅给后续工作带来巨大的计算开销<span style="font-family:Calibri;">,</span>使整个处理过程的效率非常低下<span style="font-family:Calibri;">,</span>而且会损害分类、聚类算法的精确性<span style="font-family:Calibri;">,</span>从而使所得到的结果很难令人满意。因此<span style="font-family:Calibri;">,</span>必须对文本向量做进一步净化处理<span style="font-family:Calibri;">,</span>在保证原文含义的基础上<span style="font-family:Calibri;">,</span>找出对文本特征类别最具代表性的文本特征。为了解决这个问题<span style="font-family:Calibri;">,</span>最有效的办法就是通过特征选择来降维。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>目前有关文本表示的研究主要集中于文本表示模型的选择和特征词选择算法的选取上。用于表示文本的基本单位通常称为文本的特征或特征项。特征项必须具备一定的特性<span style="font-family:Calibri;">:1)</span>特征项要能够确实标识文本内容<span style="font-family:Calibri;">;2)</span>特征项具有将目标文本与其他文本相区分的能力<span style="font-family:Calibri;">;3)</span>特征项的个数不能太多<span style="font-family:Calibri;">;4)</span>特征项分离要比较容易实现。在中文文本中可以采用字、词或短语作为表示文本的特征项。相比较而言，词比字具有更强的表达能力，而词和短语相比，词的切分难度比短语的切分难度小得多。因此，目前大多数中文文本分类系统都采用词作为特征项，称作特征词。这些特征词作为文档的中间表示形式，用来实现文档与文档、文档与用户目标之间的相似度计算<span style="font-family:Calibri;"> </span>。如果把所有的词都作为特征项，那么特征向量的维数将过于巨大，从而导致计算量太大，在这样的情况下，要完成文本分类几乎是不可能的。特征抽取的主要功能是在不损伤文本核心信息的情况下尽量减少要处理的单词数，以此来降低向量空间维数，从而简化计算，提高文本处理的速度和效率。文本特征选择对文本内容的过滤和分类、聚类处理、自动摘要以及用户兴趣模式发现、知识发现等有关方面的研究都有非常重要的影响。通常根据某个特征评估函数计算各个特征的评分值，然后按评分值对这些特征进行排序，选取若干个评分值最高的作为特征词，这就是特征抽取<span style="font-family:Calibri;">(Feature Selection)</span>。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>特征选取的方式有<span style="font-family:Calibri;">4</span>种：</span></p><p><span style="font-size:14px;"><span style="font-family:Calibri;"><span style="white-space:pre;">	</span>(I)</span>用映射或变换的方法把原始特征变换为较少的新特征；</span></p><p><span style="font-size:14px;"><span style="font-family:Calibri;"><span style="white-space:pre;">	</span>(2)</span>从原始特征中挑选出一些最具代表性的特征；</span></p><p><span style="font-size:14px;"><span style="font-family:Calibri;"><span style="white-space:pre;">	</span>(3)</span>根据专家的知识挑选最有影响的特征；</span></p><p><span style="font-size:14px;"><span style="font-family:Calibri;"><span style="white-space:pre;">	</span>(4)</span>用数学的方法进行选取，找出最具分类信息的特征，这种方法是一种比较精确的方法，人为因素的干扰较少，尤其适合于文本自动分类挖掘系统的应用。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>随着网络知识组织、人工智能等学科的发展<span style="font-family:Calibri;">,</span>文本特征提取将向着数字化、智能化、语义化的方向深入发展<span style="font-family:Calibri;">,</span>在社会知识管理方面发挥更大的作用。</span></p><p><span style="font-size:14px;"><br /></span></p><h1><a style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#1f497d;">二、</span>文本特征向量</h1><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>经典的向量空间模型(VSM: Vector Space Model)由Salton等人于60年代提出，并成功地应用于著名的SMART文本检索系统。VSM概念简单,把对文本内容的处理简化为向量空间中的向量运算,并且它以空间上的相似度表达语义的相似度,直观易懂。当文档被表示为文档空间的向量，就可以通过计算向量之间的相似性来度量文档间的相似性。文本处理中最常用的相似性度量方式是余弦距离。文本挖掘系统采用向量空间模型<span style="font-family:Calibri;">,</span>用特征词条<span style="font-family:Calibri;">(T1 ,T2 ,…Tn) </span>及其权值<span style="font-family:Calibri;">Wi </span>代表目标信息<span style="font-family:Calibri;">,</span>在进行信息匹配时<span style="font-family:Calibri;">,</span>使用这些特征项评价未知文本与目标样本的相关程度。特征词条及其权值的选取称为目标样本的特征提取<span style="font-family:Calibri;">,</span>特征提取算法的优劣将直接影响到系统的运行效果。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;">设<span style="font-family:Calibri;">D</span>为一个包含<span style="font-family:Calibri;">m</span>个文档的文档集合<span style="font-family:Calibri;">,Di</span>为第<span style="font-family:Calibri;">i</span>个文档的特征向量<span style="font-family:Calibri;">,</span>则有</span></p><p><span style="font-family:Calibri;font-size:14px;">D={D1,D2,…,Dm},</span>　<span style="font-family:Calibri;">Di=(di1,di2,…,din),i=1,2,…,m</span></p><p><span style="font-family:Calibri;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>其中<span style="font-family:Calibri;">dij(i=1,2,</span>…<span style="font-family:Calibri;">,m;j=1,2,</span>…<span style="font-family:Calibri;">,n)</span>为文档<span style="font-family:Calibri;">Di</span>中第<span style="font-family:Calibri;">j</span>个词条<span style="font-family:Calibri;">tj</span>的权值<span style="font-family:Calibri;">,</span>它一般被定义为<span style="font-family:Calibri;">tj</span>在<span style="font-family:Calibri;">Di</span>中出现的频率<span style="font-family:Calibri;">tij</span>的函数<span style="font-family:Calibri;">,</span>例如采用<span style="font-family:Calibri;">TFIDF</span>函数<span style="font-family:Calibri;">,</span>即<span style="font-family:Calibri;">dij=tij*log(N/nj)</span>其中<span style="font-family:Calibri;">,N</span>是文档数据库中文档总数<span style="font-family:Calibri;">,nj</span>是文档数据库含有词条<span style="font-family:Calibri;">tj</span>的文档数目。假设用户给定的文档向量为<span style="font-family:Calibri;">Di,</span>未知的文档向量为<span style="font-family:Calibri;">Dj,</span>则两者的相似程度可用两向量的夹角余弦来度量<span style="font-family:Calibri;">,</span>夹角越小说明相似度越高。相似度的计算公式如下<span style="font-family:Calibri;">:</span></span></p><p><span style="font-size:14px;">通过上述的向量空间模型<span style="font-family:Calibri;">,</span>文本数据就转换成了计算机可以处理的结构化数据<span style="font-family:Calibri;">,</span>两个文档之间的相似性问题转变成了两个向量之间的相似性问题。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><br /></span></p><h1><a style="color:rgb(202,0,0);"></a><span style="font-size:24px;color:#1f497d;">三、<span style="font-family:Cambria;"> </span>基于统计的特征提取方法<span style="font-family:Cambria;">(</span>构造评估函数<span style="font-family:Cambria;">)</span></span></h1><div><span style="font-size:24px;color:#1f497d;"><span style="font-family:Cambria;"><br /></span></span></div><h2><a style="color:rgb(202,0,0);"></a><span style="color:#4f81bd;">一、各种流行算法</span></h2><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>这类型算法通过构造评估函数<span style="font-family:Calibri;">,</span>对特征集合中的每个特征进行评估<span style="font-family:Calibri;">,</span>并对每个特征打分，这样每个词语都获得一个评估值,又称为权值。然后将所有特征按权值大小排序<span style="font-family:Calibri;">,</span>提取预定数目的最优特征作为提取结果的特征子集。显然<span style="font-family:Calibri;">,</span>对于这类型算法<span style="font-family:Calibri;">,</span>决定文本特征提取效果的主要因素是评估函数的质量。</span></p><p><span style="font-family:Calibri;font-size:14px;"> </span></p><h3><a style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">1</span>、<span style="font-family:Cambria;">TF-IDF</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>单词权重最为有效的实现方法就是<span style="font-family:Calibri;">TF*IDF, </span>它是由<span style="font-family:Calibri;">Salton</span>在<span style="font-family:Calibri;">1988 </span>年提出的。其中<span style="font-family:Calibri;">TF </span>称为词频<span style="font-family:Calibri;">, </span>用于计算该词描述文档内容的能力<span style="font-family:Calibri;">; IDF</span>称为反文档频率<span style="font-family:Calibri;">, </span>用于计算该词区分文档的能力。<span style="font-family:Calibri;">TF*IDF </span>的指导思想建立在这样一条基本假设之上<span style="font-family:Calibri;">: </span>在一个文本中出现很多次的单词<span style="font-family:Calibri;">, </span>在另一个同类文本中出现次数也会很多<span style="font-family:Calibri;">, </span>反之亦然。所以如果特征空间坐标系取<span style="font-family:Calibri;">TF </span>词频作为测度<span style="font-family:Calibri;">, </span>就可以体现同类文本的特点。另外还要考虑单词区别不同类别的能力<span style="font-family:Calibri;">, TF*IDF </span>法认为一个单词出现的文本频率越小<span style="font-family:Calibri;">, </span>它区别不同类别的能力就越大<span style="font-family:Calibri;">, </span>所以引入了逆文本频度<span style="font-family:Calibri;">IDF </span>的概念<span style="font-family:Calibri;">, </span>以<span style="font-family:Calibri;">TF </span>和<span style="font-family:Calibri;">IDF </span>的乘积作为特征空间坐标系的取值测度。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-family:Calibri;font-size:14px;"><span style="white-space:pre;">	</span>TFIDF </span>法是以特征词在文档<span style="font-family:Calibri;">d</span>中出现的次数与包含该特征词的文档数之比作为该词的权重，即</p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>其中，<span style="font-family:Calibri;"> Wi</span>表示第<span style="font-family:Calibri;">i</span>个特征词的权重，<span style="font-family:Calibri;">TF<sub>i</sub>(t</span>，<span style="font-family:Calibri;">d)</span>表示词<span style="font-family:Calibri;">t</span>在文档<span style="font-family:Calibri;">d</span>中的出现频率，<span style="font-family:Calibri;">N</span>表示总的文档数，<span style="font-family:Calibri;">DF(t)</span>表示包含<span style="font-family:Calibri;">t</span>的文档数。用<span style="font-family:Calibri;">TFIDF</span>算法来计算特征词的权重值是表示当一个词在这篇文档中出现的频率越高，同时在其他文档中出现的次数越少，则表明该词对于表示这篇文档的区分能力越强，所以其权重值就应该越大。将所有词的权值排序<span style="font-family:Calibri;">, </span>根据需要可以有两种选择方式<span style="font-family:Calibri;">:( 1) </span>选择权值最大的某一固定数<span style="font-family:Calibri;">n</span>个关键词<span style="font-family:Calibri;">;( 2) </span>选择权值大于某一阈值的关键词。一些实验表示<span style="font-family:Calibri;">,</span>人工选择关键词<span style="font-family:Calibri;">, 4</span>∽<span style="font-family:Calibri;">7 </span>个比较合适<span style="font-family:Calibri;">, </span>机选关键词<span style="font-family:Calibri;">10</span>∽<span style="font-family:Calibri;">15 </span>通常具有最好的覆盖度和专指度。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-family:Calibri;font-size:14px;"><span style="white-space:pre;">	</span>TFIDF</span>算法是建立在这样一个假设之上的：对区别文档最有意义的词语应该是那些在文档中出现频率高，而在整个文档集合的其他文档中出现频率少的词语，所以如果特征空间坐标系取<span style="font-family:Calibri;">TF</span>词频作为测度，就可以体现同类文本的特点。另外考虑到单词区别不同类别的能力，<span style="font-family:Calibri;">TFIDF</span>法认为一个单词出现的文本频数越小，它区别不同类别文本的能力就越大。因此引入了逆文本频度<span style="font-family:Calibri;">IDF</span>的概念，以<span style="font-family:Calibri;">TF</span>和<span style="font-family:Calibri;">IDF</span>的乘积作为特征空间坐标系的取值测度，并用它完成对权值<span style="font-family:Calibri;">TF</span>的调整，调整权值的目的在于突出重要单词，抑制次要单词。但是在本质上<span style="font-family:Calibri;">IDF</span>是一种试图抑制噪音的加权<span style="font-family:Calibri;"> </span>，并且单纯地认为文本频数小的单词就越重要，文本频数大的单词就越无用，显然这并不是完全正确的。<span style="font-family:Calibri;">IDF</span>的简单结构并不能有效地反映单词的重要程度和特征词的分布情况，使其无法很好地完成对权值调整的功能，所以<span style="font-family:Calibri;">TFIDF</span>法的精度并不是很高。</p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>此外，在<span style="font-family:Calibri;">TFIDF</span>算法中并没有体现出单词的位置信息，对于<span style="font-family:Calibri;">Web</span>文档而言，权重的计算方法应该体现出<span style="font-family:Calibri;">HTML</span>的结构特征。特征词在不同的标记符中对文章内容的反映程度不同，其权重的计算方法也应不同。因此应该对于处于网页不同位置的特征词分别赋予不同的系数，然后乘以特征词的词频，以提高文本表示的效果。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">2</span>、词频方法<span style="font-family:Cambria;">(Word Frequency)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>词频是一个词在文档中出现的次数。通过词频进行特征选择就是将词频小于某一闭值的词删除，从而降低特征空间的维数。这个方法是基于这样一个假设，即出现频率小的词对过滤的影响也较小。但是在信息检索的研究中认为，有时频率小的词含有更多的信息。因此，在特征选择的过程中不宜简单地根据词频大幅度删词。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">3</span>、文档频次方法<span style="font-family:Cambria;">(Document Frequency)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>文档频数(Document Frequency, DF)是最为简单的一种特征选择算法,它指的是在整个数据集中有多少个文本包含这个单词。在训练文本集中对每个特征计一算它的文档频次，并且根据预先设定的阑值去除那些文档频次特别低和特别高的特征。文档频次通过在训练文档数量中计算线性近似复杂度来衡量巨大的文档集，计算复杂度较低，能够适用于任何语料，因此是特征降维的常用方法。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>在训练文本集中对每个特征计算它的文档频数,若该项的DF 值小于某个阈值则将其删除,若其DF 值大于某个阈值也将其去掉。因为他们分别代表了“没有代表性”和“没有区分度”2 种极端的情况。DF 特征选取使稀有词要么不含有用信息,要么太少而不足以对分类产生影响,要么是噪音,所以可以删去。DF 的优点在于计算量很小,而在实际运用中却有很好的效果。缺点是稀有词可能在某一类文本中并不稀有,也可能包含着重要的判断信息,简单舍弃,可能影响分类器的精度。<br /></span><span style="font-size:14px;"><br /><span style="white-space:pre;">	</span>文档频数最大的优势就是速度快,它的时间复杂度和文本数量成线性关系,所以非常适合于超大规模文本数据集的特征选择。不仅如此,文档频数还非常地高效,在有监督的特征选择应用中当删除90%单词的时候其性能与信息增益和x2 统计的性能还不相上下。DF 是最简单的特征项选取方法, 而且该方法的计算复杂度低, 能够胜任大规模的分类任务。<br /><br /></span></p><p><span style="font-size:14px;">但如果某一稀有词条主要出现在某类训练集中,却能很好地反映类别的特征,而因低于某个设定的阈值而滤除掉,这样就会对分类精度有一定的影响。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t7" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">4</span>、互信息<span style="font-family:Cambria;">(Mutual Information)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>互信息衡量的是某个词和类别之间的统计独立关系,某个词t和某个类别Ci传统的互信息定义如下:</span></p><p></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>互信息是计算语言学模型分析的常用方法，它度量两个对象之间的相互性。在过滤问题中用于度量特征对于主题的区分度。互信息的定义与交叉嫡近似。互信息本来是信息论中的一个概念,用于表示信息之间的关系, 是两个随机变量统计相关性的测度，使用互信息理论进行特征抽取是基于如下假设:在某个特定类别出现频率高,但在其他类别出现频率比较低的词条与该类的互信息比较大。通常用互信息作为特征词和类别之问的测度，如果特征词属于该类的话，它们的互信息量最大。由于该方法不需要对特征词和类别之问关系的性质作任何假设，因此非常适合于文本分类的特征和类别的配准工作。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>特征项和类别的互信息体现了特征项与类别的相关程度, 是一种广泛用于建立词关联统计模型的标准。互信息与期望交叉熵的不同在于没有考虑特征出现的频率, 这样导致互信息评估函数不选择高频的有用词而有可能选择稀有词作为文本的最佳特征。因为对于每一主题来讲，特征t的互信息越大，说明它与该主题的共现概率越大，因此，以互信息作为提取特征的评价时应选互信息最大的若干个特征。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>互信息计算的时间复杂度类似于信息增益, 互信息的平均值就是信息增益。互信息的不足之处在于得分非常受词条边缘概率的影响。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>实验数据显示,互信息分类效果最差,其次是文档频率、CC 统计,CHI 统计分类效果最好。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>对互信息而言,提高分类精度的方法有:1) 可以增加特征空间的维数,以提取足够多的特征信息,这样就会带来了时间和空间上的额外开销;2) 根据互信息函数的定义,认为这些低频词携带着较为强烈的类别信息,从而对它们有不同程度的倚重. 当训练语料库没有达到一定规模的时候,特征空间中必然会存在大量的出现文档频率很低(比如低于3 次) 的词条,他们较低的文档频率导致了他们必然只属于少数类别. 但是从抽取出来的特征词观察发现,大多数为生僻词,很少一部分确实带有较强的类别信息,多数词携带少量的类别信息,甚至是噪音词.</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t8" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">5</span>、期望交叉熵<span style="font-family:Cambria;">(Expected Cross Entropy)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>交叉嫡与信息量的定义近似，其公式为:</span></p><p></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>交叉嫡 ，也称KL距离。它反映了文本主题类的概率分布和在出现了某特定词汇的条件下文本主题类的概率分布之间的距离，词汇w的交叉嫡越大，对文本主题类分布的影响也越大。它与信息增益唯一的不同之处在于没有考虑单词未发生的情况，只计算出现在文本中的特征项。如果特征项和类别强相关, P ( Ci | w )就大,若P( Ci) 又很小的话,则说明该特征对分类的影响大。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>交叉熵反映了文本类别的概率分布和在出现了某个特定词的条件下文本类别的概率分布之间的距离, 特征词t 的交叉熵越大, 对文本类别分布的影响也越大。熵的特征选择效果都要优于信息增益。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t9" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">6</span>、二次信息熵<span style="font-family:Cambria;">(QEMI)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>将二次熵函数应用于互信息评估方法中，取代互信息中的Shannon熵，就形成了基于二次熵的互信息评估函数。基于二次熵的互信息克服了互信息的随机性，是一个确定的量，因此可以作为信息的整体测度，另外它还比互信息最大化的计算复杂度要小，所以可以比较高效地用在基于分类的特征选取上。</span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>二次熵的概念是在广义信息论中提出的。广义熵：</span></p><p><span style="font-size:14px;">当<span style="font-family:Calibri;"> </span>，就得到了二次熵定义：</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t10" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">7</span>、信息增益方法<span style="font-family:Cambria;">(Information Gain)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>信息增益方法是机器学习的常用方法，在过滤问题中用于度量已知一个特征是否出现于某主题相关文本中对于该主题预测有多少信息。通过计算信息增益可以得到那些在正例样本中出现频率高而在反例样本中出现频率低的特征，以及那些在反例样本中出现频率高而在正例样本中出现频率低的特征。信息增益G(w)的训算公式如下:</span></p><p></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>其中P(w)是词w出现的概率，P(C<sub>i</sub>)是取第i个目录时的概率，P(C,|w ) 是假定w出现时取第i个目录的概率。</span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>信息增益是一种基于熵的评估方法,涉及较多的数学理论和复杂的熵理论公式,定义为某特征项为整个分类所能提供的信息量,不考虑任何特征的熵与考虑该特征后的熵的差值。他根据训练数据,计算出各个特征项的信息增益,删除信息增益很小的项,其余的按照信息增益从大到小排序。</span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>信息增益是信息论中的一个重要概念, 它表示了某一个特征项的存在与否对类别预测的影响, 定义为考虑某一特征项在文本中出现前后的信息熵之差。某个特征项的信息增益值越大, 贡献越大, 对分类也越重要。信息增益方法的不足之处在于它考虑了特征未发生的情况。特别是在类分布和特征值分布高度不平衡的情况下, 绝大多数类都是负类, 绝大多数特征都不出现。此时的函数值由不出现的特征决定, 因此, 信息增益的效果就会大大降低。信息增益表现出的分类性能偏低。因为信息增益考虑了文本特征未发生的情况，虽然特征不出现的情况肿可能对文本类别具有贡献，但这种贡献往往小于考虑这种情况时对特征分值带来的干扰。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t11" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">8</span>、<span style="font-family:Cambria;">x2</span>统计量方法：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>x2统计量用于度量特征w和主题类C之间的独立性。而表示除w以外的其他特征，C表示除C以外的其他主题类，那么特征w和主题类C的关系有以下四种</span></p><p><span style="font-size:14px;">情况: ，用A, B, C, D表示这四种情况的文档频次，总的文档数N=A+B+C+D,扩统计量的计算公式如下:</span></p><p></p><p><span style="font-size:14px;">当特征w和主题类C之间完全独立的时候，x2统计量为0。x2统计量和互信息的差别在于它是归一化的统计量，但是它对低频特征的区分效果也不好。X2 统计得分的计算有二次复杂度, 相似于互信息和信息增益。在 X2 统计和互信息之间主要的不同在于 X2 是规格化评价, 因而 X2 评估分值对在同类中的词是可比的, 但是 X2 统计对于低频词来说是不可靠的。</span></p><p><span style="font-size:14px;">利用x2 统计方法来进行特征抽取是基于如下假设:在指定类别文本中出现频率高的词条与在其他类别文本中出现频率比较高的词条,对判定文档是否属于该类别都是很有帮助的.</span></p><p><span style="font-size:14px;">采用x2估计特征选择算法的准确率在实验中最高，其分类效果受训练集影响较小，比较稳定。而且在对文教类和政治类存在类别交叉现象的文本进行分类时，采用x2估计的分类系统表现出了优于其它方法的分类性能。X2估计的可靠性较好，便于对程序的控制，无需因训练集的改变而人为的调节特征阀值的大小。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t12" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">9</span>、文本证据权<span style="font-family:Cambria;">(The Weight of Evidence forText)</span>：</h3><p></p><p><span style="font-size:14px;">文本证据权衡量类的概率和给定特征时类的条件概率之间的差别。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t13" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">10</span>、优势率<span style="font-family:Cambria;">(Odds Ratio)</span>：</h3><p></p><p><span style="font-size:14px;">    优势率只适用于二元分类的情况，其特点是只关心文本特征对于目标类的分值。Pos表示目标类，neg表示非目标类。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t14" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">11</span>、遗传算法<span style="font-family:Cambria;">(Genetic Algorithm, GA)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>文本实际上可以看作是由众多的特征词条构成的多维空间<span style="font-family:Calibri;">,</span>而特征向量的选择就是多维空间中的寻优过程<span style="font-family:Calibri;">,</span>因此在文本特征提取研究中可以使用高效寻优算法。遗传算法<span style="font-family:Calibri;">(Genetic Algorithm, GA)</span>是一种通用型的优化搜索方法<span style="font-family:Calibri;">,</span>它利用结构化的随机信息交换技术组合群体中各个结构中最好的生存因素<span style="font-family:Calibri;">,</span>复制出最佳代码串<span style="font-family:Calibri;">,</span>并使之一代一代地进化<span style="font-family:Calibri;">,</span>最终获得满意的优化结果。在将文本特征提取问题转化为文本空间的寻优过程中<span style="font-family:Calibri;">,</span>首先对<span style="font-family:Calibri;">Web</span>文本空间进行遗传编码<span style="font-family:Calibri;">,</span>以文本向量构成染色体<span style="font-family:Calibri;">,</span>通过选择、交叉、变异等遗传操作<span style="font-family:Calibri;">,</span>不断搜索问题域空间<span style="font-family:Calibri;">,</span>使其不断得到进化<span style="font-family:Calibri;">,</span>逐步得到<span style="font-family:Calibri;">Web</span>文本的最优特征向量。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>基于协同演化的遗传算法不是使用固定的环境来评价个体<span style="font-family:Calibri;">,</span>而是使用其他的个体来评价特定个体。个体优劣的标准不是其生存环境以外的事物<span style="font-family:Calibri;">,</span>而是由在同一生存竞争环境中的其他个体来决定。协同演化的思想非常适合处理同类文本的特征提取问题。由于同一类别文本相互之间存在一定相关性<span style="font-family:Calibri;">,</span>因而各自所代表的那组个体在进化过程中存在着同类之间的相互评价和竞争。因此<span style="font-family:Calibri;">,</span>每个文本的特征向量<span style="font-family:Calibri;">,</span>即该问题中的个体<span style="font-family:Calibri;">,</span>在不断的进化过程中<span style="font-family:Calibri;">,</span>不仅受到其母体<span style="font-family:Calibri;">(</span>文本<span style="font-family:Calibri;">)</span>的评价和制约<span style="font-family:Calibri;">,</span>而且还受到种族中其他同类个体的指导。所以<span style="font-family:Calibri;">,</span>基于协同演化的遗传算法不仅能反映其母体的特征<span style="font-family:Calibri;">,</span>还能反映其他同类文本的共性<span style="font-family:Calibri;">,</span>这样可以有效地解决同一主题众多文本的集体特征向量的提取问题<span style="font-family:Calibri;">,</span>获得反映整个文本集合某些特征的最佳个体。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t15" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">12</span>、主成分分析法<span style="font-family:Cambria;">(Principal Component Analysis</span>，<span style="font-family:Cambria;">PCA)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>它不是通过特征选取的方式降维的，而是通过搜索最能代表原数据的正交向量，创立一个替换的、较小的变量集来组合属性的精华，原数据可以投影到这个较小的集合。PCA由于其处理方式的不同又分为数据方法和矩阵方法。矩阵方法中，所有的数据通过计算方差一协方差结构在矩阵中表示出来，矩阵的实现目标是确定协方差矩阵的特征向量，它们和原始数据的主要成分相对应。在主成分方法中，由于矩阵方法的复杂度在n很大的情况 以二次方增长，因此人们又开发使用了主要使用Hebbian学习规则的PCA神经网络方法。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>主成分分析法是特征选取常用的方法之一，它能够揭示更多有关变量_丰要方向的信息。但它的问题在于矩阵方法中要使用奇异值分解对角化矩阵求解方差一协方差。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t16" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">13</span>、模拟退火算法<span style="font-family:Cambria;">(Simulating Anneal</span>，<span style="font-family:Cambria;">SA)</span>：</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>特征选取可以看成是一个组合优化问题，因而可以使用解决优化问题的方法来解决特征选取的问题。模拟退火算法(Simulating Anneal，SA)就是其中一种方法。</span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>模拟退火算法是一个很好的解决优化问题的方法，将这个方法运用到特征选取中，理论上能够找到全局最优解，但在初始温度的选取和邻域的选取t要恰当，必须要找到一个比较折中的办法，综合考虑解的性能和算法的速度。<br /><br /></span></p><h3><a name="t17" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">14</span>、<span style="font-family:Cambria;">N</span>—<span style="font-family:Cambria;">Gram</span>算法</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>它的基本思想是将文本内容按字节流进行大小为<span style="font-family:Calibri;">N</span>的滑动窗口操作<span style="font-family:Calibri;">,</span>形成长度为<span style="font-family:Calibri;">N</span>的字节片段序列。每个字节片段称为<span style="font-family:Calibri;">gram,</span>对全部<span style="font-family:Calibri;">gram</span>的出现频度进行统计<span style="font-family:Calibri;">,</span>并按照事先设定的阈值进行过滤<span style="font-family:Calibri;">,</span>形成关键<span style="font-family:Calibri;">gram</span>列表<span style="font-family:Calibri;">,</span>即为该文本的特征向量空间<span style="font-family:Calibri;">,</span>每一种<span style="font-family:Calibri;">gram</span>则为特征向量维度。由于<span style="font-family:Calibri;">N</span>—<span style="font-family:Calibri;">Gram</span>算法可以避免汉语分词的障碍<span style="font-family:Calibri;">,</span>所以在中文文本处理中具有较高的实用性。中文文本处理大多采用双字节进行分解<span style="font-family:Calibri;">,</span>称之为<span style="font-family:Calibri;">bi-gram</span>。但是<span style="font-family:Calibri;">bigram</span>切分方法在处理<span style="font-family:Calibri;">20%</span>左右的中文多字词时<span style="font-family:Calibri;">,</span>往往产生语义和语序方面的偏差。而对于专业研究领域<span style="font-family:Calibri;">,</span>多字词常常是文本的核心特征<span style="font-family:Calibri;">,</span>处理错误会导致较大的负面影响。基于<span style="font-family:Calibri;">N</span>—<span style="font-family:Calibri;">Gram</span>改进的文本特征提取算法<span style="font-family:Calibri;">[2],</span>在进行<span style="font-family:Calibri;">bigram</span>切分时<span style="font-family:Calibri;">,</span>不仅统计<span style="font-family:Calibri;">gram</span>的出现频度<span style="font-family:Calibri;">,</span>而且还统计某个<span style="font-family:Calibri;">gram</span>与其前邻<span style="font-family:Calibri;">gram</span>的情况<span style="font-family:Calibri;">,</span>并将其记录在<span style="font-family:Calibri;">gram</span>关联矩阵中。对于那些连续出现频率大于事先设定阈值的<span style="font-family:Calibri;">,</span>就将其合并成为多字特征词。这样通过统计与合并双字特征词<span style="font-family:Calibri;">,</span>自动产生多字特征词<span style="font-family:Calibri;">,</span>可以较好地弥补<span style="font-family:Calibri;">N</span>—<span style="font-family:Calibri;">Gram</span>算法在处理多字词方面的缺陷。</span></p><p><span style="font-size:14px;"><br /></span></p><h3><a name="t18" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">15</span>、各种方法的综合评价</h3><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>上述几种评价函数都是试图通过概率找出特征与主题类之间的联系，信息增益的定义过于复杂，因此应用较多的是交叉嫡和互信息。其中互信息的效果要好于交又嫡，这是因为互信息是对不同的主题类分别抽取特征词，而交叉嫡跟特征在全部主题类内的分布有关，是对全部主题类来抽取特征词。这些方法,在英文特征提取方面都有各自的优势,但用于中文文本,并没有很高的效率。主要有2 个方面的原因:1) 特征提取的计算量太大,特征提取效率太低,而特征提取的效率直接影响到整个文本分类系统的效率。2) 经过特征提取后生成的特征向量维数太高,而且不能直接计算出特征向量中各个特征词的权重。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>目前使用评估函数进行特征选取越来越普遍，特征选取算法通过构造一个评估函数的方法，选取预定数目的最佳特征作为特征子集的结果。在几种评估方法中，每一种方法都有一个选词标准，遵从这个标准，从文本集的所有词汇中选取出有某个限定范围的特征词集。因为评估函数的构造不是特别复杂，适用范围又很广泛，所以越来越多的人们喜欢使用构造评估函数来进行特征的选取。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>这些评估函数在Web文本挖掘中被广泛使用,特征选择精度普遍达到70%~80%,但也各自存在缺点和不足。例如,“信息增益”考虑了单词未发生的情况,对判断文本类别贡献不大,而且引入不必要的干扰,特别是在处理类分布和特征值分布高度不平衡的数据时选择精度下降。“期望交叉熵”与“信息增益”的唯一不同就是没有考虑单词未发生的情况,因此不论处理哪种数据集,它的特征选择精度都优于“信息增益”。与“期望交叉熵”相比,“互信息”没有考虑单词发生的频度,这是一个很大的缺点,造成“互信息”评估函数经常倾向于选择稀有单词。“文本证据权”是一种构造比较新颖的评估函数,它衡量一般类的概率和给定特征类的条件概率之间的差别,这样在文本处理中,就不需要计算W的所有可能值,而仅考虑W在文本中出现的情况。“优势率”不像前面所述的其他评估函数将所有类同等对待,它只关心目标类值,所以特别适用于二元分类器,可以尽可能多地识别正类,而不关心识别出负类。<br /><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>从考虑文本类间相关性的角度,可以把常用的评估函数分为两类,即类间不相关的和类间相关的。“文档频数”(DF)是典型的类间不相关评估函数, DF的排序标准是依据特征词在文档中出现篇数的百分比,或称为篇章覆盖率。这种类型的评估函数,为了提高区分度,要尽量寻找篇章覆盖率较高的特征词,但又要避免选择在各类文本中都多次出现的无意义高频词,因此类间不相关评估函数对停用词表的要求很高。但是,很难建立适用于多个类的停用词表,停用词不能选择太多,也不能选择太少,否则都将会影响特征词的选择。同时,类间不相关评估函数还存在一个明显的缺点,就是对于特征词有交叉的类别或特征相近的类别,选择的特征词会出现很多相似或相同的词条,造成在特定类别间的区分度下降。类间相关的评估函数,例如期望交叉熵、互信息、文本证据权等,综合考虑了词条在已定义的所有类别中的出现情况,可以通过调整特征词的权重,选择出区分度更好的特征,在一定程度上提高了相近类别的区分度。但是，该区分度的提高仅体现在已定义的类别间,而对于尚未定义的域外类别,类间相关评估函数的选择效果也不理想。因此,在评估函数选择问题上,提高对域外类别文本的区分度是十分重要的研究课题。    </span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><span style="white-space:pre;">	</span>传统的特征选择方法大多采用以上各评估函数进行特征权重的计算，由于这些评估函数是基于统计学的，其中一个主要缺陷就是需要用一个很庞大的训练集才能获得几乎所有的对分类起关键作用的特征．这需要消耗大量的时间和空间资源，况且，构建这样一个庞大的训练集也是一项十分艰巨的工作。然而，在现实应用中，考虑到工作效率，不会也没有足够的资源去构建一个庞大的训练集，这样的结果就是：被选中的甚至是权重比较高的特征，可能对分类没有什么用处，反而会干涉到正确的分类；而真正有用的特征却因为出现的频率低而获得<span style="font-family:Calibri;"> </span>较低的权重，甚至在降低特征空间维数的时候被删除掉了。<br /><br /></span></p><p><span style="font-size:14px;">基于评估函数的特征提取方法是建立在特征独立的假设基础上<span style="font-family:Calibri;">,</span>但在实际中这个假设是很难成立的<span style="font-family:Calibri;">,</span>因此需要考虑特征相关条件下的文本特征提取方法。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><br /></span></p><h2><a name="t19" style="color:rgb(202,0,0);"></a><span style="color:#4f81bd;">二、影响特征词权值的因素分析</span></h2><h3><a name="t20" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">1</span>、词频</h3><p><span style="font-family:Calibri;font-size:14px;">    </span>文本内空中的中频词往往具有代表性，高频词区分能力较小，而低频词或者示出现词也常常可以做为关键特征词。所以词频是特征提取中必须考虑的重要因素，并且在不同方法中有不同的应用公式。</p><h3><a name="t21" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">2</span>、词性</h3><p><span style="font-size:14px;">汉语言中，能标识文本特性的往往是文本中的实词，如名词、动词、形容词等。而文本中的一些虚词，如感叹词、介词、连词等，对于标识文本的类别特性并没有贡献，也就是对确定文本类别没有意义的词。如果把这些对文本分类没有意思的虚词作为文本特征词，将会带来很大噪音，从而直接降低文本分类的效率和准确率。因此，在提取文本特征时，应首先考虑剔除这些对文本分类没有用处的虚词，而在实词中，又以名词和动词对于文本的类别特性的表现力最强，所以可以只提取文本中的名词和动词作为文本的一级特征词。</span></p><h3><a name="t22" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">2</span>、文档频次</h3><p><span style="font-family:Calibri;font-size:14px;">    </span>出现文档多的特征词，分类区分能力较差，出现文档少的特征词更能代表文本的不同主题。</p><h3><a name="t23" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">2</span>、标题</h3><p><span style="font-size:14px;">标题是作者给出的提示文章内容的短语，特别在新闻领域，新闻报道的标题一般都要求要简练、醒目，有不少缩略语，与报道的主要内容有着重要的联系，对摘要内容的影响不可忽视。统计分析表明<span style="font-family:Calibri;">,</span>小标题的识别有助于准确地把握文章的主题。主要体现在两个方面<span style="font-family:Calibri;">:</span>正确识别小标题可以很好地把握文章的整体框架<span style="font-family:Calibri;">,</span>理清文章的结构层次<span style="font-family:Calibri;">;</span>同时<span style="font-family:Calibri;">,</span>小标题本身是文章中心内容的高度概括。因此<span style="font-family:Calibri;">,</span>小标题的正确识别能在一定程度上提高文摘的质量。</span></p><h3><a name="t24" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">3</span>、位置</h3><p><span style="font-size:14px;">美国的<span style="font-family:Calibri;">EE</span>．<span style="font-family:Calibri;">Baxendale</span>的调查结果显示：段落的论题是段落首句的概率为<span style="font-family:Calibri;">85</span>％<span style="font-family:Calibri;"> </span>，<span style="font-family:Calibri;"> </span>是段落末句的概率为<span style="font-family:Calibri;">7</span>％<span style="font-family:Calibri;"> </span>。而且新闻报道性文章的形式特征决定了第一段一般是揭示文章主要内容的。因此，有必要提高处于特殊位置的句子权重，特别是报道的首旬和末句。但是这种现象又不是绝对的，所以，我们不能认为首句和末句就一定是所要摘要的内容，因此可以考虑一个折衷的办法，即首句和末句的权重上可通过统计数字扩大一个常数倍。首段、末段、段首、段尾、标题和副标题、子标题等处的句子往往在较大程度上概述了文章的内容。对于出现在这些位置的句子应该加大权重。</span></p><p><span style="font-family:Calibri;font-size:14px;">Internet</span>上的文本信息大多是<span style="font-family:Calibri;">HTML</span>结构的，对于处于<span style="font-family:Calibri;">Web</span>文本结构中不同位置的单词，其相应的表示文本内容或区别文本类别的能力是不同的，所以在单词权值中应该体现出该词的位置信息。</p><h3><a name="t25" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">4</span>、句法结构</h3><p><span style="font-size:14px;">句式与句子的重要性之间存在着某种联系，比如摘要中的句子大多是陈述句，而疑问句、感叹句等则不具内容代表性。而通常“总之”、“综上所述”等一些概括性语义后的句子，包含了文本的中心内容。</span></p><h3><a name="t26" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">5</span>、专业词库</h3><p><span style="font-size:14px;">通用词库包含了大量不会成为特征项的常用词汇<span style="font-family:Calibri;">,</span>为了提高系统运行效率<span style="font-family:Calibri;">,</span>系统根据挖掘目标建立专业的分词表<span style="font-family:Calibri;">,</span>这样可以在保证特征提取准确性的前提下<span style="font-family:Calibri;">,</span>显著提高系统的运行效率。</span></p><p><span style="font-size:14px;">用户并不在乎具体的哪一个词出现得多<span style="font-family:Calibri;">,</span>而在乎泛化的哪一类词出现得多。真正起决定作用的是某一类词出现的总频率。基于这一原理<span style="font-family:Calibri;">,</span>我们可以先将词通过一些方法依主题领域划分为多个类<span style="font-family:Calibri;">,</span>然后为文本提取各个词类的词频特征<span style="font-family:Calibri;">,</span>以完成对文本的分类。</span></p><p><span style="font-size:14px;">可以通过人工确定领域内的关键词集。</span></p><h3><a name="t27" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">6</span>、信息熵</h3><p><span style="font-size:14px;">熵<span style="font-family:Calibri;">(Entropy)</span>在信息论中是一个非常重要的概念<span style="font-family:Calibri;"> ' </span>，它是不确定性的一种度量。信息熵方法的基本目的是找出某种符号系统的信息量和多余度之间的关系，以便能用最小的成本和消耗来实现最高效率的数据储存、管理和传递。信息熵是数学方法和语言文字学的结合，其定义为：设<span style="font-family:Calibri;">x</span>是取有限个值的随机变量，各个取值出现的概率为<span style="font-family:Calibri;"> </span>则<span style="font-family:Calibri;"> </span>的熵为<span style="font-family:Calibri;"> </span>其中，底数<span style="font-family:Calibri;">n</span>可以为任意正数，并规定当<span style="font-family:Calibri;"> </span>时，<span style="font-family:Calibri;"> =0</span>。在式<span style="font-family:Calibri;">(3)</span>中，对数底<span style="font-family:Calibri;">a</span>决定了熵的单位，如<span style="font-family:Calibri;">a=2</span>、<span style="font-family:Calibri;">e</span>、<span style="font-family:Calibri;">10</span>，熵的单位分别为<span style="font-family:Calibri;">Bit</span>，<span style="font-family:Calibri;">nat</span>，<span style="font-family:Calibri;">Hartley</span>。在我们的研究论文中，均取<span style="font-family:Calibri;">a</span>＝<span style="font-family:Calibri;">2</span>。熵具有最大值和最小值<span style="font-family:Calibri;"> </span>，由熵的定义公式可以看出，当</span>每个值出现的概率相等时，即当 时 这时熵函数达到最大值 ，记为最大熵 。其中Pt ≥0，并且 。而当 n)时，熵值最小，Entropy(X)=0。</p><p><span style="font-size:14px;">我们将可以将信息论中的熵原理引入到特征词权重的计算中。</span></p><h3><a name="t28" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">7</span>、文档、词语长度</h3><p><span style="font-size:14px;">一般情况下<span style="font-family:Calibri;">,</span>词的长度越短<span style="font-family:Calibri;">,</span>其语义越泛。一般来说<span style="font-family:Calibri;">, </span>中文中词长较长的词往往反映比较具体、下位的概念<span style="font-family:Calibri;">, </span>而短的词常常表示相对抽象、上位的概念一般说来<span style="font-family:Calibri;">, </span>短词具有较高的频率和更多的含义<span style="font-family:Calibri;">, </span>是面向功能的<span style="font-family:Calibri;">;</span>而长词的频率较低<span style="font-family:Calibri;">, </span>是面向内容的<span style="font-family:Calibri;">, </span>增加长词的权重<span style="font-family:Calibri;">, </span>有利于词汇进行分割<span style="font-family:Calibri;">, </span>从而更准确地反映出特征词在文章中的重要程度。词语长度通常不被研究者重视。但是本文在实际应用中发现<span style="font-family:Calibri;">,</span>关键词通常是一些专业学术组合词汇<span style="font-family:Calibri;">,</span>长度较一般词汇长。考虑候选词的长度<span style="font-family:Calibri;">,</span>会突出长词的作用。长度项也可以使用对数函数来平滑词汇间长度的剧烈差异。通常来说<span style="font-family:Calibri;">,</span>长词汇含义更明确<span style="font-family:Calibri;">,</span>更能反映文本主题<span style="font-family:Calibri;">,</span>适合作为关键词<span style="font-family:Calibri;">,</span>因此将包含在长词汇中低于一定过滤阈值的短词汇进行了过滤。所谓过滤阈值<span style="font-family:Calibri;">,</span>就是指进行过滤短词汇的后处理时<span style="font-family:Calibri;">,</span>短词汇的权重和长词汇的权重的比的最大值。如果低于过滤阈值<span style="font-family:Calibri;">,</span>则过滤短词汇<span style="font-family:Calibri;">,</span>否则保留短词汇。</span></p><p><span style="font-size:14px;">根据统计<span style="font-family:Calibri;">,</span>二字词汇多是常用词<span style="font-family:Calibri;">,</span>不适合作为关键词<span style="font-family:Calibri;">,</span>因此对实际得到的二字关键词可以做出限制。比如<span style="font-family:Calibri;">,</span>抽取<span style="font-family:Calibri;">5 </span>个关键词<span style="font-family:Calibri;">,</span>本文最多允许<span style="font-family:Calibri;">3 </span>个二字关键词存在。这样的后处理无疑会降低关键词抽取的准确度和召回率<span style="font-family:Calibri;">,</span>但是同候选词长度项的运用一样<span style="font-family:Calibri;">,</span>人工评价效果将会提高。</span></p><h3><a name="t29" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">8</span>、词语间关联</h3><h3><a name="t30" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">9</span>、单词的区分能力</h3><p><span style="font-size:14px;">在<span style="font-family:Calibri;">TF*IDF </span>公式的基础上<span style="font-family:Calibri;">, </span>又扩展了一项单词的类区分能力。新扩展的项用于描述单词与各个类别之间的相关程度。</span></p><h3><a name="t31" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">10</span>、词语直径<span style="font-family:Cambria;">(Diameter ( t) )</span></h3><p><span style="font-size:14px;">词语直径是指词语在文本中首次出现的位置和末次出现的位置之间的距离。词语直径是根据实践提出的一种统计特征。根据经验<span style="font-family:Calibri;">,</span>如果某个词汇在文本开头处提到<span style="font-family:Calibri;">,</span>结尾又提到<span style="font-family:Calibri;">,</span>那么它对该文本来说<span style="font-family:Calibri;">,</span>是个很重要的词汇。不过统计结果显示<span style="font-family:Calibri;">,</span>关键词的直径分布出现了两极分化的趋势<span style="font-family:Calibri;">,</span>在文本中仅仅出现了<span style="font-family:Calibri;">1 </span>次的关键词占全部关键词的<span style="font-family:Calibri;">14.184 %</span>。所以词语直径是比较粗糙的度量特征。</span></p><h3><a name="t32" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">11</span>、首次出现位置<span style="font-family:Cambria;">(FirstLoc ( t) )</span></h3><p><span style="font-family:Calibri;font-size:14px;">Frank </span>在<span style="font-family:Calibri;">Kea </span>算法中使用候选词首次出现位置作为<span style="font-family:Calibri;">Bayes </span>概率计算的一个主要特征<span style="font-family:Calibri;">,</span>他称之为距离<span style="font-family:Calibri;">(Distance)</span>。简单的统计可以发现<span style="font-family:Calibri;">,</span>关键词一般在文章中较早出现<span style="font-family:Calibri;">,</span>因此出现位置靠前的候选词应该加大权重。实验数据表明<span style="font-family:Calibri;">,</span>首次出现位置和词语直径两个特征只选择一个使用就可以了。由于文献数据加工问题导致中国学术期刊全文数据库的全文数据不仅包含文章本身<span style="font-family:Calibri;">,</span>还包含了作者、作者机构以及引文信息<span style="font-family:Calibri;">,</span>针对这个特点<span style="font-family:Calibri;">,</span>使用首次出现位置这个特征<span style="font-family:Calibri;">,</span>可以尽可能减少全文数据的附加信息造成的不良影响。</p><h3><a name="t33" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">12</span>、词语分布偏差<span style="font-family:Cambria;">(Deviation ( t) )</span></h3><p><span style="font-size:14px;">词语分布偏差所考虑的是词语在文章中的统计分布。在整篇文章中分布均匀的词语通常是重要的词汇。词语的分布偏差计算公式如下<span style="font-family:Calibri;">: </span>其中<span style="font-family:Calibri;">,CurLoc ( tj ) </span>是词汇<span style="font-family:Calibri;">t </span>在文章中第<span style="font-family:Calibri;">j </span>次出现的位置<span style="font-family:Calibri;">;MeanLoc ( t ) </span>是词汇<span style="font-family:Calibri;">t </span>在文章中出现的平均位置。</span></p><h3><a name="t34" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#e36c0a;">13</span>、特征提取的一般步骤</h3><p><span style="font-size:14px;">一、<span style="font-family:Calibri;"> </span>候选词的确定</span></p><p><span style="font-family:Calibri;font-size:14px;"> (1) </span>分词<span style="font-family:Calibri;">(</span>词库的扩充<span style="font-family:Calibri;">)</span></p><p><span style="font-size:14px;">尽管现在分词软件的准确率已经比较高了，但是，它对专业术语的识别率还是很好，所以，为了进一步提高关键词抽取的准确率，我们有必要在词库中添加了一个专业词库以保证分词的质量。</span></p><p><span style="font-family:Calibri;font-size:14px;">(2) </span>停用词的过滤</p><p><span style="font-size:14px;">停用词是指那些不能反映主题的功能词。例如：“的”、“地”、“得”之类的助词，以及像“然而”、“因此”等只能反映句子语法结构的词语，它们不但不能反映文献的主题，而且还会对关键词的抽取造成干扰，有必要将其滤除。停用词确定为所有虚词以及标点符号。</span></p><p><span style="font-family:Calibri;font-size:14px;">(3) </span>记录候选词在文献中的位置</p><p><span style="font-size:14px;">为了获取每个词的位置信息，需要确定记录位置信息的方式以及各个位置的词在反映主题时的相对重要性。根据以往的研究结果，初步设定标题的位置权重为<span style="font-family:Calibri;">5</span>，摘要和结论部分为<span style="font-family:Calibri;">3</span>，正文为<span style="font-family:Calibri;">1</span>，同时，把标题、摘要和结论、正文分别称为<span style="font-family:Calibri;">5 </span>区、<span style="font-family:Calibri;">3 </span>区和<span style="font-family:Calibri;">1 </span>区。确定了文章各个部分的位置权重之后，就可以用数字标签对每个位置做一个标记。做法是：在标题的开头标上数字<span style="font-family:Calibri;">5</span>，在摘要和结论部分的段首标上数字<span style="font-family:Calibri;">3</span>，在正文的段首标上数字<span style="font-family:Calibri;">1</span>，这样，当软件逐词扫描统计词频时，就可以记录每个词的位置信息。</span></p><p><span style="font-size:14px;">二、词语权重计算</span></p><p><span style="font-family:Calibri;font-size:14px;">(1) </span>词语权值函数的构造<span style="font-family:Calibri;">(</span>见各不同算法<span style="font-family:Calibri;">)</span></p><p><span style="font-family:Calibri;font-size:14px;">(2) </span>关键词抽取</p><p><span style="font-size:14px;">候选词的权值确定以后，将权值排序，取前<span style="font-family:Calibri;">n</span>个词作为最后的抽取结果。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><br /></span></p><h1><a name="t35" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#1f497d;">四、</span>基于语义的特征提取方法（结合领域）</h1><div><br /></div><h2><a name="t36" style="color:rgb(202,0,0);"></a><span style="color:#4f81bd;">一、基于语境框架的文本特征提取方法</span></h2><p><span style="font-size:14px;">越来越多的现象表明，统计并不能完全取代语义分析。不考虑句子的含义和句子间的关系机械抽取，必然导致主题的准确率低，连贯性差，产生一系列问题，如主要内容缺失、指代词悬挂、文摘句过长等。因此，理想的自动主题提取模型应当将两种方法相结合。应当将语义分析融入统计算法，基本的方法仍然是“统计-抽取”模型，因为这一技术已经相对成熟并拥有丰富的研究成果。</span></p><p><span style="font-size:14px;">语境框架是一个三维的语义描述<span style="font-family:Calibri;">,</span>把文本内容抽象为领域<span style="font-family:Calibri;">(</span>静态范畴<span style="font-family:Calibri;">)</span>、情景<span style="font-family:Calibri;">(</span>动态描述<span style="font-family:Calibri;">)</span>、背景<span style="font-family:Calibri;">(</span>褒贬、参照等<span style="font-family:Calibri;">)</span>三个框架。在语境框架的基础上<span style="font-family:Calibri;">,</span>从语义分析入手<span style="font-family:Calibri;">,</span>实现了<span style="font-family:Calibri;">4</span>元组表示的领域提取算法、以领域句类为核心的情景提取算法和以对象语义立场网络图为基础的褒贬判断。该方法可以有效地处理语言中的褒贬倾向、同义、多义等现象<span style="font-family:Calibri;">,</span>表现出较好的特征提取能力。</span></p><p><span style="font-size:14px;"><br /></span></p><h2><a name="t37" style="color:rgb(202,0,0);"></a><span style="color:#4f81bd;">二、基于本体论的文本提取方法</span></h2><p><span style="font-size:14px;">应用本体论<span style="font-family:Calibri;">(On-tology)</span>模型可以有效地解决特定领域知识的描述问题。具体针对数字图像领域的文本特征提取<span style="font-family:Calibri;">,</span>通过构建文本结构树<span style="font-family:Calibri;">,</span>给出特征权值的计算公式。算法充分考虑特征词的位置以及相互之间关系的分析<span style="font-family:Calibri;">,</span>利用特征词统领长度的概念和计算方法<span style="font-family:Calibri;">,</span>能够更准确地进行特征词权值的计算和文本特征的提取。</span></p><p><span style="font-size:14px;"><br /></span></p><h2><a name="t38" style="color:rgb(202,0,0);"></a><span style="color:#4f81bd;">三、基于知网的概念特征提取方法</span></h2><p><span style="font-size:14px;">对于文本的处理<span style="font-family:Calibri;">,</span>尤其是中文文本处理<span style="font-family:Calibri;">,</span>字、词、短语等特征项是处理的主要对象。但是字、词、短语更多体现的是文档的词汇信息<span style="font-family:Calibri;">,</span>而不是它的语义信息<span style="font-family:Calibri;">,</span>因而无法准确表达文档的内容<span style="font-family:Calibri;">;</span>大多数关于文本特征提取的研究方法只偏重考虑特征发生的概率和所处的位置<span style="font-family:Calibri;">,</span>而缺乏语义方面的分析<span style="font-family:Calibri;">;</span>向量空间模型最基本的假设是各个分量间正交<span style="font-family:Calibri;">,</span>但作为分量的词汇间存在很大的相关性<span style="font-family:Calibri;">,</span>无法满足模型的假设。基于概念特征的特征提取方法是在<span style="font-family:Calibri;">VSM</span>的基础上<span style="font-family:Calibri;">,</span>对文本进行部分语义分析<span style="font-family:Calibri;">,</span>利用知网获取词汇的语义信息<span style="font-family:Calibri;">,</span>将语义相同的词汇映射到同一概念<span style="font-family:Calibri;">,</span>进行概念聚类<span style="font-family:Calibri;">,</span>并将概念相同的词合并成同一词。用聚类得到的词作为文档向量的特征项<span style="font-family:Calibri;">,</span>能够比普通词汇更加准确地表达文档内容<span style="font-family:Calibri;">,</span>减少特征之间的相关性和同义现象。这样可以有效降低文档向量的维数<span style="font-family:Calibri;">,</span>减少文档处理计算量<span style="font-family:Calibri;">,</span>提高特征提取的精度和效率。</span></p><p><span style="font-size:14px;"><br /></span></p><p><span style="font-size:14px;"><br /></span></p><h1><a name="t39" style="color:rgb(202,0,0);"></a><span style="font-family:Cambria;font-size:24px;color:#1f497d;">五、</span>可创新点</h1><p><span style="font-size:14px;">一、文本特征提取及文本挖掘在军事情报领域的应用研究</span></p><p><span style="font-size:14px;">二、新的文本特征表示模型</span></p><p><span style="font-size:14px;">考虑使用二级向量进行文本特征建模<span style="font-family:Calibri;">,</span>关键词向量能快速定位用户的兴趣领域<span style="font-family:Calibri;">,</span>而扩展词向量能准确反映用户在该领域上的兴趣偏好。结合领域知识，采用概念词、同义词或本体来代替具体的关键词成为特征词，体现语义层面的需求和分析。</span></p><p><span style="font-size:14px;">三、军事情报领域专业主题词库、敏感词库的构造</span></p><p><span style="font-family:Calibri;font-size:14px;">    </span>通过人机结合的方式，建立军事情报领导的最佳关键词表，即主题词库，或者语义库。将专业词库应用于军事系统的分词、特征提取、分类、信息抽取和监控、文本挖掘等方面。</p><p><span style="font-size:14px;">四、改进分词算法</span></p><p><span style="font-family:Calibri;font-size:14px;">    </span>利用专业词库改进中科院<span style="font-family:Calibri;">ICTCLAS</span>分词系统<span style="font-family:Calibri;">(JAVA</span>开源版<span style="font-family:Calibri;">)</span>，并针对特征提取需要，改进分词步骤，直接在分词过程中剔除无意义词语，增加词语附加信息，集成相关因素影响值的计算，加快系统速度和效率。</p><p><span style="font-size:14px;">五、改进特征评价函数</span></p><p><span style="font-family:Calibri;font-size:14px;">    </span>将影响因素中的经验知识通过实验和验算定量表示<span style="font-family:Calibri;">(</span>如位置影响、高频词权值增加<span style="font-family:Calibri;">)</span>，形成可行的非性线加权公式。探索二次迭代算法，在初次文本分析基础上，记录文本的结构组成特征，记录候选特征词，记录文档集的组成特征，然后根据加权理论调整算法，第二次计算词的权值，最终提取高准确度的特征词集。</p><p><br /></p><p>来源：<a href="http://blog.csdn.net/chl033/article/details/2731701">http://blog.csdn.net/chl033/article/details/2731701</a><br /></p><p><br /></p><p><br /></p><p><br /></p><p><a href="http://blog.csdn.net/zhoubl668/article/details/7321012" style="text-decoration:none;font-family:'Microsoft YaHei';line-height:30px;"><strong><span style="font-size:32px;color:#990000;">BM25算法</span></strong></a><br /></p><p><br /></p><p></p><p class="MsoListParagraph" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:-18pt;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;">1.</span><span style="font-size:7pt;line-height:normal;font-family:'Times New Roman';">       </span></span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;">BM25</span></span><span style="font-family:'宋体';"><span style="font-size:13px;">算法</span></span></p><p class="MsoListParagraph" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">BM25</span></span><span style="font-family:'宋体';">是二元独立模型的扩展，其得分函数有很多形式，最普通的形式如下：</span></span></p><p class="MsoListParagraph" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;"> </span></span></p><p class="MsoListParagraph" align="center" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;text-align:center;margin:0cm 0cm 0pt 18pt;"><span style="font-family:'宋体';font-size:15pt;">∑</span><span lang="en-us" xml:lang="en-us"><span lang="en-us" style="font-family:Calibri, sans-serif;font-size:10.5pt;" xml:lang="en-us"> <img src="http://hi.csdn.net/attachment/201011/30/0_12911307384w69.gif" alt="" style="border:none;" /></span></span><span lang="en-us" style="font-family:'宋体';font-size:15pt;" xml:lang="en-us"></span></p><p class="MsoListParagraph" align="center" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;text-align:center;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" style="font-family:'宋体';font-size:15pt;" xml:lang="en-us"> </span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span style="font-family:'宋体';">其中，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">k<sub>1</sub>,k<sub>2</sub>,K</span></span><span style="font-family:'宋体';">均为经验设置的参数，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">f<sub>i</sub></span></span><span style="font-family:'宋体';">是词项在文档中的频率，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">qf<sub>i</sub></span></span><span style="font-family:'宋体';">是词项在查询中的频率。</span><span lang="en-us" xml:lang="en-us"></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">K<sub>1</sub></span></span><span style="font-family:'宋体';">通常为</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">1.2</span></span><span style="font-family:'宋体';">，通常为</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">0-1000</span></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">K</span></span><span style="font-family:'宋体';">的形式较为复杂</span><span lang="en-us" xml:lang="en-us"></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;"> </span></span></p><p class="MsoListParagraph" align="center" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;text-align:center;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" style="font-size:14pt;" xml:lang="en-us"><span style="font-family:Calibri;">K=</span></span><span lang="en-us" xml:lang="en-us"><img src="http://hi.csdn.net/attachment/201011/30/0_1291130766F92C.gif" alt="" style="border:none;" /></span><span lang="en-us" style="font-size:14pt;" xml:lang="en-us"></span></p><p class="MsoListParagraph" align="center" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;text-align:center;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" style="font-size:14pt;" xml:lang="en-us"><span style="font-family:Calibri;"> </span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span style="font-family:'宋体';">上式中，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">dl</span></span><span style="font-family:'宋体';">表示文档的长度，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">avdl</span></span><span style="font-family:'宋体';">表示文档的平均长度，</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">b</span></span><span style="font-family:'宋体';">通常取</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">0.75</span></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;"> </span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:-18pt;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;">2.</span><span style="font-size:7pt;line-height:normal;font-family:'Times New Roman';">       </span></span><span style="font-size:13px;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">BM25</span></span><span style="font-family:'宋体';">具体实现</span><span lang="en-us" xml:lang="en-us"></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span style="font-size:13px;"><span style="font-family:'宋体';">由于在典型的情况下，没有相关信息，即</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">r</span></span><span style="font-family:'宋体';">和</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">R</span></span><span style="font-family:'宋体';">都是</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">0</span></span><span style="font-family:'宋体';">，而通常的查询中，不会有某个词项出现的次数大于</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">1</span></span><span style="font-family:'宋体';">。因此打分的公式</span><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;">score</span></span><span style="font-family:'宋体';">变为</span><span lang="en-us" xml:lang="en-us"></span></span></p><p class="MsoListParagraph" align="left" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;margin:0cm 0cm 0pt 18pt;"><span lang="en-us" xml:lang="en-us"><span style="font-family:Calibri;font-size:13px;"> </span></span></p><p class="MsoListParagraph" align="center" style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;text-indent:0cm;text-align:center;margin:0cm 0cm 0pt 18pt;"><span style="font-family:'宋体';font-size:15pt;">∑</span><span lang="en-us" style="font-family:'宋体';font-size:15pt;" xml:lang="en-us"><img src="http://hi.csdn.net/attachment/201011/30/0_1291130782wRZR.gif" alt="" style="border:none;" /></span></p><div style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><span lang="en-us" style="font-family:'宋体';font-size:15pt;" xml:lang="en-us">3.0</span></div><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">BM25算法，通常用来作搜索相关性平分。一句话概况其主要思想：对Query进行语素解析，生成语素qi；然后，对于每个搜索结果D，计算每个语素qi与D的相关性得分，最后，将qi相对于D的相关性得分进行加权求和，从而得到Query与D的相关性得分。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">BM25算法的一般性公式如下：</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></p><div style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></div><div style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></div><img src="http://hi.csdn.net/attachment/201203/5/0_1330931680Pclw.gif" alt="" style="border:none;color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;" /><br style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;" /><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">其中，Q表示Query，qi表示Q解析之后的一个语素（对中文而言，我们可以把对Query的分词作为语素分析，每个词看成语素qi。）；d表示一个搜索结果文档；Wi表示语素qi的权重；R(qi，d)表示语素qi与文档d的相关性得分。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><br /></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">下面我们来看如何定义Wi。判断一个词与一个文档的相关性的权重，方法有多种，较常用的是IDF。这里以IDF为例，公式如下：</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><img src="http://hi.csdn.net/attachment/201203/5/0_1330931748GS49.gif" alt="" style="border:none;" /><br /></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">其中，N为索引中的全部文档数，n(qi)为包含了qi的文档数。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">根据IDF的定义可以看出，对于给定的文档集合，包含了qi的文档数越多，qi的权重则越低。也就是说，当很多文档都包含了qi时，qi的区分度就不高，因此使用qi来判断相关性时的重要度就较低。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">我们再来看语素qi与文档d的相关性得分R（qi，d）。首先来看BM25中相关性得分的一般形式：</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><img src="http://hi.csdn.net/attachment/201203/5/0_1330931798AAZD.gif" alt="" style="border:none;" /><br /></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">其中，k1，k2，b为调节因子，通常根据经验设置，一般k1=2，b=0.75；fi为qi在d中的出现频率，qfi为qi在Query中的出现频率。dl为文档d的长度，avgdl为所有文档的平均长度。由于绝大部分情况下，qi在Query中只会出现一次，即qfi=1，因此公式可以简化为：</p><img src="http://hi.csdn.net/attachment/201203/5/0_1330931845RfFi.gif" alt="" style="border:none;color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;" /><br style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;" /><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">从K的定义中可以看到，参数b的作用是调整文档长度对相关性影响的大小。b越大，文档长度的对相关性得分的影响越大，反之越小。而文档的相对长度越长，K值将越大，则相关性得分会越小。这可以理解为，当文档较长时，包含qi的机会越大，因此，同等fi的情况下，长文档与qi的相关性应该比短文档与qi的相关性弱。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">综上，BM25算法的相关性得分公式可总结为：</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;"><img src="http://hi.csdn.net/attachment/201203/5/0_1330931849Y5aC.gif" alt="" style="border:none;" /><br /></p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">从BM25的公式可以看到，通过使用不同的语素分析方法、语素权重判定方法，以及语素与文档的相关性判定方法，我们可以衍生出不同的搜索相关性得分计算方法，这就为我们设计算法提供了较大的灵活性。</p><p style="color:rgb(51,51,51);font-family:Arial;font-size:14px;line-height:26px;">参考资料：<br />1. <a href="http://blog.csdn.net/wbia2010lkl/archive/2010/11/30/6046661.aspx" style="color:rgb(51,102,153);text-decoration:none;">Project2--Lucene的Ranking算法修改：BM25算法</a><br />2. <a href="http://x.thmz.cn/html/2010/06/25/bm25.html" style="color:rgb(51,102,153);text-decoration:none;">Okapi BM25算法详解</a><br />3. <a href="http://summerbell.javaeye.com/blog/420084" style="color:rgb(51,102,153);text-decoration:none;">谈谈BM25评分</a></p><br /><p>来源：<a href="http://blog.csdn.net/zhoubl668/article/details/7321012">http://blog.csdn.net/zhoubl668/article/details/7321012</a> </p><p><br /></p><p><br /></p><p><br /></p><p><br /></p><p></p><h2 style="margin:0px 0px 4px;font-family:Verdana, Arial, Helvetica, sans-serif;line-height:25.2000007629395px;"><a id="cb_post_title_url" href="http://www.cnblogs.com/biyeymyhjob/archive/2012/07/17/2595249.html" style="text-decoration:none;"><span style="font-size:32px;color:#990000;">TF-IDF及其算法</span></a></h2><br /><p><br /></p><p></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="color:rgb(128,0,0);"><strong><span style="font-size:15px;">概念</span></strong></span></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">     TF-IDF（term frequency–inverse document frequency）是一种用于资讯检索与资讯探勘的<span style="color:rgb(0,0,255);">常用加权技术</span>。TF-IDF是一种统计方法，用以评估一字词对于一个文件集或一个语料库中的其中一份文件的重要程度。<span style="color:rgb(0,0,255);">字词的重要性随着它在文件中出现的次数成正比增加</span>，但同时会<span style="color:rgb(0,0,255);">随着它在语料库中出现的频率成反比下降</span>。TF-IDF加权的各种形式常被搜寻引擎应用，作为文件与用户查询之间相关程度的度量或评级。除了TF-IDF以外，因特网上的搜寻引擎还会使用基于连结分析的评级方法，以确定文件在搜寻结果中出现的顺序。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">　　</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="color:rgb(128,0,0);"><strong><span style="font-size:15px;">原理</span></strong></span></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">      在一份给定的文件里，<strong>词频 (term frequency, TF)</strong> 指的是某一个给定的词语在该文件中出现的次数。这个数字通常会被<span style="color:rgb(0,0,255);">归一化（分子一般小于分母 区别于IDF）</span>，以防止它偏向长的文件。（同一个词语在长文件里可能会比短文件有更高的词频，而不管该词语重要与否。）</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">　　<strong>逆向文件频率 (inverse document frequency, IDF)</strong> 是一个词语普遍重要性的度量。某一特定词语的IDF，可以由总文件数目除以包含该词语之文件的数目，再将得到的商取对数得到。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">　　某一特定文件内的高词语频率，以及该词语在整个文件集合中的低文件频率，可以产生出高权重的TF-IDF。因此，TF-IDF倾向于过滤掉常见的词语，保留重要的词语。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">      <strong>TFIDF的主要思想是</strong>：<span style="line-height:25.2000007629395px;">如果某个词或短语在一篇文章中出现的频率TF高，并且在其他文章中很少出现，则认为此词或者短语具有很好的类别区分能力，适合用来分类。</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">TFIDF实际上是：TF * IDF，TF词频(Term Frequency)，IDF反文档频率(Inverse Document Frequency)。</span><span style="line-height:25.2000007629395px;"><strong>TF</strong></span><span style="line-height:25.2000007629395px;">表示词条在文档d中出现的频率（另一说：</span><span style="line-height:25.2000007629395px;"><strong>TF词频(Term Frequency)指</strong></span><span style="line-height:25.2000007629395px;">的是</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">某一个给定的词语在该文件中出现的次数</span><span style="line-height:25.2000007629395px;">）。IDF的主要思想是：如果</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">包含词条t的文档越少</span><span style="line-height:25.2000007629395px;">，也</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">就是n越小，IDF越大</span><span style="line-height:25.2000007629395px;">，则说明词条t具有很好的类别区分能力。如果某一类文档C中</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">包含词条t的文档数为m</span><span style="line-height:25.2000007629395px;">，而</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">其它类包含t的文档总数为k</span><span style="line-height:25.2000007629395px;">，显然所有包含t的文档数n=m+k，当</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">m大</span><span style="line-height:25.2000007629395px;">的时候，</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">n也大</span><span style="line-height:25.2000007629395px;">，按照IDF公式得到的</span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">IDF的值会</span><span style="line-height:25.2000007629395px;">小，就说明该词条t类别区分能力不强。（另一说：</span><span style="line-height:25.2000007629395px;"><strong>IDF反文档频率(Inverse Document Frequency)</strong></span><span style="line-height:25.2000007629395px;color:rgb(0,0,255);">是指果包含词条的文档越少，IDF越大，则说明词条具有很好的类别区分能力。</span><span style="line-height:25.2000007629395px;">）但是实际上，如果一个词条在一个类的文档中频繁出现，则说明该词条能够很好代表这个类的文本的特征，这样的词条应该给它们赋予较高的权重，并选来作为该类文本的特征词以区别与其它类文档。这就是IDF的不足之处.</span></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">      在一份给定的文件里，<strong>词频</strong>（term frequency，TF）指的是某一个给定的词语在该文件中出现的频率。这个数字是对<strong>词数</strong>(term count)的归一化，以防止它偏向长的文件。（同一个词语在长文件里可能会比短文件有更高的词数，而不管该词语重要与否。）对于在某一特定文件里的词语 <img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/e/c/2/ec232cdf2784de6af619af9e5d2b4eed.png" alt="t_{i}" style="border:0px;" /> 来说，它的重要性可表示为：</p><p style="margin:10px auto 10px 180px;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/e/5/a/e5a7b43197068eddf42859f3995ebf15.png" alt="\mathrm{tf_{i,j}} = \frac{n_{i,j}}{\sum_k n_{k,j}}" style="border:0px;" /></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">      以上式子中 <img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/6/c/b/6cb9ca4667e16389321534c9f714100a.png" alt="n_{i,j}" style="border:0px;" /> 是<span style="color:rgb(0,0,255);">该词在文件<img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/c/4/a/c4aa4939af4846c2cc2c0af2919611ee.png" alt="d_{j}" style="border:0px;" />中的出现次数</span>，而分母则是在<span style="color:rgb(0,0,255);">文件<img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/c/4/a/c4aa4939af4846c2cc2c0af2919611ee.png" alt="d_{j}" style="border:0px;" />中所有字词的出现次数之和</span>。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><strong>      逆向文件频率</strong>（inverse document frequency，IDF）是一个词语普遍重要性的度量。某一特定词语的IDF，可以由总文件数目除以包含该词语之文件的数目，再将得到的商取对数得到：</p><dl style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><dd style="margin-left:180px;"><img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/0/2/5/0257ce95c505ab568d7898faa56a4f5c.png" alt="\mathrm{idf_{i}} =  \log \frac{|D|}{|\{j: t_{i} \in d_{j}\}|}" style="border:0px;" /></dd></dl><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">其中</p><ul style="margin-left:45px;padding-left:0px;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><li style="list-style: !important;">|D|：语料库中的<span style="color:rgb(0,0,255);">文件总数</span></li><li style="list-style: !important;"><img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/a/2/2/a22c849cb4a0064eb5ebc806f690eebf.png" alt="|\{ j: t_{i} \in d_{j}\}|" style="border:0px;" />：<span style="color:rgb(0,0,255);">包含词语<img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/e/c/2/ec232cdf2784de6af619af9e5d2b4eed.png" alt="t_{i}" style="border:0px;" />的文件数目</span>（即<img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/9/8/1/981e495461cfd42cf2a413a8ed175e7f.png" alt="n_{i,j} \neq 0" style="border:0px;" />的文件数目）<span style="color:rgb(0,0,255);">如果该词语不在语料库中，就会导致被除数为零，<strong>因此一般情况下使用<img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/1/b/e/1bea70e17e2167cc08346d650f10b29d.png" alt="1 + |\{j : t_{i} \in d_{j}\}|" style="border:0px;" /></strong></span></li></ul><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">然后</p><dl style="font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><dd><img class="tex" src="http://upload.wikimedia.org/wikipedia/zh/math/b/0/6/b06a060c28253c8dd2528811c447862e.png" alt="\mathrm{tf{}idf_{i,j}} = \mathrm{tf_{i,j}} \times  \mathrm{idf_{i}}" style="border:0px;" /></dd></dl><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;">      某一特定文件内的高词语频率，以及该词语在整个文件集合中的低文件频率，可以产生出高权重的TF-IDF。因此，<span style="color:rgb(0,0,255);">TF-IDF倾向于过滤掉常见的词语，保留重要的词语</span>。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"> </p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="color:rgb(128,0,0);"><strong><span style="font-size:15px;">示例</span></strong></span></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"> </p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>一：有很多不同的数学公式可以用来计算TF-IDF。这边的例子以上述的数学公式来计算。词频 (TF) 是一词语出现的次数除以该文件的总词语数。假如一篇文件的总词语数是100个，而词语“母牛”出现了3次，那么“母牛”一词在该文件中的词频就是3/100=0.03。一个计算文件频率 (DF) 的方法是测定有多少份文件出现过“母牛”一词，然后除以文件集里包含的文件总数。所以，如果“母牛”一词在1,000份文件出现过，而文件总数是10,000,000份的话，其逆向文件频率就是 log(10,000,000 / 1,000)=4。最后的TF-IDF的分数为0.03 * 4=0.12。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><br /></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>二：<span style="color:rgb(0,0,255);">根据关键字k1,k2,k3进行搜索结果的相关性就变成TF1*IDF1 + TF2*IDF2 + TF3*IDF3</span>。比如document1的term总量为1000，k1,k2,k3在document1出现的次数是100，200，50。包含了 k1, k2, k3的docuement总量分别是 1000， 10000，5000。document set的总量为10000。 TF1 = 100/1000 = 0.1 TF2 = 200/1000 = 0.2 TF3 = 50/1000 = 0.05 IDF1 = log(10000/1000) = log(10) = 2.3 IDF2 = log(10000/100000) = log(1) = 0; IDF3 = log(10000/5000) = log(2) = 0.69 这样<span style="color:rgb(0,0,255);">关键字k1,k2,k3与docuement1的相关性</span>= 0.1*2.3 + 0.2*0 + 0.05*0.69 = 0.2645 其中k1比k3的比重在document1要大，k2的比重是0.</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><br /></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>三：在某个一共有一千词的网页中“原子能”、“的”和“应用”分别出现了 2 次、35 次 和 5 次，那么它们的词频就分别是 0.002、0.035 和 0.005。 我们将这三个数相加，其和 0.042 就是相应网页和查询“原子能的应用” <span style="color:rgb(0,0,255);">相关性的一个简单的度量</span>。<span style="color:rgb(0,0,255);">概括地讲，如果一个查询包含关键词 w1,w2,...,wN, 它们在一篇特定网页中的词频分别是: TF1, TF2, ..., TFN。 （TF: term frequency)。 那么，这个查询和该网页的相关性就是:TF1 + TF2 + ... + TFN</span>。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><br /></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>读者可能已经发现了又一个漏洞。在上面的例子中，词“的”站了总词频的 80% 以上，而它对确定网页的主题几乎没有用。我们称这种词叫“应删除词”（Stopwords)，也就是说在度量相关性是不应考虑它们的频率。在汉语中，应删除词还有“是”、“和”、“中”、“地”、“得”等等几十个。忽略这些应删除词后，上述网页的相似度就变成了0.007，其中“原子能”贡献了 0.002，“应用”贡献了 0.005。细心的读者可能还会发现另一个小的漏洞。在汉语中，“应用”是个很通用的词，而“原子能”是个很专业的词，后者在相关性排名中比前者重要。因此我们需要给汉语中的每一个词给一个权重，这个权重的设定必须满足下面两个条件：</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>1. 一个词预测主题能力越强，权重就越大，反之，权重就越小。我们在网页中看到“原子能”这个词，或多或少地能了解网页的主题。我们看到“应用”一次，对主题基本上还是一无所知。因此，“原子能“的权重就应该比应用大。</p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>2. 应删除词的权重应该是零。<br /><br /></p><p style="margin:10px auto;font-family:Verdana, Arial, Helvetica, sans-serif;font-size:14px;line-height:25.2000007629395px;"><span style="white-space:pre;">	</span>我们很容易发现，如果一个<span style="color:rgb(0,0,255);">关键词只在很少的网页中出现，我们通过它就容易锁定搜索目标，它的权重也就应该大</span>。反之<span style="color:rgb(0,0,255);">如果一个词在大量网页中出现</span>，我们看到它仍然不很清楚要找什么内容，因此它应该小。概括地讲，<span style="color:rgb(0,0,255);">假定一个关键词 ｗ 在 Ｄｗ 个网页中出现过，那么 Ｄｗ 越大，ｗ的权重越小，反之亦然</span>。在信息检索中，使用最多的权重是“逆文本频率指数” （Inverse document frequency 缩写为ＩＤＦ），它的公式为ｌｏｇ（Ｄ／Ｄｗ）其中Ｄ是全部网页数。比如，我们假定中文网页数是Ｄ＝１０亿，应删除词“的”在所有的网页中都出现，即Ｄｗ＝１０亿，那么它的ＩＤＦ＝log(10亿/10亿）= log (1) = ０。<span style="text-decoration:underline;">假如专用词“原子能”在两百万个网页中出现，即Ｄｗ＝２００万，则它的权重ＩＤＦ＝log(500) =6.2。又假定通用词“应用”，出现在五亿个网页中，它的权重ＩＤＦ = log(2)则只有 0.7。也就只说，在网页中找到一个“原子能”的比配相当于找到九个“应用”的匹配</span>。利用 IDF，<span style="color:rgb(0,0,255);">上述相关性计算个公式就由词频的简单求和变成了加权求和，即 TF1*IDF1 +　TF2*IDF2 ＋... + TFN*IDFN</span>。在上面的例子中，该网页和“原子能的应用”的相关性为 0.0161，其中“原子能”贡献了 0.0126，而“应用”只贡献了0.0035。这个比例和我们的直觉比较一致了。</p><br /><p>文章来源：http://www.cnblogs.com/biyeymyhjob/archive/2012/07/17/2595249.html </p><p><br /></p>                </div>
+                    </div>
+        <script>
+        $(".MathJax").remove();
+        </script>
+    </article>
+      <div class="readall_box csdn-tracking-statistics tracking-click" data-mod="popu_376">
+          <div class="read_more_mask"></div>
+          <a class="btn btn-large btn-gray-fred read_more_btn" target="_self">阅读全文</a>
+      </div>
+      <div class="article_copyright">
+
+              </div>
+      <ul class="article_collect clearfix csdn-tracking-statistics tracking-click"  data-mod="popu_378">
+          <li class="tit">本文已收录于以下专栏：</li>
+<!--          [startarticlecolumns]-->
+                                <!--          [endarticlecolumns]-->
+      </ul>
+      <div class="edu_promotion" style="margin: 16px 0;display:none;"></div>
+      <div class="comment_box clearfix" id="comments">
+          <div id="comment_form">
+              <div id="commentsbmitarear">
+                              </div>
+          </div>
+      </div>
+      <div class="comment_li_outbox">
+          <div id="comment_list"></div>
+      </div>
+
+      <div class="more_comment">
+          <div id="comment_bar" class="trackgin-ad" data-mod="popu_385"></div>
+      </div>
+
+      <!-- <h3 class="recommend_tit" id="related">相关文章推荐</h3> -->
+      <div class="recommend_list clearfix" id="rasss">
+                                          <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/wang_shen_tao/article/details/50682478"  target="_blank" strategy="BlogCommendFromBaidu_0">
+                    <dd>
+                        <h2>BM25算法详解</h2>
+                        <div class="summary">
+                            BM25算法通过加入文档权值和查询权值，拓展了二元独立模型的得分函数。这种拓展是基于概率论和实验验证的，并不是一个正式的模型。BM25模型在二元独立模型的基础上，考虑了单词在查询中的权值以及单词在文档...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/A/E/C/3_wang_shen_tao.jpg" alt="wang_shen_tao" title="wang_shen_tao"></li>
+                            <li class="user_name">wang_shen_tao</li>
+                            <li class="time">2016年02月17日 20:21</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>7768</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/kevin_darkelf/article/details/29810519"  target="_blank" strategy="BlogCommendFromBaidu_1">
+                    <dd>
+                        <h2>BM25算法</h2>
+                        <div class="summary">
+                            BM25 is a bag-of-words retrieval function that ranks a set of documents based on the query terms app...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/B/E/5/3_kevin_darkelf.jpg" alt="kevin_darkelf" title="kevin_darkelf"></li>
+                            <li class="user_name">kevin_darkelf</li>
+                            <li class="time">2014年06月10日 10:38</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>8342</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                          <dl class="">
+            <script>
+            (function() {
+              var s = "_" + Math.random().toString(36).slice(2);
+              document.write('<div id="' + s + '"></div>');
+              (window.slotbydup=window.slotbydup || []).push({
+                id: '4765209',
+                container: s,
+                size: '808,120',
+                display: 'inlay-fix'
+              });
+            })();
+            </script>
+          </dl>
+                                        <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/43429447"  target="_blank" strategy="searchFromBaidu_2">
+                    <dd>
+                        <h2>[转]搜索引擎的文档相关性计算和检索模型（BM25/TF-IDF）</h2>
+                        <div class="summary">
+                            搜索引擎的检索模型-查询与文档的相关度计算1. 检索模型概述      搜索结果排序时搜索引擎最核心的部分，很大程度度上决定了搜索引擎的质量好坏及用户满意度。实际搜索结果排序的因子有很多，但最主要的两...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/4/7/E/3_heiyeshuwu.jpg" alt="heiyeshuwu" title="heiyeshuwu"></li>
+                            <li class="user_name">heiyeshuwu</li>
+                            <li class="time">2015年02月03日 01:14</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>24458</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/kamendula/article/details/51756396"  target="_blank" strategy="BlogCommendFromBaidu_3">
+                    <dd>
+                        <h2>BM25原理讲解</h2>
+                        <div class="summary">
+                            BM25算法解析BM25原理BM25算法，通常用来作搜索相关性平分。一句话概况其主要思想：对Query进行语素解析，生成语素qi（对于汉语来说，通常是指分词后的词）；然后，对于每个搜索结果D，计算每个...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/F/1/0/3_kamendula.jpg" alt="kamendula" title="kamendula"></li>
+                            <li class="user_name">kamendula</li>
+                            <li class="time">2016年06月24日 23:33</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>1144</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/weixin_41090915/article/details/79053584"  target="_blank" strategy="BlogCommendFromBaidu_4">
+                    <dd>
+                        <h2>自然语言处理-BM25相关度打分</h2>
+                        <div class="summary">
+                            哈尔滨工程大学-537
+
+
+
+自然语言处理-BM25相关度打分
+
+(注：文中大写Query、Document等代表集合，小写query、document等代表集合中的个体)
+
+一、优缺点
+
+适用于：在...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/3/2/8/3_weixin_41090915.jpg" alt="weixin_41090915" title="weixin_41090915"></li>
+                            <li class="user_name">weixin_41090915</li>
+                            <li class="time">2018年01月13日 20:37</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>193</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/zhoubl668/article/details/7321012"  target="_blank" strategy="BlogCommendFromBaidu_5">
+                    <dd>
+                        <h2>BM25算法</h2>
+                        <div class="summary">
+                            1.       BM25算法
+
+BM25是二元独立模型的扩展，其得分函数有很多形式，最普通的形式如下：
+
+ 
+
+∑ 
+
+ 
+
+其中，k1,k2,K均为经验设置的参数，fi是词项在...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/5/2/B/3_zhoubl668.jpg" alt="zhoubl668" title="zhoubl668"></li>
+                            <li class="user_name">zhoubl668</li>
+                            <li class="time">2012年03月05日 15:14</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>25601</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/wdxin1322/article/details/38093261"  target="_blank" strategy="BlogCommendFromBaidu_6">
+                    <dd>
+                        <h2>搜索之BM25和BM25F模型</h2>
+                        <div class="summary">
+                            文章主要介绍搜索引擎文本相关性计算使用的BM25，BM25F模型，以及相关的知识点和理论基础...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/5/8/5/3_wdxin1322.jpg" alt="wdxin1322" title="wdxin1322"></li>
+                            <li class="user_name">wdxin1322</li>
+                            <li class="time">2014年08月25日 19:33</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>7848</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/iamubbTing/article/details/51481571"  target="_blank" strategy="BlogCommendFromBaidu_7">
+                    <dd>
+                        <h2>向量相似度算法，BM25，Jelinek-Mercer平滑</h2>
+                        <div class="summary">
+                            完整的来说，一下算法包括三个函数，分别是向量相似度基本算法，BM25，语言模型方法（Jelinek-Mercer平滑）或者叫线性插值LM
+向量相似度基本算法公式为：
+
+
+其中w表示权重，d表示...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/8/A/D/3_iamubbting.jpg" alt="iamubbTing" title="iamubbTing"></li>
+                            <li class="user_name">iamubbTing</li>
+                            <li class="time">2016年05月23日 14:44</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>1671</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics downloadElement" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a class="clearfix" href="https://download.csdn.net/download/dolphin_lzy/4956622" target="_blank" strategy="BlogCommendFromBaidu_8">
+                    <dd class="floatL">
+                        <div class="summary">
+                            <h2>BM25算法介绍</h2>
+                            <div class="summary">
+                                <ul>
+                                    <li class="time">2013年01月04日 10:45</li>
+                                    <li class="visited_num fileSize">42KB</li>
+                                    <li class="download_btn">下载</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </dd>
+                    <dt class="floatR"><img class="maxwidth" src="http://csdnimg.cn/release/download/old_static/images/minetype/doc.svg" alt="" title=""/></dt>
+                </a>
+            </dl>
+                                                    <dl class="clearfix csdn-tracking-statistics recommend_article" data-mod="popu_387" data-poputype="feed"  data-feed-show="false"  data-dsm="post">
+                <a href="https://blog.csdn.net/NORTHhan/article/details/50952728"  target="_blank" strategy="BlogCommendFromBaidu_9">
+                    <dd>
+                        <h2>OKapi BM25 算法</h2>
+                        <div class="summary">
+                            BM25（Best Match25）是在信息检索系统中根据提出的query对document进行评分的算法。It is based on the probabilistic
+ retrieval f...                        </div>
+
+                        <ul>
+                            <li class="avatar_img"><img src="https://avatar.csdn.net/0/8/2/3_northhan.jpg" alt="NORTHhan" title="NORTHhan"></li>
+                            <li class="user_name">NORTHhan</li>
+                            <li class="time">2016年03月22日 10:17</li>
+                            <li class="visited_num"><i class="icon iconfont icon-read"></i><span>4517</span></li>
+                        </ul>
+                    </dd>
+                </a>
+            </dl>
+                              </div>
+  </main>
+<aside>
+    <div class="right_box user_info">
+    <dl class="inf_bar clearfix">
+        <dt class="csdn-tracking-statistics tracking-click" data-mod="popu_381">
+                <a href="https://blog.csdn.net/heiyeshuwu" target="_blank">
+                    <img src="https://avatar.csdn.net/4/7/E/3_heiyeshuwu.jpg" class="avatar_pic">
+        </a>
+      </dt><dd>
+            <h3 class="csdn-tracking-statistics tracking-click"  data-mod="popu_380"><a href="https://blog.csdn.net/heiyeshuwu" target="_blank" id="uid">heiyeshuwu</a></h3>
+            <div class="medals" title="">
+                        <svg class="icon" aria-hidden="true">
+                <use xlink:href="#icon-bokezhuanjia"></use>
+            </svg>
+            <span>博客专家</span>
+                      </div>
+                    </dd>
+    </dl>
+    <div class="inf_number_box clearfix">
+        <dl title="331">
+            <dt>原创</dt>
+            <dd>331</dd>
+        </dl>
+        <dl title="2795">
+            <dt>粉丝</dt>
+            <dd id='fan'>2795</dd>
+        </dl>
+        <dl title="248">
+            <dt>喜欢</dt>
+            <dd>248</dd>
+        </dl>
+        <dl title="1289">
+          <dt>评论</dt>
+          <dd>1289</dd>
+        </dl>
+    </div>
+
+</div>
+<div class="interflow clearfix">
+      <div class="grade gradeAndbadge gradewidths">
+      <span>等级：</span>
+      <div>
+        <a href="https://blog.csdn.net/home/help.html#level" title="8级,点击查看等级说明" target="_blank">
+          <img class="grade-img" src="https://csdnimg.cn/jifen/images/xunzhang/jianzhang/blog8.png" alt="8级,点击查看等级说明">
+        </a>
+      </div>
+    </div>
+    <div class="gradeAndbadge gradewidths" title="4260315">
+        <span>访问量：</span>
+        <span class="num odd-overhidden">426万+</span>
+    </div>
+
+    <div class="gradeAndbadge gradewidths" title="44990">
+      <span>积分：</span>
+      <span  class="num odd-overhidden">4万+</span>
+    </div>
+    <div class="gradeAndbadge gradewidths" title="86">
+        <span>排名：</span>
+        <span class="num odd-overhidden">86</span>
+    </div>
+
+</div>
+<script type="text/javascript">
+  // 判断并设置用户名位置，没有博客专家与关注按钮时，用户名居中
+  $medals_children = $('.medals').children().length;
+  $span_add_follow = $('#span_add_follow').length;
+  if($medals_children === 0 && $span_add_follow === 0){
+    $('.inf_bar dd').css('vertical-align','10px')
+  }
+</script>          <div class="extension_other csdn-tracking-statistics tracking-click" data-mod="popu_389">
+          <!--u3032528-->
+        <div class="flashrecommend">
+                        <script type="text/javascript" src="//cee1.iteye.com/bwocoltly.js"></script>
+                    </div>
+      </div>
+            <div class="writings">
+      <div class="public_signal clearfix">
+        <h3>博主最新文章</h3>
+        <a href="https://blog.csdn.net/heiyeshuwu" target="_blank" class="more"><span>更多文章</span></a>
+      </div>
+        <ul class="inf_list clearfix csdn-tracking-statistics tracking-click" data-mod="popu_382">
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/79165162" target="_blank">[转]Go语言(Golang)的Web框架比较：gin VS echo</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/79165105" target="_blank">[转]php中流行的rpc框架有哪些？</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/79065456" target="_blank">[转]区块链代码快速学习实践</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/79065383" target="_blank">[转]区块链主流开源技术体系介绍</a>
+            </li>
+                        <li class="clearfix">
+                <a href="https://blog.csdn.net/heiyeshuwu/article/details/79064277" target="_blank">[转]一文看懂区块链架构设计 - 从概念到底层技术</a>
+            </li>
+                    </ul>
+    </div>
+                <div class="user-hotArticle sort ClassSort">
+            <h3>文章分类</h3>
+            <ul class="hotArticle-list sort-list ClassSort-list">
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/454524" class="odd-overhidden floatL">Architecture/Distributed/High Performance</a>
+                        <div class="read list-left floatR"><span>182篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/193911" class="odd-overhidden floatL">PHP/DHTML/Other</a>
+                        <div class="read list-left floatR"><span>239篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/193914" class="odd-overhidden floatL">Linux/FreeBSD/Server</a>
+                        <div class="read list-left floatR"><span>136篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/193912" class="odd-overhidden floatL">Java/C/C++</a>
+                        <div class="read list-left floatR"><span>124篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/193915" class="odd-overhidden floatL">Network Security</a>
+                        <div class="read list-left floatR"><span>14篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/955675" class="odd-overhidden floatL">Perl/Python/Ruby/Erlang/D/Go</a>
+                        <div class="read list-left floatR"><span>10篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/1348815" class="odd-overhidden floatL">业界/规划/思考</a>
+                        <div class="read list-left floatR"><span>12篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/1820225" class="odd-overhidden floatL">Perl/Python/Ruby/Erlang/D</a>
+                        <div class="read list-left floatR"><span>5篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/2927177" class="odd-overhidden floatL">算法/机器学习/数据挖掘/区块链</a>
+                        <div class="read list-left floatR"><span>20篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/2935897" class="odd-overhidden floatL">MySQL/PostgreSQL/NoSQL/DFS</a>
+                        <div class="read list-left floatR"><span>17篇</span></div>
+                    </li>
+                                    <li class="clearfix">
+                        <a href="https://blog.csdn.net/heiyeshuwu/article/category/7402153" class="odd-overhidden floatL">算法/机器学习/数据挖掘</a>
+                        <div class="read list-left floatR"><span>1篇</span></div>
+                    </li>
+                            </ul>
+            <div class="unfold-btn">
+              <span>展开</span><i class="icon iconfont icon-xiajiantou"></i>
+            </div>
+        </div>
+    <!--    [StartShowSelfColumn]-->
+    <!--    [EndShowSelfColumn]-->
+            <div class="user-hotArticle sort timeSort">
+          <h3>文章存档</h3>
+          <ul class="hotArticle-list timeSort-list">
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2018/01" class="odd-overhidden floatL">2018年1月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/10" class="odd-overhidden floatL">2017年10月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/09" class="odd-overhidden floatL">2017年9月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/07" class="odd-overhidden floatL">2017年7月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/04" class="odd-overhidden floatL">2017年4月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/03" class="odd-overhidden floatL">2017年3月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2017/02" class="odd-overhidden floatL">2017年2月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/12" class="odd-overhidden floatL">2016年12月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/10" class="odd-overhidden floatL">2016年10月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/09" class="odd-overhidden floatL">2016年9月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/08" class="odd-overhidden floatL">2016年8月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/07" class="odd-overhidden floatL">2016年7月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/06" class="odd-overhidden floatL">2016年6月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/05" class="odd-overhidden floatL">2016年5月</a>
+                  <div class="read list-left floatR"><span>16篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/04" class="odd-overhidden floatL">2016年4月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/03" class="odd-overhidden floatL">2016年3月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/02" class="odd-overhidden floatL">2016年2月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2016/01" class="odd-overhidden floatL">2016年1月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/11" class="odd-overhidden floatL">2015年11月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/10" class="odd-overhidden floatL">2015年10月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/09" class="odd-overhidden floatL">2015年9月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/08" class="odd-overhidden floatL">2015年8月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/07" class="odd-overhidden floatL">2015年7月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/06" class="odd-overhidden floatL">2015年6月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/05" class="odd-overhidden floatL">2015年5月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/04" class="odd-overhidden floatL">2015年4月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/03" class="odd-overhidden floatL">2015年3月</a>
+                  <div class="read list-left floatR"><span>18篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/02" class="odd-overhidden floatL">2015年2月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2015/01" class="odd-overhidden floatL">2015年1月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/12" class="odd-overhidden floatL">2014年12月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/11" class="odd-overhidden floatL">2014年11月</a>
+                  <div class="read list-left floatR"><span>10篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/10" class="odd-overhidden floatL">2014年10月</a>
+                  <div class="read list-left floatR"><span>10篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/08" class="odd-overhidden floatL">2014年8月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/07" class="odd-overhidden floatL">2014年7月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/06" class="odd-overhidden floatL">2014年6月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/05" class="odd-overhidden floatL">2014年5月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/04" class="odd-overhidden floatL">2014年4月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2014/03" class="odd-overhidden floatL">2014年3月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/12" class="odd-overhidden floatL">2013年12月</a>
+                  <div class="read list-left floatR"><span>8篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/11" class="odd-overhidden floatL">2013年11月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/10" class="odd-overhidden floatL">2013年10月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/09" class="odd-overhidden floatL">2013年9月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/08" class="odd-overhidden floatL">2013年8月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/07" class="odd-overhidden floatL">2013年7月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/06" class="odd-overhidden floatL">2013年6月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/05" class="odd-overhidden floatL">2013年5月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/04" class="odd-overhidden floatL">2013年4月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/03" class="odd-overhidden floatL">2013年3月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/02" class="odd-overhidden floatL">2013年2月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2013/01" class="odd-overhidden floatL">2013年1月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/12" class="odd-overhidden floatL">2012年12月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/11" class="odd-overhidden floatL">2012年11月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/09" class="odd-overhidden floatL">2012年9月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/08" class="odd-overhidden floatL">2012年8月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/07" class="odd-overhidden floatL">2012年7月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/06" class="odd-overhidden floatL">2012年6月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/05" class="odd-overhidden floatL">2012年5月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/04" class="odd-overhidden floatL">2012年4月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/03" class="odd-overhidden floatL">2012年3月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/02" class="odd-overhidden floatL">2012年2月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2012/01" class="odd-overhidden floatL">2012年1月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/12" class="odd-overhidden floatL">2011年12月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/11" class="odd-overhidden floatL">2011年11月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/10" class="odd-overhidden floatL">2011年10月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/09" class="odd-overhidden floatL">2011年9月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/08" class="odd-overhidden floatL">2011年8月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/07" class="odd-overhidden floatL">2011年7月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/06" class="odd-overhidden floatL">2011年6月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/05" class="odd-overhidden floatL">2011年5月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/04" class="odd-overhidden floatL">2011年4月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/03" class="odd-overhidden floatL">2011年3月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/02" class="odd-overhidden floatL">2011年2月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2011/01" class="odd-overhidden floatL">2011年1月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/12" class="odd-overhidden floatL">2010年12月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/11" class="odd-overhidden floatL">2010年11月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/10" class="odd-overhidden floatL">2010年10月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/09" class="odd-overhidden floatL">2010年9月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/08" class="odd-overhidden floatL">2010年8月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/07" class="odd-overhidden floatL">2010年7月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/06" class="odd-overhidden floatL">2010年6月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/05" class="odd-overhidden floatL">2010年5月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/04" class="odd-overhidden floatL">2010年4月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/03" class="odd-overhidden floatL">2010年3月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/02" class="odd-overhidden floatL">2010年2月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2010/01" class="odd-overhidden floatL">2010年1月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/12" class="odd-overhidden floatL">2009年12月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/11" class="odd-overhidden floatL">2009年11月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/10" class="odd-overhidden floatL">2009年10月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/09" class="odd-overhidden floatL">2009年9月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/08" class="odd-overhidden floatL">2009年8月</a>
+                  <div class="read list-left floatR"><span>1篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/07" class="odd-overhidden floatL">2009年7月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/06" class="odd-overhidden floatL">2009年6月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/05" class="odd-overhidden floatL">2009年5月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/04" class="odd-overhidden floatL">2009年4月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/03" class="odd-overhidden floatL">2009年3月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/02" class="odd-overhidden floatL">2009年2月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2009/01" class="odd-overhidden floatL">2009年1月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/12" class="odd-overhidden floatL">2008年12月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/11" class="odd-overhidden floatL">2008年11月</a>
+                  <div class="read list-left floatR"><span>9篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/10" class="odd-overhidden floatL">2008年10月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/09" class="odd-overhidden floatL">2008年9月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/08" class="odd-overhidden floatL">2008年8月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/07" class="odd-overhidden floatL">2008年7月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/06" class="odd-overhidden floatL">2008年6月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/05" class="odd-overhidden floatL">2008年5月</a>
+                  <div class="read list-left floatR"><span>9篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/04" class="odd-overhidden floatL">2008年4月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/03" class="odd-overhidden floatL">2008年3月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/02" class="odd-overhidden floatL">2008年2月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2008/01" class="odd-overhidden floatL">2008年1月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/12" class="odd-overhidden floatL">2007年12月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/11" class="odd-overhidden floatL">2007年11月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/10" class="odd-overhidden floatL">2007年10月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/09" class="odd-overhidden floatL">2007年9月</a>
+                  <div class="read list-left floatR"><span>8篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/08" class="odd-overhidden floatL">2007年8月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/07" class="odd-overhidden floatL">2007年7月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/06" class="odd-overhidden floatL">2007年6月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/05" class="odd-overhidden floatL">2007年5月</a>
+                  <div class="read list-left floatR"><span>11篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/04" class="odd-overhidden floatL">2007年4月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/03" class="odd-overhidden floatL">2007年3月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/02" class="odd-overhidden floatL">2007年2月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2007/01" class="odd-overhidden floatL">2007年1月</a>
+                  <div class="read list-left floatR"><span>10篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/12" class="odd-overhidden floatL">2006年12月</a>
+                  <div class="read list-left floatR"><span>12篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/11" class="odd-overhidden floatL">2006年11月</a>
+                  <div class="read list-left floatR"><span>21篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/10" class="odd-overhidden floatL">2006年10月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/09" class="odd-overhidden floatL">2006年9月</a>
+                  <div class="read list-left floatR"><span>23篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/08" class="odd-overhidden floatL">2006年8月</a>
+                  <div class="read list-left floatR"><span>9篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/07" class="odd-overhidden floatL">2006年7月</a>
+                  <div class="read list-left floatR"><span>13篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/06" class="odd-overhidden floatL">2006年6月</a>
+                  <div class="read list-left floatR"><span>15篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/05" class="odd-overhidden floatL">2006年5月</a>
+                  <div class="read list-left floatR"><span>21篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/04" class="odd-overhidden floatL">2006年4月</a>
+                  <div class="read list-left floatR"><span>21篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/03" class="odd-overhidden floatL">2006年3月</a>
+                  <div class="read list-left floatR"><span>17篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/02" class="odd-overhidden floatL">2006年2月</a>
+                  <div class="read list-left floatR"><span>11篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2006/01" class="odd-overhidden floatL">2006年1月</a>
+                  <div class="read list-left floatR"><span>11篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/12" class="odd-overhidden floatL">2005年12月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/11" class="odd-overhidden floatL">2005年11月</a>
+                  <div class="read list-left floatR"><span>6篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/10" class="odd-overhidden floatL">2005年10月</a>
+                  <div class="read list-left floatR"><span>10篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/09" class="odd-overhidden floatL">2005年9月</a>
+                  <div class="read list-left floatR"><span>22篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/08" class="odd-overhidden floatL">2005年8月</a>
+                  <div class="read list-left floatR"><span>21篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/07" class="odd-overhidden floatL">2005年7月</a>
+                  <div class="read list-left floatR"><span>28篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/06" class="odd-overhidden floatL">2005年6月</a>
+                  <div class="read list-left floatR"><span>8篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/05" class="odd-overhidden floatL">2005年5月</a>
+                  <div class="read list-left floatR"><span>2篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/04" class="odd-overhidden floatL">2005年4月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/03" class="odd-overhidden floatL">2005年3月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/02" class="odd-overhidden floatL">2005年2月</a>
+                  <div class="read list-left floatR"><span>3篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2005/01" class="odd-overhidden floatL">2005年1月</a>
+                  <div class="read list-left floatR"><span>9篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2004/12" class="odd-overhidden floatL">2004年12月</a>
+                  <div class="read list-left floatR"><span>36篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2004/11" class="odd-overhidden floatL">2004年11月</a>
+                  <div class="read list-left floatR"><span>7篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2004/10" class="odd-overhidden floatL">2004年10月</a>
+                  <div class="read list-left floatR"><span>8篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2004/09" class="odd-overhidden floatL">2004年9月</a>
+                  <div class="read list-left floatR"><span>4篇</span></div>
+                </li>
+                            <li class="clearfix">
+                  <a href="https://blog.csdn.net/heiyeshuwu/article/month/2004/08" class="odd-overhidden floatL">2004年8月</a>
+                  <div class="read list-left floatR"><span>5篇</span></div>
+                </li>
+                      </ul>
+          <div class="unfold-btn">
+            <span>展开</span><i class="icon iconfont icon-xiajiantou"></i>
+          </div>
+        </div>
+            <div class="user-hotArticle">
+        <h3>博主热门文章</h3>
+        <ul class="hotArticle-list csdn-tracking-statistics tracking-click" data-mod="popu_521">
+<!--        [StartHotArticles]-->
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/51859571">【原创】Sublime Text 3设置吊炸天PHP开发环境</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>47529</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/1622397">GB2312汉字拼音对照表</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>46514</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/44117473">[转]文档去重算法：SimHash和MinHash</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>44426</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/40098043">【原创】PHP程序员的技术成长规划</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>43213</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/1380838">[原创]Memcache的使用和协议分析详解</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>38822</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/8600887">【原创】技术人员的未来：做技术还是做管理？</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>36189</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/489926">几款常见的可视化HTML编辑器(WYSIWYG).</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>34028</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/3453854">[原创]快速开发一个PHP扩展</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>31023</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/8655236">【原创】技术人员如何去面试？</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>30962</span></div>
+                </li>
+                            <li>
+                    <a href="https://blog.csdn.net/heiyeshuwu/article/details/7841366">【原创】PHP超时处理全面总结</a>
+                    <div class="read list-left"><i class="icon iconfont icon-read"></i><span>30660</span></div>
+                </li>
+            <!--        [EndHotArticles]-->
+        </ul>
+    </div>
+    
+<!--    [startcustom]-->
+    <!--    [endcustom]-->
+  <div class="fixRight_box" style="height:256px">
+    <div class="fixRight">
+                    <!--u3163270-->
+                        <script type="text/javascript" src="//cee1.iteye.com/avneunkwb.js"></script>
+                          <div class="persion_article"></div>
+    </div>
+  </div>
+</aside>
+</div>
+
+<div class="left_fixed">
+    <div class="left_show_button">
+        <span>
+          <i class="icon iconfont icon-youjiantou"></i>
+        </span>
+    </div>
+    <ul class="left_menu" id="share_box">
+        <li>
+            <button class="left-fixed-btn btn-like csdn-tracking-statistics tracking-click" data-mod="popu_373" target="_self" title="点赞">
+                <a href="javascript:void(0);" class="iconbox border_red" ><i class="icon iconfont icon-dianzan"></i></a>
+                <a class="txt" href="javascript:void(0);">2</a>
+            </button>
+        </li>
+        <li id="blog_artical_directory">
+            <button class="left-fixed-btn left_menu_btn csdn-tracking-statistics tracking-click" data-mod="popu_372" target="_self" title="目录">
+                <a href="javascript:void(0);" class="iconbox border_black" ><i class="icon iconfont icon-mulu"></i></a>
+            </button>
+        </li>
+        <li class="menu_con">
+            <div class="list_father">
+                <div class="arr_box">
+                    <button class="btn-noborder arr-btn scroll-down  left_scroll_down"><i class="icon iconfont icon-xiajiantou"></i></button>
+                    <button class="btn-noborder arr-btn scroll-up left_scroll_top"><i class="icon iconfont icon-shangjiantou"></i></button>
+                </div>
+                <div class="arr"></div>
+                <div id="csdnBlogDir"></div>
+            </div>
+        </li>
+        <!--        <li>-->
+        <!--            <button class="left-fixed-btn btn-like tracking-ad" data-mod="popu_373" target="_self">-->
+        <!--                <span class="iconbox border_red"><i class="icon iconfont icon-xihuan-"></i></span>-->
+        <!--                <span class="txt">喜欢</span>-->
+        <!--                <span class="untxt">取消喜欢</span>-->
+        <!--            </button>-->
+        <!--        </li>-->
+        <li>
+            <button class="left-fixed-btn csdn-tracking-statistics tracking-click" data-mod="popu_374"  id="com-quick-collect" target="_self" title="收藏">
+                <a href="javascript:void(0);" class="iconbox border_purple" ><i class="icon iconfont icon-shoucang"></i></a>
+            </button>
+        </li>
+        <li>
+            <button class="left-fixed-btn btn-pinglun csdn-tracking-statistics tracking-click" data-mod="popu_544" title="评论">
+                <a href="javascript:void(0);" class="iconbox border_purple" ><i class="icon iconfont icon-pinglun"></i></a>
+            </button>
+        </li>
+        <li class="bdsharebuttonbox csdn-tracking-statistics tracking-click" data-mod="popu_172">
+            <a class="bds_tsina outside left-fixed-btn" data-cmd="tsina" title="分享到新浪微博"></a>
+            <span class="iconbox border_red2"><i class="icon iconfont icon-xinlang"></i></span>
+        </li>
+        <li class="bdsharebuttonbox csdn-tracking-statistics tracking-click" data-mod="popu_172">
+            <a class="bds_weixin outside left-fixed-btn" data-cmd="weixin" title="分享到微信"></a>
+            <span class="iconbox border_green"><i class="icon iconfont icon-weixin"></i></span>
+        </li>
+        <li class="bdsharebuttonbox csdn-tracking-statistics tracking-click" data-mod="popu_172">
+            <a class="bds_qzone outside left-fixed-btn" data-cmd="qzone" title="分享到QQ空间"></a>
+            <span class="iconbox border_blue"><i class="icon iconfont icon-QQ"></i></span>
+        </li>
+        <li id="share_box">
+
+            <div class="bdsharebuttonbox csdn-tracking-statistics tracking-click" data-mod="popu_172">
+
+
+
+            </div>
+        </li>
+    </ul>
+</div>
+<div id="pop_win"></div>
+<div id="popup_mask"></div>
+<div class="pop_CA_cover" ></div>
+<div class="pop pop_CA" >
+    <div class="CA_header">
+        收藏助手
+        <span class="cancel_icon"  id="fapancle" ></span>
+    </div>
+    <iframe src="" id="collectIframe" frameborder="0" width="100%" height="360"  scrolling="no" ></iframe>
+</div>
+<!--举报-->
+<div id="report_dialog" style="top: 250px; left: 343.5px;"><div id="panel_report">
+    <div class="panel_head">不良信息举报</div>
+    <form method="post" id="frmReport" class="panel_body">
+        <table border="0" cellpadding="0" cellspacing="4" class="pop_table">
+            <tbody><tr><td colspan="2">您举报文章：<a href="https://blog.csdn.net/heiyeshuwu/article/details/43429447" target="_blank">[转]搜索引擎的文档相关性计算和检索模型（BM25/TF-IDF）</a></td></tr>
+            <tr>
+                <th style="width:60px;">举报原因：</th>
+                <td id="panel_reporttype">
+                    <label><input type="radio" class="report_type" id="report_sex" name="report_type" value="1">色情</label>
+                    <label><input type="radio" class="report_type" id="report_Politics" name="report_type" value="2">政治</label>
+                    <label><input type="radio" class="report_type" id="report_copy" name="report_type" value="3">抄袭</label>
+                    <label><input type="radio" class="report_type" id="report_ad" name="report_type" value="4">广告</label>
+                    <label><input type="radio" class="report_type" id="report_want" name="report_type" value="5">招聘</label>
+                    <label><input type="radio" class="report_type" id="report_call" name="report_type" value="6">骂人</label>
+                    <br>
+                    <label><input type="radio" class="report_type" id="report_other" name="report_type" value="7">其他</label>
+                    <input type="text" name="report_other_content" id="report_other_content" maxlength="30" style="display: none;">
+                </td>
+            </tr>
+            <tr id="panel_originalurl" style="display: none;">
+                <th>原文地址：</th>
+                <td>
+                    <input id="originalurl" value="http://" name="originalurl" type="text" style="width: 90%;">
+                </td>
+            </tr>
+            <tr>
+                <th id="sp_reason">原因补充：</th>
+                <td>
+                    <textarea id="report_description" style="width: 300px;" rows="3" name="report_description"></textarea>
+                    <p id="sp_n" style="color:#999;margin:0px;padding:0px;">(最多只允许输入30个字)</p>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td>
+                    <input id="btnSubmitReport" name="submit" type="image" align="middle" class="btn_1" src="https://csdnimg.cn/release/phoenix/images/btn_submit.jpg">
+                    <span style="padding-left:20px;"></span>
+                    <img id="btnCloseReportDialog" src="https://csdnimg.cn/release/phoenix/images/btn_cancel.jpg" align="middle">
+                    <div id="error" style="color: Red">
+                    </div>
+                </td>
+            </tr>
+            </tbody></table>
+    </form>
+</div>
+    <script language="javascript" type="text/javascript">
+        var isComment=0;
+        //显示隐藏地址
+        $(function () {
+          console.log("version:phoenix");
+            if(isComment){
+                $("#report_description").attr("disabled",true);
+                $("#sp_n").hide();
+                $("#sp_reason").html("评论内容：");
+            }
+            $(".report_type").click(function () {
+                $("#panel_originalurl,#report_other_content").hide();
+                switch ($(this).val()) {
+                    case '3':
+                        $("#panel_originalurl").show();
+                        $("#originalurl").focus();
+                        break;
+                    case '7':
+                        if(isComment){
+                            $("#report_other_content").show().focus();
+                        }
+                        break;
+                }
+
+            });
+
+            $("#frmReport").submit(function () {
+                if (!currentUserName) {
+
+                    if (confirm("您的操作必须登录，是否登录？")) {
+                        location.href = "https://passport.csdn.net/account/login?from=" + encodeURIComponent(location.href);
+                        return false;
+                    }
+                    return false;
+                }
+
+                var reportType = $("input[name=report_type]:checked").val();
+                if(!reportType){
+                    alert("请选择举报原因！");
+                    return false;
+                }
+                var otherInfo = "";
+                switch (reportType) {
+                    case '3':
+                        otherInfo = $("#originalurl").val();
+                        if (otherInfo == ""||otherInfo=="http://") {
+                            alert("举报抄袭必须提供原创文章地址！");
+                            $("#originalurl").focus();
+                            return false;
+                        } else if(!checkeURL(otherInfo)) {
+                            alert("请输入正确的原创文章地址！");
+                            $("#originalurl").focus();
+                            return false;
+                        }
+                        break;
+                    case '7':
+                        otherInfo = $("#report_other_content").val();
+                        if (isComment && !otherInfo) {
+                            alert("请填写举报的具体原因！");
+                            $("#report_other_content").focus();
+                            return false;
+                        }
+                        if(!isComment){
+                            if(!$("#report_description").val()){
+                                alert("请填写举报的具体原因！");
+                                $("#report_description").focus();
+                                return false;
+                            }
+                        }
+                        break;
+                }
+                if(!isComment){
+                    if($("#report_description").val().length>30){
+                        alert("举报原因最多只允许输入30个字！");
+                        return false;
+                    }
+                }
+	            nowTime = {
+		            year: new Date().getFullYear(),
+		            month: parseInt(new Date().getMonth())+1,
+		            day: new Date().getDate(),
+		            hours: parseInt(new Date().getHours())+1,
+		            minutes: parseInt(new Date().getMinutes())+1,
+		            seconds: parseInt(new Date().getSeconds())+1
+	            };
+	            var data = {
+		            articleId: fileName,
+		            commentId: 0,
+		            reportType: reportType,
+		            originalurl: $("#originalurl").val(),
+		            report_other_content: $("#report_other_content").val(),
+		            report_description: $("#report_description").val(),
+		            currentUserName: currentUserName,
+		            updatetime: nowTime.year+'/'+nowTime.month+'/'+nowTime.day+' '+ nowTime.hours+':'+nowTime.minutes+':'+seconds,
+		            blogUser: username
+	            };
+	            if(!isComment){//如果是举报文章
+		            data.report_other_content = data.report_description;
+		            // data.report_description = "1. 神经网络这是一个常见的神经网络的图：这是一个常见的三层神经网络的基本构成，Layer L1是输入层，Layer L2是隐含层";
+	            }
+
+	            $.post(blog_address + "/common/report?id="+fileName+"&t=2", data, function (data) {
+		            if (data.result == 1){
+			            SetError("感谢您的举报，我们会尽快审核！");
+		            }else{
+			            if (data.content) alert(data.content);
+		            }
+
+	            });
+                return false;
+            });
+
+            $("#btnCloseReportDialog").click(function () {
+                CloseDiv();
+            });
+
+        });
+
+        //提示后关闭方法
+        function SetError(error) {
+            $("#btnCloseReportDialog").trigger("click");
+            alert(error);
+            CloseDiv();
+        }
+
+        //关闭方法
+        function CloseDiv() {
+
+            $.removeMask();
+            $("#report_dialog").hide();
+            return false;
+        }
+
+        //验证url
+        function checkeURL(url){
+            return /^http(s)?:\/\/([\w-]+\.)+[\w-]+/i.test(url);
+        }
+    </script>
+</div>
+<!--  fixme 后期清理掉  -->
+<div id="a52b5334d" style="width: 1px; height: 1px; display: none;">
+    <script id="adJs52b5334"></script>
+    <script>document.getElementById("adJs52b5334").src = "https://ads.csdn.net/js/opt/52b5334.js?t=" + Math.random();</script>
+</div>
+<script type="text/javascript" src="https://static-blog.csdn.net/mdeditor/public/res/bower-libs/MathJax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        "HTML-CSS": {
+            linebreaks: { automatic: true, width: "94%container" },
+            imageFont: null
+        }
+    });
+</script>
+<!-- <script type="text/javascript" src="https://passport.csdn.net/content/loginbox/login.js"></script> -->
+<script>window._bd_share_config = { "common": { "bdSnsKey": {}, "bdText": "", "bdMini": "1", "bdMiniList": false, "bdPic": "", "bdStyle": "0", "bdSize": "16" }, "share": {} }; with (document) 0[(getElementsByTagName('head')[0] || body).appendChild(createElement('script')).src = 'https://csdnimg.cn/static/api/js/share.js?v=89860594'];</script>
+<script type="text/javascript" >
+    if($(".article_collect li").length==1){$(".article_collect").hide();}
+    if($(".article_tags li").length==1){$(".article_tags").hide();}
+    $(".edit a").attr("href","https://mp.csdn.net/postedit/"+fileName);
+    $.each($(".edu_li a"),function(){$(this).attr("href",$(this).attr("href").replace("blog7","blog9"))});
+    new CNick('#uid').showNickname();
+
+    if($("#fan").html()=="")
+    {
+	    $("#fan").html(0);
+    }
+</script>
+<script src="https://csdnimg.cn/public/common/append_mark/appendMark.min.js?v=5.00.43" type="text/javascript"></script>
+<script type="text/javascript">
+    appendMark($('.recommend_list').children('a').find('dt'),$('.extension_other'),$('.yd_a_d_feed_cla'))
+</script>
+<script src='https://csdnimg.cn/pubfooter/js/publib_footer-1.0.3.js?v201804111810' data-isfootertrack="false"></script>
+<script src='https://csdnimg.cn/public/common/gotop/js/goTop-v1.0.min.js?v201803151422'></script>
+<script>
+    GoTop({
+        right: 8,
+        hasReport: true,
+        reportFun: function() {
+            $.createMask();
+            var r = blog_address + "/common/report?id=" + fileName + "&t=" + 2;
+            if (3 == 2) {
+                var s = n.parentNode.parentNode.parentNode.getAttribute("floor");
+                r += "&floor=" + s
+            }
+            var i = (document.documentElement.clientHeight - 400) / 2 + (document.documentElement.scrollTop || document.body.scrollTop),
+                a = (document.documentElement.clientWidth - 400) / 2;
+
+            $("#report_dialog").load(r).css({
+                //top: i + "px",
+                top: '20%',
+                left: a
+            }).show()
+        }
+    })
+</script>
+<script src="https://dup.baidustatic.com/js/os.js"></script>
+
+<div id="loginWrap"></div>
+<div id="dlMask"></div>
+</body>

@@ -23,10 +23,10 @@ def del_tag(strings):
         s = dr.sub('',strings)
         return s
 
-# db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
-# cursor = db.cursor()
-# cursor.execute('select answer from QA')
-# result = cursor.fetchall()
+db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+cursor = db.cursor()
+cursor.execute('select answer from QA')
+result = cursor.fetchall()
 
 def tokenization(text):
     result = []
@@ -42,19 +42,19 @@ def tokenization(text):
 #     text = del_tag(r)
 #     terms = tokenization(text)
 #     corpus.append(terms)
-# output = open('data.pkl', 'wb')
+# output = open('bm25.model', 'wb')
 # pickle.dump(corpus,output)
 
-f = open("data.pkl","rb")
+f = open("bm25.model","rb")
 bin_data = f.read()
 corpus = pickle.loads(bin_data)
 bm25Model = bm25.BM25(corpus)
 average_idf = sum(map(lambda k: float(bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
 
 
-query = ['政策','服务器','法规']
+query = ['开发者工具中心','大数据工具']
 scores = bm25Model.get_scores(query,average_idf)
 # scores.sort(reverse=True)
 idx = scores.index(max(scores))
 print(idx)
-print(corpus[idx])
+print(corpus[2031])
