@@ -1,0 +1,31 @@
+html{
+	height: 100%;
+	width: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    margin: 10px;
+}
+
+.tbl{
+	top:50px;
+	position: relative;
+	/*height: 85%;*/
+	
+	margin: 10px;
+}
+
+.float-left{
+	float: left;
+}
+
+.radio2{
+	margin:10px;
+	width: 10%;
+}
+
+.img-table{
+	height: 80%;
+}

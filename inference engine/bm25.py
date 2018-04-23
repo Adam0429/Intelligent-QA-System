@@ -11,8 +11,6 @@ import pickle
 import jieba
 from jieba import analyse
 
-jieba.load_userdict('dict.txt') 
-
 def del_tag(strings):
     dr = re.compile(r'<[^>]+>',re.S)
     if type(strings) == type([]): 
@@ -50,29 +48,30 @@ def f1(result):
             best = b
     return best 
 
-def andsearch(keywords,attr):
+def andsearch(keywords,attr,attr2):
     first = True
     sql = 'select ' + attr + ' from QA where '
     for w in keywords:
         if first:   
-            sql = sql + 'descs like "%' + w + '%" '
+            sql = sql + attr2 +' like "%' + w + '%" '
             first = False
         else:
-            sql = sql + 'and descs like "%' + w + '%" '
+            sql = sql + 'and ' + attr2 + ' like "%' + w + '%" '
     return sql
 
-def orsearch(keywords,attr):
+def orsearch(keywords,attr,attr2):
     first = True
     sql = 'select ' + attr + ' from QA where '
     for w in keywords:
         if first:   
-            sql = sql + 'descs like "%' + w + '%" '
+            sql = sql + attr2 + ' like "%' + w + '%" '
             first = False
         else:
-            sql = sql + 'or descs like "%' + w + '%" '
+            sql = sql + 'or ' + attr2 +' like "%' + w + '%" '
     return sql
 
 def tokenization(text):
+    stop_flag = ['x', 'c', 'u','d', 'p', 't', 'uj', 'm', 'f', 'r']
     result = []
     words = pseg.cut(text)
     for word, flag in words:
@@ -81,13 +80,15 @@ def tokenization(text):
     return result
 
 
+
 query = input('')
 keywords = analyse.extract_tags(query,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
-# print(keywords)
-# keywords = ['DevOps','解决方案']
+# keywords = ['帮助中心','产品术语-驱动']
+print(keywords)
 
-sql = andsearch(keywords,'answer')
-sql2 = orsearch(keywords,'answer')
+sql = andsearch(keywords,'answer,descs','descs')
+sql2 = orsearch(keywords,'answer,descs','descs')
+print(sql2)
 db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 cursor = db.cursor()
 cursor.execute(sql)
@@ -99,27 +100,71 @@ if len(result) == 0:
         result == None
     else:
         result = result2
-
+ 
+descs = []
 corpus = []
-stop_flag = ['x', 'c', 'u','d', 'p', 't', 'uj', 'm', 'f', 'r']
+
 if result != None:
     for r in tqdm(result):
-        text = del_tag(r)
+        text = del_tag(r[0])
         terms = tokenization(text)
         corpus.append(terms)
+        descs.append(r[1])
 else:
-    output = open('bm25.model', 'wb')
-    pickle.dump(corpus,output)
+    # output = open('bm25.model', 'wb')
+    # pickle.dump(data,output)
     f = open("bm25.model","rb")
     bin_data = f.read()
-    corpus = pickle.loads(bin_data)
+    data = pickle.loads(bin_data)
+    corpus = data[0]
+    descs = data[1]
+
+for d in descs:
+    print(d)
 
 bm25Model = bm25.BM25(corpus)
 average_idf = sum(map(lambda k: float(bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
 
 
 scores = bm25Model.get_scores(keywords,average_idf)
-# scores.sort(reverse=True)
-idx = scores.index(max(scores))
-print(scores)
-print(corpus[idx])
+_scores = list(set(scores))
+_scores.sort(reverse=True)
+
+# idx = scores.index(max(scores))
+# print(idx)
+# print(corpus[idx])
+# print(descs[idx])
+# print(scores)
+answer = ''
+url = []
+titles = []
+for s in _scores[:3]:
+    idx = scores.index(s)
+    cursor.execute('select url from QA where descs = "'+descs[idx]+'"') 
+    url.append(cursor.fetchall()[0][0])
+
+url = list(set(url))
+
+if len(url) == 1:
+    print(url)
+    cursor.execute('select descs from QA where url = "'+url[0]+'"') 
+    for c in cursor.fetchall():
+        titles.append(c[0])
+
+else:
+    for s in _scores[:3]:
+        idx = scores.index(s)
+        titles.append(descs[idx])
+        print(descs[idx])
+        print(scores[idx])
+
+
+for title in tqdm(titles):
+    # print(title)
+    sql = 'select answer from QA where descs="' + title + '"'
+    cursor.execute(sql)
+    # print(cursor.fetchone())
+    answer = answer + '<h2>' + title + '</h2>' + cursor.fetchone()[0]
+print(answer)
+return answer
+# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
