@@ -9,6 +9,13 @@ from pyltp import SementicRoleLabeller
 from pyltp import NamedEntityRecognizer
 from pyltp import Parser
 
+#分隔标签
+def splitor(sentence='帮助中心 > 数据仓库服务 > 购买指南 > 续费'):
+    labels_list = list(sentence.split(' > '))
+#   for label in labels_list:
+#       print(label + ' ', end = '')
+    return labels_list
+
 def filter(List):
     useless_labels = ['简介','帮助中心','概览','产品简介','快速入门','FAQ','用户指南']
     nList = list()
@@ -42,7 +49,7 @@ def posttagger(words):
     return postags_list
 
 #生成问句
-def generator(qas):
+def generator(List,qas):
     labels = List
     useful_labels = filter(labels)
     # 找到最后一个标签
@@ -58,11 +65,24 @@ def generator(qas):
     if qas == '概述':
         return
 
-    #假如小标题分词后最后一个为名词，则用"有哪些... ..."来生成
+    #假如小标题的开头是动词，且分词后大于3个词汇，用"怎么... ..."来生成
+    elif (qas_postages[0] is 'v' and
+        len(qas_list) > 2):
+        return '怎么' + qas
+
+    #假如小标题的开头是操作，则用"...的...有哪些"来生成
+    elif (qas_list[0] == '操作' or
+          qas_list[0] == '使用'):
+        return useful_labels[-1] + '的' + qas + '有哪些？'
+
+    #假如小标题分词后第一个词为名词，则用"有哪些... ..."来生成
     elif (
-        qas_postages[-1] == 'n' or
-        qas_postages[-1] == 'nt' or
-        qas_postages[-1] == 'nz'
+        qas_postages[0] == 'n' or
+        qas_postages[0] == 'nt' or
+        qas_postages[0] == 'nz'
     ):
         return '有哪些' + qas
 
+print('******************整体测试：**********************')
+a = generator(splitor('帮助中心 > 弹性云服务器 > 用户指南 > 实例 > 用户数据注入'),'使用场景')
+print(a)
