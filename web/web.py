@@ -97,9 +97,12 @@ def chat():
 def getanswer():
 	question = request.args['question']
 	query = question
+
 	keywords = analyse.extract_tags(query,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
 	# keywords = ['帮助中心','产品术语-驱动']
 	print(keywords)
+	if len(keywords) == 0:
+		return '没有相关结果'
 
 	sql = andsearch(keywords,'answer,descs','descs')
 	sql2 = orsearch(keywords,'answer,descs','descs')
@@ -121,7 +124,7 @@ def getanswer():
 
 	if result != None:
 	    for r in tqdm(result):
-	        text = del_tag(r[0])
+	        text = del_tag(r[1])			#index为1是用标签搜索，改为0是用答案搜
 	        terms = tokenization(text)
 	        corpus.append(terms)
 	        descs.append(r[1])
