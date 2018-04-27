@@ -141,7 +141,7 @@
 						        // data: $('#form1').serialize(),
 						        success: function (result) {
 						            if(result.length == 0){
-						            	back_info('没有相关结果');
+						            	back_info('<div><p>没有相关结果</p></div>');
 						            }
 						            else {
 						           		back_info(result);
@@ -149,7 +149,7 @@
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
-						            back_info('没有相关结果');
+						            back_info('<div><p>没有相关结果</p></div>');
 						        }
 						      });
 							add_message('You','img/demo/av1.jpg',$(this).val(),true);					
@@ -172,7 +172,7 @@
 			    },'1000');
 			    */
 			    setTimeout(function(){
-			        back_info('<p>Hello!</p>')
+			        back_info('<div><p>Hello!</p></div>')
 			    },'1000');
 
 			   	var i = 0;
