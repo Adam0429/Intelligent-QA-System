@@ -102,7 +102,7 @@ def getanswer():
 	# keywords = ['帮助中心','产品术语-驱动']
 	print(keywords)
 	if len(keywords) == 0:
-		return '没有相关结果'
+		return '<div><p>没有相关结果</p></div>'
 
 	sql = andsearch(keywords,'answer,descs','descs')
 	sql2 = orsearch(keywords,'answer,descs','descs')

@@ -118,7 +118,7 @@
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');		
 					if(input.val() != ''){
-						add_message('You','img/demo/av1.jpg',input.val(),true);
+						add_message('You','/static/img/demo/av1.jpg',input.val(),true);
 					} else {
 						$('.input-box').addClass('has-error');
 					}
@@ -152,7 +152,7 @@
 						            back_info('<div><p>没有相关结果</p></div>');
 						        }
 						      });
-							add_message('You','img/demo/av1.jpg',$(this).val(),true);					
+							add_message('You','/static/img/demo/av1.jpg',$(this).val(),true);					
 
 						} else {
 							$('.input-box').addClass('has-error');

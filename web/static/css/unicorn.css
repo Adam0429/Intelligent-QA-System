@@ -1635,7 +1635,6 @@ ul#icons li {
   -webkit-transition-duration: 1s;
   transition-duration: 1s;
 }
-.chat-content .chat-messages .chat-messages-inner p.show,
 .chat-content .chat-messages .chat-messages-inner div.show,
 .chat-content .chat-messages .chat-messages-inner div.show div{
   -webkit-transform: translate(0, 0);
@@ -1643,6 +1642,14 @@ ul#icons li {
   transform: translate(0, 0);
   opacity: 1;
   filter: alpha(opacity=100);
+}
+.chat-content .chat-messages .chat-messages-inner p.show{
+  -webkit-transform: translate(0, 0);
+  -ms-transform: translate(0, 0);
+  transform: translate(0, 0);
+  opacity: 1;
+  filter: alpha(opacity=100);
+  margin: 0px 10px 0px 10px;
 }
 .chat-content .chat-messages .chat-messages-inner p.al.show,
 .chat-content .chat-messages .chat-messages-inner div.al.show,
