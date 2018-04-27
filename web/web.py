@@ -22,72 +22,86 @@ app.config['SECRET_KEY'] = '1234231'
 jieba.load_userdict('dict.txt') 
 
 def del_tag(strings):
-    dr = re.compile(r'<[^>]+>',re.S)
-    if type(strings) == type([]): 
-        strs = []
-        for string in strings:
-            string = str(string)
-            s = dr.sub('',string)
-            strs.append(s)
-        return strs
-    else:
-        strings= str(strings)
-        s = dr.sub('',strings)
-        return s
+	dr = re.compile(r'<[^>]+>',re.S)
+	if type(strings) == type([]): 
+		strs = []
+		for string in strings:
+			string = str(string)
+			s = dr.sub('',string)
+			strs.append(s)
+		return strs
+	else:
+		strings= str(strings)
+		s = dr.sub('',strings)
+		return s
+
+def del_div(strings):
+	dr = re.compile(r'<div[^>]+>',re.S)
+	if type(strings) == type([]): 
+		strs = []
+		for string in strings:
+			string = str(string)
+			s = dr.sub('',string)
+			strs.append(s)
+		return strs
+	else:
+		strings= str(strings)
+		s = dr.sub('',strings)
+		return s
 
 def f1(result):
-    best_answer = [result[0]]
-    min_word = len(result[0][0].split('-'))
-    # print(result)
-    for r in result:
-        length = len(r[0].split('-'))
-        # print(r)
-        # print(length)
-        # 先取出字条数最少的，再在其中找到长度最短的
-        # 改成计算文本相似度
-        if length < min_word:
-            min_word = length
-            best_answer = [r]
-        if length == min_word:
-            best_answer.append(r)
-    best = best_answer[0]
-    num = len(best_answer[0])
-    for b in best_answer:
-        length = len(b[0])
-        if length < num:
-            best = b
-    return best 
+	best_answer = [result[0]]
+	min_word = len(result[0][0].split('-'))
+	# print(result)
+	for r in result:
+		length = len(r[0].split('-'))
+		# print(r)
+		# print(length)
+		# 先取出字条数最少的，再在其中找到长度最短的
+		# 改成计算文本相似度
+		if length < min_word:
+			min_word = length
+			best_answer = [r]
+		if length == min_word:
+			best_answer.append(r)
+	best = best_answer[0]
+	num = len(best_answer[0])
+	for b in best_answer:
+		length = len(b[0])
+		if length < num:
+			best = b
+	return best 
 
 def andsearch(keywords,attr,attr2):
-    first = True
-    sql = 'select ' + attr + ' from QA where '
-    for w in keywords:
-        if first:   
-            sql = sql + attr2 +' like "%' + w + '%" '
-            first = False
-        else:
-            sql = sql + 'and ' + attr2 + ' like "%' + w + '%" '
-    return sql
+	first = True
+	sql = 'select ' + attr + ' from QA where '
+	for w in keywords:
+		if first:   
+			sql = sql + attr2 +' like "%' + w + '%" '
+			first = False
+		else:
+			sql = sql + 'and ' + attr2 + ' like "%' + w + '%" '
+	return sql
 
 def orsearch(keywords,attr,attr2):
-    first = True
-    sql = 'select ' + attr + ' from QA where '
-    for w in keywords:
-        if first:   
-            sql = sql + attr2 + ' like "%' + w + '%" '
-            first = False
-        else:
-            sql = sql + 'or ' + attr2 +' like "%' + w + '%" '
-    return sql
+	first = True
+	sql = 'select ' + attr + ' from QA where '
+	for w in keywords:
+		if first:   
+			sql = sql + attr2 + ' like "%' + w + '%" '
+			first = False
+		else:
+			sql = sql + 'or ' + attr2 +' like "%' + w + '%" '
+	return sql
 
 def tokenization(text):
-    stop_flag = ['x', 'c', 'u','d', 'p', 't', 'uj', 'm', 'f', 'r']
-    result = []
-    words = pseg.cut(text)
-    for word, flag in words:
-        if flag not in stop_flag:
-            result.append(word)
-    return result
+	stop_flag = ['x', 'c', 'u','d', 'p', 't', 'uj', 'm', 'f', 'r']
+	result = []
+	words = pseg.cut(text)
+	for word, flag in words:
+		if flag not in stop_flag:
+			result.append(word)
+	return result
 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -102,7 +116,7 @@ def getanswer():
 	# keywords = ['帮助中心','产品术语-驱动']
 	print(keywords)
 	if len(keywords) == 0:
-		return '<div><p>没有相关结果</p></div>'
+		return '没有相关结果'
 
 	sql = andsearch(keywords,'answer,descs','descs')
 	sql2 = orsearch(keywords,'answer,descs','descs')
@@ -114,31 +128,41 @@ def getanswer():
 	cursor.execute(sql2)
 	result2 = cursor.fetchall()
 	if len(result) == 0:
-	    if result2 == 0:
-	        result == None
-	    else:
-	        result = result2
+		if result2 == 0:
+			result == None
+		else:
+			result = result2
 	 
 	descs = []
 	corpus = []
 
+	if len(result) == 1:
+		sql = 'select answer from QA where descs="' + result[0][1] + '"'
+		cursor.execute(sql)
+		# print(cursor.fetchone())
+		answer = '<h2>' + result[0][1] + '</h2>' + cursor.fetchone()[0]
+		answer = del_div(answer)	
+		answer = answer.replace('</div>','')
+		answer = '<div>' + answer + '</div>'
+		return answer
+
 	if result != None:
-	    for r in tqdm(result):
-	        text = del_tag(r[1])			#index为1是用标签搜索，改为0是用答案搜
-	        terms = tokenization(text)
-	        corpus.append(terms)
-	        descs.append(r[1])
+		for r in tqdm(result):
+			text = del_tag(r[1])			#index为1是用标签搜索，改为0是用答案搜
+			terms = tokenization(text)
+			corpus.append(terms)
+			descs.append(r[1])
 	else:
-	    # output = open('bm25.model', 'wb')
-	    # pickle.dump(data,output)
-	    f = open("bm25.model","rb")
-	    bin_data = f.read()
-	    data = pickle.loads(bin_data)
-	    corpus = data[0]
-	    descs = data[1]
+		# output = open('bm25.model', 'wb')
+		# pickle.dump(data,output)
+		f = open("bm25.model","rb")
+		bin_data = f.read()
+		data = pickle.loads(bin_data)
+		corpus = data[0]
+		descs = data[1]
 
 	for d in descs:
-	    print(d)
+		print(d)
 
 	bm25Model = bm25.BM25(corpus)
 	average_idf = sum(map(lambda k: float(bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
@@ -157,32 +181,35 @@ def getanswer():
 	url = []
 	titles = []
 	for s in _scores[:3]:
-	    idx = scores.index(s)
-	    cursor.execute('select url from QA where descs = "'+descs[idx]+'"') 
-	    url.append(cursor.fetchall()[0][0])
+		idx = scores.index(s)
+		cursor.execute('select url from QA where descs = "'+descs[idx]+'"') 
+		url.append(cursor.fetchall()[0][0])
 
 	url = list(set(url))
 
 	if len(url) == 1:
-	    print(url)
-	    cursor.execute('select descs from QA where url = "'+url[0]+'"') 
-	    for c in cursor.fetchall():
-	        titles.append(c[0])
+		print(url)
+		cursor.execute('select descs from QA where url = "'+url[0]+'"') 
+		for c in cursor.fetchall():
+			titles.append(c[0])
 
 	else:
-	    for s in _scores[:3]:
-	        idx = scores.index(s)
-	        titles.append(descs[idx])
-	        print(descs[idx])
-	        print(scores[idx])
+		for s in _scores[:3]:
+			idx = scores.index(s)
+			titles.append(descs[idx])
+			print(descs[idx])
+			print(scores[idx])
 
 
 	for title in tqdm(titles):
-	    # print(title)
-	    sql = 'select answer from QA where descs="' + title + '"'
-	    cursor.execute(sql)
-	    # print(cursor.fetchone())
-	    answer = answer + '<h2>' + title + '</h2>' + cursor.fetchone()[0]
+		# print(title)
+		sql = 'select answer from QA where descs="' + title + '"'
+		cursor.execute(sql)
+		# print(cursor.fetchone())
+		answer = answer + '<h2>' + title + '</h2>' + cursor.fetchone()[0]
+	answer = del_div(answer)	
+	answer = answer.replace('</div>','')
+	answer = '<div>' + answer + '</div>' 
 	print(answer)
 	return answer
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
