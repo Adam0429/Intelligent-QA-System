@@ -143,6 +143,7 @@ def getanswer():
 		answer = '<h2>' + result[0][1] + '</h2>' + cursor.fetchone()[0]
 		answer = del_div(answer)	
 		answer = answer.replace('</div>','')
+		answer = answer.replace('<]','')
 		answer = '<div>' + answer + '</div>'
 		return answer
 
@@ -209,6 +210,7 @@ def getanswer():
 		answer = answer + '<h2>' + title + '</h2>' + cursor.fetchone()[0]
 	answer = del_div(answer)	
 	answer = answer.replace('</div>','')
+	answer = answer.replace('<]','')
 	answer = '<div>' + answer + '</div>' 
 	print(answer)
 	return answer
