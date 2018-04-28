@@ -14,6 +14,7 @@ import pymysql
 
 db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 cursor = db.cursor()
+# idx = 1
 
 def del_tag(strings):
 	dr = re.compile(r'<[^>]+>',re.S)
@@ -192,17 +193,13 @@ for file in tqdm(files):
 
 	# print(generator(_segmentor,_postagger,data['desc']))
 	for question,answer in data['qas'].items():
+		# idx = idx + 1	
 		dd = []
 		for d in data['desc']:
 			# if d != data['desc'][len(data['desc'])-1]:
 			dd.append(d)
 		question = question.replace('\n','')
 		question = question.strip()
-		dd = []
-		for d in data['desc']:
-			if d != data['desc'][len(data['desc'])-1]:
-				dd.append(d)
-
 		dd.append(question)
 		d = '-'.join(dd)
 		answer = answer.replace('\n','')
@@ -211,6 +208,10 @@ for file in tqdm(files):
 		answer = answer.replace('”','"')
 		answer = answer.replace('“','"')
 		# some limit signals in sql 
+		if del_tag(answer) == '':
+			# print(answer)
+			continue
+		# answer is null
 		sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"		
 		try:
 			cursor.execute(sql)
@@ -226,7 +227,7 @@ for file in tqdm(files):
 				result = cursor.fetchall()[0]
 				url = result[1] + ' ' + data['url'] 
 				result = result[0]
-				print(url)
+				# print(url)
 				if del_tag(result) != del_tag(answer):
 					answer = answer + result[0]
 					answer = answer.replace('\n','')
@@ -234,27 +235,19 @@ for file in tqdm(files):
 					answer = answer.replace(';','')
 					answer = answer.replace('”','"')
 					answer = answer.replace('“','"')
-					answer = answer z+ result
+					answer = answer + result
 					# ~~~~~~~~~~~
 				sql = "update QA set answer='"+answer+"' where descs='"+ d + "'"
 				sql2 = "update QA set url='"+url+"' where descs='"+ d + "'"
-				print(sql2)
+				# print(sql2)
 				# have the same answer situation
 				cursor.execute(sql)
 				cursor.execute(sql2)
-				print(url)
+				# print(url)
 				db.commit()
 			elif e == '1064':#limit signals
-				print(file)
+				# print(file)
 				answer = del_tag(answer)
 				sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"
 				cursor.execute(sql)
 				db.commit() 
-			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')'
-		except:
-			answer = del_tag(answer) 
-			# some limit signals in sql 
-			sql = 'insert into QA values(' + str(idx) + ',"' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "','" + d + "'" + ')' 
-		print(sql)
-		cursor.execute(sql)
-		db.commit()
