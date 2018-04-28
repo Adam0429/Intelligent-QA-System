@@ -49,6 +49,11 @@ def del_div(strings):
 		s = dr.sub('',strings)
 		return s
 
+def find_a(strings):
+	regex=re.compile('<a.*>')
+	string = regex.findall(strings)
+	return string[0]
+
 def f1(result):
 	best_answer = [result[0]]
 	min_word = len(result[0][0].split('-'))
@@ -111,17 +116,23 @@ def chat():
 def getanswer():
 	question = request.args['question']
 	query = question
-
-	keywords = analyse.extract_tags(query,topK=20, withWeight=False,allowPOS=['ns','n','vn','v','nr'])
+	q2 = query.upper()
+	q3 = query.lower()
+	keywords = analyse.extract_tags(query, withWeight=False)
+	# allowPOS=['ns','n','vn','v','nr']
+	# 处理大小写不能分出关键词的问题,分词区分大小写,而数据库查询不区分
 	# keywords = ['帮助中心','产品术语-驱动']
 	print(keywords)
+	# 如没有关键词,就需要分词将所有词做关键词
 	if len(keywords) == 0:
-		return '<div><p>没有相关结果</p></div>'
-
+		keywords = jieba.cut(query,cut_all = True)
+		keywords = '/'.join(keywords)
+		keywords.split('/')
 
 	sql = andsearch(keywords,'answer,descs','descs')
 	sql2 = orsearch(keywords,'answer,descs','descs')
 	print(sql2)
+
 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	cursor.execute(sql)
@@ -133,7 +144,7 @@ def getanswer():
 			result == None
 		else:
 			result = result2
-	 
+	
 	descs = []
 	corpus = []
 
@@ -142,18 +153,27 @@ def getanswer():
 		cursor.execute(sql)
 		# print(cursor.fetchone())
 		answer = '<h2>' + result[0][1] + '</h2>' + cursor.fetchone()[0]
-		answer = del_div(answer)	
+		# 当答案中只有一个<a>时,需要加上'链接'让其显示
+		if del_tag(answer) == result[0][1]:
+			answer = '<h2>' + result[0][1] + '</h2>' + find_a(answer) + '链接'
+		else:
+			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
-		answer = answer.replace('<]','')
 		answer = '<div>' + answer + '</div>'
+		answer = answer.replace(']','')
+		print(answer)
 		return answer
 
-	if result != None:
+	elif len(result) != 0:
 		for r in tqdm(result):
-			text = del_tag(r[1])			#index为1是用标签搜索，改为0是用答案搜
+			text = del_tag(r[1])			
+			#index为1是用标签搜索，改为0是用答案搜
 			terms = tokenization(text)
 			corpus.append(terms)
 			descs.append(r[1])
+
+	
+	# 如果标题都没出现,去答案里找
 	else:
 		# output = open('bm25.model', 'wb')
 		# pickle.dump(data,output)
@@ -202,19 +222,23 @@ def getanswer():
 			print(descs[idx])
 			print(scores[idx])
 
-
+	totalanswer = ''
 	for title in tqdm(titles):
 		# print(title)
 		sql = 'select answer from QA where descs="' + title + '"'
 		cursor.execute(sql)
 		# print(cursor.fetchone())
-		answer = answer + '<h2>' + title + '</h2>' + cursor.fetchone()[0]
-	answer = del_div(answer)	
-	answer = answer.replace('</div>','')
-	answer = answer.replace('<]','')
-	answer = '<div>' + answer + '</div>' 
-	print(answer)
-	return answer
+		answer = '<h2>' + title + '</h2>' + cursor.fetchone()[0]
+		if del_tag(answer) == title:
+			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
+		totalanswer = totalanswer + answer
+
+	totalanswer = del_div(totalanswer)
+	totalanswer = totalanswer.replace('</div>','')
+	totalanswer = totalanswer.replace(']','')
+	totalanswer = '<div>' + totalanswer + '</div>' 
+	print(totalanswer)
+	return totalanswer
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
 
 if __name__ == '__main__':
