@@ -52,8 +52,10 @@ def del_div(strings):
 def find_a(strings):
 	regex=re.compile('<a.*>')
 	string = regex.findall(strings)
-	return string[0]
-
+	if len(string) != 0:
+		return string[0]
+	else:
+		return ''
 def f1(result):
 	best_answer = [result[0]]
 	min_word = len(result[0][0].split('-'))
