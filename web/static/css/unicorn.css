@@ -1597,14 +1597,14 @@ ul#icons li {
 }
 /* Chat styles */
 .chat-content {
-  height: 500px;
+  height: 900px;
   padding: 15px;
 }
 .chat-content .chat-messages {
   background: none repeat scroll 0 0 #FBFBFB;
   border: 1px solid #DDDDDD;
   border-radius: 4px 4px 0 0;
-  height: 425px;
+  height: 825px;
   overflow: auto;
   position: relative;
   z-index: 10;
