@@ -116,9 +116,29 @@
 				var messages_inner = $('#chat-messages-inner');
 
 				$('.chat-message button').click(function(){
-					var input = $(this).parent().siblings('input[type=text]');		
+					var input = $(this).parent().siblings('input[type=text]');
+					var message = input.val();		
 					if(input.val() != ''){
-						add_message('You','/static/img/demo/av1.jpg',input.val(),true);
+						$.ajax({
+						        type: "get",
+						        dataType: "text",//预期服务器返回的数据类型
+						        async:true,
+						        url: 'getanswer?question='+message,
+						        // data: $('#form1').serialize(),
+						        success: function (result) {
+						            if(result.length == 0){
+						            	back_info('没有相关结果');
+						            }
+						            else {
+						           		back_info(result);
+						              
+						            }
+						        },
+						        error : function(XMLHttpRequest, textStatus, errorThrown) {
+						            back_info('没有相关结果');
+						        }
+						      });
+						add_message('You','img/demo/av1.jpg',input.val(),true);
 					} else {
 						$('.input-box').addClass('has-error');
 					}
