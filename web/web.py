@@ -233,10 +233,10 @@ def getanswer():
 		answer = '<h2>' + title + '</h2>' + cursor.fetchone()[0]
 		if del_tag(answer) == title:
 			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + answer + '<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>'
+		totalanswer = totalanswer + '<div>' + answer + '</div>' + '<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>'
 
 	totalanswer = del_div(totalanswer)
-	totalanswer = totalanswer.replace('</div>','')
+#	totalanswer = totalanswer.replace('</div>','')
 	totalanswer = totalanswer.replace(']','')
 	totalanswer = '<div>' + totalanswer + '</div>' 
 	print(totalanswer)
@@ -244,6 +244,6 @@ def getanswer():
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0',port=5000,debug=True)
+	app.run(host='0.0.0.0',port=8800)
 
 
