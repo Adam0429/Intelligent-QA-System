@@ -135,7 +135,7 @@ def getanswer():
 	sql2 = orsearch(keywords,'answer,descs','descs')
 	print(sql2)
 
-	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
 	cursor = db.cursor()
 	cursor.execute(sql)
 	result = cursor.fetchall()
