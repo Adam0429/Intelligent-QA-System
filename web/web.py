@@ -135,7 +135,7 @@ def getanswer():
 	sql2 = orsearch(keywords,'answer,descs','descs')
 	print(sql2)
 
-	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	cursor.execute(sql)
 	result = cursor.fetchall()
@@ -151,13 +151,14 @@ def getanswer():
 	corpus = []
 
 	if len(result) == 1:
-		sql = 'select answer from QA where descs="' + result[0][1] + '"'
+		sql = 'select normal_question,answer from QA where descs="' + result[0][1] + '"'
 		cursor.execute(sql)
-		# print(cursor.fetchone())
-		answer = '<h2>' + result[0][1] + '</h2>' + cursor.fetchone()[0]
+		result = cursor.fetchall()
+		title = result[0][0]
+		answer = '<h2>' + title + '</h2>' + result[0][1]
 		# 当答案中只有一个<a>时,需要加上'链接'让其显示
-		if del_tag(answer) == result[0][1]:
-			answer = '<h2>' + result[0][1] + '</h2>' + find_a(answer) + '链接'
+		if del_tag(answer) == title:
+			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
 		else:
 			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
@@ -177,6 +178,17 @@ def getanswer():
 	
 	# 如果标题都没出现,去答案里找
 	else:
+		# corpus = []
+		# descs = []
+		# cursor.execute('select answer from QA')
+		# for c in cursor.fetchall():
+		# 	corpus.append(c[0])
+		# cursor.execute('select descs from QA')
+		# for c in cursor.fetchall():
+		# 	descs.append(c[0])
+		# data = []
+		# data.append(corpus)
+		# data.append(descs)
 		# output = open('bm25.model', 'wb')
 		# pickle.dump(data,output)
 		f = open("bm25.model","rb")
@@ -185,8 +197,9 @@ def getanswer():
 		corpus = data[0]
 		descs = data[1]
 
-	for d in descs:
-		print(d)
+
+	# for d in descs:
+	# 	print(d)
 
 	bm25Model = bm25.BM25(corpus)
 	average_idf = sum(map(lambda k: float(bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
@@ -227,16 +240,18 @@ def getanswer():
 	totalanswer = ''
 	for title in tqdm(titles):
 		# print(title)
-		sql = 'select answer from QA where descs="' + title + '"'
+		sql = 'select normal_question,answer from QA where descs="' + title + '"'
 		cursor.execute(sql)
+		result = cursor.fetchall()
+		title = result[0][0]
+		answer = '<h2>' + title + '</h2>' + result[0][1]
 		# print(cursor.fetchone())
-		answer = '<h2>' + title + '</h2>' + cursor.fetchone()[0]
 		if del_tag(answer) == title:
 			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + '<div>' + answer + '</div>' + '<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>'
+		totalanswer = totalanswer + answer
 
 	totalanswer = del_div(totalanswer)
-#	totalanswer = totalanswer.replace('</div>','')
+	totalanswer = totalanswer.replace('</div>','')
 	totalanswer = totalanswer.replace(']','')
 	totalanswer = '<div>' + totalanswer + '</div>' 
 	print(totalanswer)
@@ -244,6 +259,6 @@ def getanswer():
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0',port=8800)
+	app.run(host='0.0.0.0',port=5000,debug=True)
 
 
