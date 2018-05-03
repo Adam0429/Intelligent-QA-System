@@ -110,6 +110,29 @@ def tokenization(text):
 			result.append(word)
 	return result
 
+# def feedback(desc,title,keywords):
+# 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+# 	cursor = db.cursor()
+# 	cursor.execute('select descs from QA where normal_question == "'+title'"')
+# 	result = cursor.fetchall()[0]
+# 	print(result)
+# 	words = result.split(' ')
+
+# 	cursor.execute("update QA set descs='"+keywords+"' where normal_question='"+keywords+"'")
+	# corpus = []
+	# descs = []
+	# cursor.execute('select answer from QA')
+	# for c in cursor.fetchall():
+	# 	corpus.append(c[0])
+	# cursor.execute('select descs from QA')
+	# for c in cursor.fetchall():
+	# 	descs.append(c[0])
+	# data = []
+	# data.append(corpus)
+	# data.append(descs)
+	# output = open('bm25.model', 'wb')
+	# pickle.dump(data,output)
+
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
 	return render_template('chat.html')
@@ -164,6 +187,7 @@ def getanswer():
 		answer = answer.replace('</div>','')
 		answer = '<div>' + answer + '</div>'
 		answer = answer.replace(']','')
+
 		print(answer)
 		return answer
 
@@ -218,6 +242,7 @@ def getanswer():
 	url = []
 	titles = []
 	for s in _scores[:3]:
+		print(s)
 		idx = scores.index(s)
 		cursor.execute('select url from QA where descs = "'+descs[idx]+'"') 
 		url.append(cursor.fetchall()[0][0])
