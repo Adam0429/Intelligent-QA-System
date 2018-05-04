@@ -167,7 +167,7 @@
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-						            		back_info('<div>' + result_list[j] + question_inner + '</div>');
+						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
 						            	}
 						            	//survey_info();
 						            }
@@ -241,10 +241,8 @@
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    }
 			    function gen_info() {
-			    	i = i + 1;
-			    	var id = 'msg-'+i;
-			    	messages_inner.append('<div class="offline al" id="'+id+'">'+'<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>'+'</div>');
-			    	$('#'+id).fadeOut(0).addClass('show');
+			    	var id = 'sur-'+i;
+			    	return ('<div><h3 style="text-align:center;">你对这条结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>');
 			    }
 			});
  		</script>
