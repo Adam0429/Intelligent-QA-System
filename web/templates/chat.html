@@ -239,7 +239,7 @@
 			    	var id = 'msg-'+i;
 			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
-			    	messages.animate({scrollTop: $("#msg-"+i).offset().top }, {duration: 500,easing: "swing"});
+			    	window.location.hash = "#"+id;
 			    }
 			    function gen_info() {
 			    	var id = 'sur-'+i;
