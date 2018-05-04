@@ -114,6 +114,7 @@
 				var message_box = $('.chat-message');
 				var message_box_input = $('.chat-message input');
 				var messages_inner = $('#chat-messages-inner');
+				var question_inner = '<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>';
 
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');
@@ -164,7 +165,11 @@
 						            	back_info('<div><p>没有相关结果</p></div>');
 						            }
 						            else {
-						           		back_info(result);
+						            	var result_list = new Array();
+						            	var result_list = result.split('<split>')
+						            	for (i=0;i<result_list.length;i++) {
+						            		back_info('<div>' + result_list + question_inner + '</div>');
+						            	}
 						            	//survey_info();
 						            }
 						        },
@@ -236,7 +241,7 @@
 			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    }
-			    function survey_info() {
+			    function gen_info() {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
 			    	messages_inner.append('<div class="offline al" id="'+id+'">'+'<div><h3 style="text-align:center;">你对返回的结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>'+'</div>');

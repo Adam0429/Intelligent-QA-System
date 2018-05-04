@@ -273,12 +273,12 @@ def getanswer():
 		# print(cursor.fetchone())
 		if del_tag(answer) == title:
 			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + answer
+		totalanswer = totalanswer + answer + '<split>'
 
 	totalanswer = del_div(totalanswer)
 	totalanswer = totalanswer.replace('</div>','')
 	totalanswer = totalanswer.replace(']','')
-	totalanswer = '<div>' + totalanswer + '</div>' 
+	#totalanswer = '<div>' + totalanswer + '</div>' 
 	print(totalanswer)
 	return totalanswer
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
