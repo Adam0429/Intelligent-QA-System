@@ -114,12 +114,6 @@
 				var message_box = $('.chat-message');
 				var message_box_input = $('.chat-message input');
 				var messages_inner = $('#chat-messages-inner');
-				
-				for (var p = 10; i >= 0; i--) {
-    				$('#' + p + '-1').click(function(){
-    					alert('ok');
-					});
-				}
 
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');
@@ -251,7 +245,13 @@
 			    }
 			    function gen_info() {
 			    	var id = 'sur-'+i;
-			    	return ('<div><h3 style="text-align:center;">你对这条结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>');
+			    	return ('<div><h3 style="text-align:center;">你对这条结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="goodReaction('+ i +')">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="badReaction('+ i +')">不满意</button></div></div>');
+			    }
+			    function goodReaction(x) {
+			    	alert('you click '+x);
+			    }
+			    function badReaction(x) {
+			    	alert('you click '+x);
 			    }
 
 			});
