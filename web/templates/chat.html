@@ -114,7 +114,13 @@
 				var message_box = $('.chat-message');
 				var message_box_input = $('.chat-message input');
 				var messages_inner = $('#chat-messages-inner');
-				var question_inner = '<div><h3 style="text-align:center;">你对这条结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" style="margin:10px 10px 10px 10px; width: 200px">满意</button><button type="button" class="btn btn-danger" style="margin:10px 10px 10px 10px; width: 200px">不满意</button></div></div>';
+				var obutton = document.getElementById("chat-messages-inner").getElementsByTagName("buttton");
+
+				for (var i = obutton.length - 1; i >= 0; i--) {
+    				obutton[i].onclick = function(){
+        				alert(this.id);
+   					}
+				}
 
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');
@@ -131,8 +137,9 @@
 						            	back_info('没有相关结果');
 						            }
 						            else {
-						           		back_info(result);
-						              
+						           		var result_list = result.split("<split>");
+						            	for (j=0;j<result_list.length-1;j++) {
+						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
