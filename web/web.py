@@ -19,7 +19,15 @@ import pymysql
 
 app = Flask('my web')
 app.config['SECRET_KEY'] = '1234231'
-jieba.load_userdict('dict.txt') 
+
+def load_similardict(path):
+	print('loading similar model...')
+	similar_dict = {}
+	for line in open(path,'r'):
+		words = line.strip().split('-')
+		for w in words:
+			similar_dict[w] = words
+	return similar_dict		
 
 def del_tag(strings):
 	dr = re.compile(r'<[^>]+>',re.S)
@@ -110,6 +118,24 @@ def tokenization(text):
 			result.append(word)
 	return result
 
+def get_keywords(query):
+	keywords = analyse.extract_tags(query, withWeight=False)
+	# allowPOS=['ns','n','vn','v','nr']
+	# 处理大小写不能分出关键词的问题,分词区分大小写,而数据库查询不区分
+	# keywords = ['帮助中心','产品术语-驱动']
+	# 如没有关键词,就需要分词将所有词做关键词
+	if len(keywords) == 0:
+		keywords = jieba.cut(query,cut_all = True)
+		keywords = '/'.join(keywords)
+		keywords.split('/')
+	return keywords
+
+def get_questionword(query):
+	questionword = ''
+	for qw in questionwords:
+		if qw in query:
+			return qw
+	return None
 # def feedback(desc,title,keywords):
 # 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 # 	cursor = db.cursor()
@@ -133,42 +159,70 @@ def tokenization(text):
 	# output = open('bm25.model', 'wb')
 	# pickle.dump(data,output)
 
+
+
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
 	return render_template('chat.html')
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	question = request.args['question']
-	query = question
-	q2 = query.upper()
-	q3 = query.lower()
-	keywords = analyse.extract_tags(query, withWeight=False)
-	# allowPOS=['ns','n','vn','v','nr']
-	# 处理大小写不能分出关键词的问题,分词区分大小写,而数据库查询不区分
-	# keywords = ['帮助中心','产品术语-驱动']
-	print(keywords)
-	# 如没有关键词,就需要分词将所有词做关键词
-	if len(keywords) == 0:
-		keywords = jieba.cut(query,cut_all = True)
-		keywords = '/'.join(keywords)
-		keywords.split('/')
-
-	sql = andsearch(keywords,'answer,descs','descs')
-	sql2 = orsearch(keywords,'answer,descs','descs')
-	print(sql2)
-
 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
-	cursor.execute(sql)
-	result = cursor.fetchall()
-	cursor.execute(sql2)
-	result2 = cursor.fetchall()
-	if len(result) == 0:
-		if result2 == 0:
-			result == None
-		else:
-			result = result2
+	question = request.args['question']
+	query = question
+
+	keywords = get_keywords(query)
+	
+	questionword = get_questionword(query)
+	if questionword != None:
+		print(questionword)
+		if questionword in keywords:
+			keywords.remove(questionword)
+		
+		qw_list = similar_dict[questionword]
+		num = 0
+		for qw in qw_list:
+			kw = []
+			for w in keywords:
+				kw.append(w)
+			kw.append(qw)
+			sql = andsearch(kw,'answer,descs','descs')
+			sql2 = orsearch(kw,'answer,descs','descs')
+			cursor.execute(sql)
+			r1 = cursor.fetchall()
+			cursor.execute(sql2)
+			r2 = cursor.fetchall()
+			if len(r1) != 0:
+				result = r1
+				break 
+			if len(r2) > num:
+				print(r2)
+				num = len(r2)
+				result = r2
+	
+	else:	
+		sql = andsearch(keywords,'answer,descs','descs')
+		sql2 = orsearch(keywords,'answer,descs','descs')
+		print(sql2)
+		cursor.execute(sql)
+		result = cursor.fetchall()
+		cursor.execute(sql2)
+		result2 = cursor.fetchall()
+		if len(result) == 0:
+			if result2 == 0:
+				result == None
+			else:
+				result = result2
+
+
+	# print(result)
+
+	# if len(result) == 0:
+	# 	if result2 == 0:
+	# 		result == None
+	# 	else:
+	# 		result = result2
 	
 	descs = []
 	corpus = []
@@ -284,6 +338,11 @@ def getanswer():
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
 
 if __name__ == '__main__':
+	jieba.load_userdict('dict.txt') 
+	similar_dict = load_similardict('jinyici.txt')
+	questionwords = similar_dict.keys()
+	questionwords = list(questionwords)
+	questionwords.remove('')
 	app.run(host='0.0.0.0',port=5000,debug=True)
 
 
