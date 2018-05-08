@@ -23,7 +23,7 @@ app.config['SECRET_KEY'] = '1234231'
 def load_similardict(path):
 	print('loading similar model...')
 	similar_dict = {}
-	for line in open(path,'r'):
+	for line in open(path,'rU',encoding='utf-8'):
 		words = line.strip().split('-')
 		for w in words:
 			similar_dict[w] = words
@@ -167,7 +167,7 @@ def chat():
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
 	cursor = db.cursor()
 	question = request.args['question']
 	query = question
@@ -232,7 +232,7 @@ def getanswer():
 		else:
 			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
-		answer = '<div>' + answer + '</div>'
+		answer = '<div>' + answer + '<key>' +  str(keywords) + '</key>' + '</div>'
 		answer = answer.replace(']','') + '<split>'
 
 		print(answer)
@@ -320,7 +320,7 @@ def getanswer():
 		# print(cursor.fetchone())
 		if del_tag(answer) == title:
 			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + answer + '<split>'
+		totalanswer = totalanswer + answer + '<key>' +  str(keywords) + '</key>' + '<split>'
 
 	totalanswer = del_div(totalanswer)
 	totalanswer = totalanswer.replace('</div>','')
@@ -335,7 +335,7 @@ if __name__ == '__main__':
 	similar_dict = load_similardict('jinyici.txt')
 	questionwords = similar_dict.keys()
 	questionwords = list(questionwords)
-	questionwords.remove('')
-	app.run(host='0.0.0.0',port=5000,debug=True)
+#	questionwords.remove('')
+	app.run(host='0.0.0.0',port=5000)
 
 
