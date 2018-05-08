@@ -216,13 +216,6 @@ def getanswer():
 				result = result2
 
 
-	# print(result)
-
-	# if len(result) == 0:
-	# 	if result2 == 0:
-	# 		result == None
-	# 	else:
-	# 		result = result2
 	
 	descs = []
 	corpus = []
@@ -240,7 +233,7 @@ def getanswer():
 			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
 		answer = '<div>' + answer + '</div>'
-		answer = answer.replace(']','')
+		answer = answer.replace(']','') + '<split>'
 
 		print(answer)
 		return answer
