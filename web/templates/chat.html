@@ -106,9 +106,10 @@
 <!--             <script src="js/unicorn.chat.js"></script>
 -->	
  		<script type="text/javascript">
+ 			var answer_array = new Array();
 
  			function goodReaction(x) {
-				alert('you click '+x);
+				alert('you click '+answer_array[x-1]);
 			}
 			function badReaction(x) {
 				alert('you click '+x);
@@ -141,6 +142,7 @@
 						           		var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
 						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
+						            		answer_array.push(result_list[j].$("h2").text());
 						            	}
 						            }
 						        },
