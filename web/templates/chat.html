@@ -110,10 +110,24 @@
 			var key_array = new Array();
 
  			function goodReaction(x) {
-				alert('you click '+answer_array[x-1]+'  '+key_array[x-1]);
+				$.ajax({
+			        type: "post",
+			        dataType: "text",//预期服务器返回的数据类型
+			        async:true,
+			        url: 'feedback?',
+			        data: {
+			        	'question': answer_array[x-1],
+			        	'keywords': key_array[x-1]
+			        },
+			        success: function (result) {
+
+			        },
+			        error : function(XMLHttpRequest, textStatus, errorThrown) {
+			        }
+			      });
 			}
 			function badReaction(x) {
-				alert('you click '+x);
+				// alert(x);
 			}
 
  			$(document).ready(function(){
