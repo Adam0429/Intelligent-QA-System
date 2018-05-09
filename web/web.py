@@ -136,15 +136,21 @@ def get_questionword(query):
 		if qw in query:
 			return qw
 	return None
-# def feedback(desc,title,keywords):
-# 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
-# 	cursor = db.cursor()
-# 	cursor.execute('select descs from QA where normal_question == "'+title'"')
-# 	result = cursor.fetchall()[0]
-# 	print(result)
-# 	words = result.split(' ')
 
-# 	cursor.execute("update QA set descs='"+keywords+"' where normal_question='"+keywords+"'")
+@app.route('/feedback', methods=['GET','POST'])
+def feedback():
+	title = request.args['title']
+	keywords = request.args['keywords']
+	print(title)
+	print(keywords)
+	# db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	# cursor = db.cursor()
+	# cursor.execute('select descs from QA where normal_question == "'+title+'"')
+	# result = cursor.fetchall()[0]
+	# print(result)
+	# words = result.split(' ')
+
+	# cursor.execute("update QA set descs='"+keywords+"' where normal_question='"+keywords+"'")
 	# corpus = []
 	# descs = []
 	# cursor.execute('select answer from QA')
@@ -167,7 +173,7 @@ def chat():
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	question = request.args['question']
 	query = question
@@ -197,7 +203,7 @@ def getanswer():
 				result = r1
 				break 
 			if len(r2) > num:
-				print(r2)
+				# print(r2)
 				num = len(r2)
 				result = r2
 	
@@ -235,7 +241,7 @@ def getanswer():
 		answer = '<div>' + answer + '<key>' +  str(keywords) + '</key>' + '</div>'
 		answer = answer.replace(']','') + '<split>'
 
-		print(answer)
+		# print(answer)
 		return answer
 
 	elif len(result) != 0:
@@ -326,7 +332,7 @@ def getanswer():
 	totalanswer = totalanswer.replace('</div>','')
 	totalanswer = totalanswer.replace(']','')
 	#totalanswer = '<div>' + totalanswer + '</div>' 
-	print(totalanswer)
+	# print(totalanswer)
 	return totalanswer
 	# 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
 
@@ -336,6 +342,6 @@ if __name__ == '__main__':
 	questionwords = similar_dict.keys()
 	questionwords = list(questionwords)
 #	questionwords.remove('')
-	app.run(host='0.0.0.0',port=5000)
+	app.run(host='0.0.0.0',port=5000,debug=True)
 
 
