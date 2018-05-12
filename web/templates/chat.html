@@ -139,6 +139,12 @@
 				var message_box_input = $('.chat-message input');
 				var messages_inner = $('#chat-messages-inner');
 
+				$(".box h2").toggle(function(){  
+   					$(this).next(".text").animate({height: 'toggle', opacity: 'toggle'}, "slow");  
+   					},function(){  
+    				$(this).next(".text").animate({height: 'toggle', opacity: 'toggle'});  
+   				});
+
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');
 					var message = input.val();		
@@ -154,22 +160,22 @@
 						        success: function (result) {
 						            if(result.length == 0){
 						            	back_info('没有相关结果');
-								answer_array.push('1');
-                                                		key_array.push('1');
+										answer_array.push('1');
+                                    	key_array.push('1');
 						            }
 						            else {
 						           		var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
+						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
 						            		key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
-								}
+										}
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
 						            back_info('<div><p>没有相关结果</p></div>');
 						            answer_array.push('1');
-                                                	    key_array.push('1');
+                                    key_array.push('1');
 						        }
 						      });
 						add_message('You','img/demo/av1.jpg',input.val(),true);
@@ -197,23 +203,23 @@
 						        success: function (result) {
 						            if(result.length == 0){
 						            	back_info('<div><p>没有相关结果</p></div>');
-								answer_array.push('1');
-                                                		key_array.push('1');
+										answer_array.push('1');
+                                        key_array.push('1');
 						            }
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
+						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-									key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
-								}
+											key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+										}
 						            	//survey_info();
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
 						            back_info('<div><p>没有相关结果</p></div>');
 						            answer_array.push('1');
-                                                	    key_array.push('1');
+                                    key_array.push('1');
 						        }
 						      });
 							add_message('You','/static/img/demo/av1.jpg',$(this).val(),true);					

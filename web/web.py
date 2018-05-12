@@ -325,7 +325,7 @@ def getanswer():
 		answer = '<h2>' + title + '</h2>' + result[0][1]
 		# print(cursor.fetchone())
 		if del_tag(answer) == title:
-			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
+			answer = '<h2>' + title + '</h2><div class="text" style="display:none">' + find_a(answer) + '链接'
 		totalanswer = totalanswer + answer + '<key>' +  str(keywords) + '</key>' + '<split>'
 
 	totalanswer = del_div(totalanswer)
