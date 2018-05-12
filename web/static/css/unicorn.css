@@ -32,6 +32,9 @@ a,
 a:hover {
   text-decoration: none !important;
 }
+.text{line-height:22px;padding:0 6px;color:#666;}
+.box h1{padding-left:10px;height:22px;line-height:22px;background:#f1f1f1;font-weight:bold;}
+.box{position:relative;border:1px solid #e7e7e7;}
 .row {
   margin: 0;
 }

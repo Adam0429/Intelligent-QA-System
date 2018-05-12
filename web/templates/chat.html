@@ -109,7 +109,20 @@
  			var answer_array = new Array();
 			var key_array = new Array();
 
+			function boxToggle(x){
+				//alert(x);
+				$('#text-'+x).toggle();
+			}
+	
+			$(function(){
+				$(".box").click(function(){
+					alert("ok");
+                        		$(this).next(".text").toggle();
+                               	})
+			})		
+
  			function goodReaction(x) {
+				alert(key_array[x-1]);
 				$.ajax({
 			        type: "post",
 			        dataType: "text",//预期服务器返回的数据类型
@@ -139,12 +152,6 @@
 				var message_box_input = $('.chat-message input');
 				var messages_inner = $('#chat-messages-inner');
 
-				$(".box h2").toggle(function(){  
-   					$(this).next(".text").animate({height: 'toggle', opacity: 'toggle'}, "slow");  
-   					},function(){  
-    				$(this).next(".text").animate({height: 'toggle', opacity: 'toggle'});  
-   				});
-
 				$('.chat-message button').click(function(){
 					var input = $(this).parent().siblings('input[type=text]');
 					var message = input.val();		
@@ -166,9 +173,11 @@
 						            else {
 						           		var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
+									var t = i+1;
+									result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
 						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-						            		key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+						            		key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 										}
 						            }
 						        },
@@ -209,9 +218,11 @@
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
+									var t = i+1;
+									result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
 						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-											key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+											key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 										}
 						            	//survey_info();
 						            }
@@ -283,7 +294,7 @@
 			    function back_info(info) {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
-			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
+			    	messages_inner.append('<div class="offline al" id="'+id+'" onclick="boxToggle('+ i +');">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    	window.location.hash = "#"+id;
 			    }
