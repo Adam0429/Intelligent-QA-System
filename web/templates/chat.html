@@ -109,27 +109,16 @@
  			var answer_array = new Array();
 			var key_array = new Array();
 
-			function boxToggle(x){
-				//alert(x);
-				$('#text-'+x).toggle();
-			}
-	
-			$(function(){
-				$(".box").click(function(){
-					alert("ok");
-                        		$(this).next(".text").toggle();
-                               	})
-			})		
-
  			function goodReaction(x) {
-				alert(key_array[x-1]);
 				$.ajax({
-			        type: "post",
+			        type: "get",
 			        dataType: "text",//预期服务器返回的数据类型
+			        contentType: 'application/json',
 			        async:true,
-			        url: 'feedback?',
-			        data: {
-			        	'question': answer_array[x-1],
+			        url: 'feedback',
+			        data: 
+			        {
+			        	'question': answer_array[x-1  ],
 			        	'keywords': key_array[x-1]
 			        },
 			        success: function (result) {
@@ -168,23 +157,21 @@
 						            if(result.length == 0){
 						            	back_info('没有相关结果');
 										answer_array.push('1');
-                                    	key_array.push('1');
+                                                		key_array.push('1');
 						            }
 						            else {
 						           		var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-									var t = i+1;
-									result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
-						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
+						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-						            		key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
-										}
+						            		key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+								}
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
 						            back_info('<div><p>没有相关结果</p></div>');
 						            answer_array.push('1');
-                                    key_array.push('1');
+                                                	    key_array.push('1');
 						        }
 						      });
 						add_message('You','img/demo/av1.jpg',input.val(),true);
@@ -212,25 +199,23 @@
 						        success: function (result) {
 						            if(result.length == 0){
 						            	back_info('<div><p>没有相关结果</p></div>');
-										answer_array.push('1');
-                                        key_array.push('1');
+								answer_array.push('1');
+                                                		key_array.push('1');
 						            }
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-									var t = i+1;
-									result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
-						            		back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
+						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-											key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
-										}
+									key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+								}
 						            	//survey_info();
 						            }
 						        },
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
 						            back_info('<div><p>没有相关结果</p></div>');
 						            answer_array.push('1');
-                                    key_array.push('1');
+                                                	    key_array.push('1');
 						        }
 						      });
 							add_message('You','/static/img/demo/av1.jpg',$(this).val(),true);					
@@ -294,7 +279,7 @@
 			    function back_info(info) {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
-			    	messages_inner.append('<div class="offline al" id="'+id+'" onclick="boxToggle('+ i +');">'+info+'</div>');
+			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    	window.location.hash = "#"+id;
 			    }
