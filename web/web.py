@@ -137,34 +137,57 @@ def get_questionword(query):
 			return qw
 	return None
 
-@app.route('/feedback', methods=['GET','POST'])
-def feedback():
+
+@app.route('/f', methods=['GET','POST'])
+def f():
 	title = request.args['title']
 	keywords = request.args['keywords']
 	print(title)
 	print(keywords)
-	# db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
-	# cursor = db.cursor()
-	# cursor.execute('select descs from QA where normal_question == "'+title+'"')
-	# result = cursor.fetchall()[0]
-	# print(result)
-	# words = result.split(' ')
+	return "1"
 
-	# cursor.execute("update QA set descs='"+keywords+"' where normal_question='"+keywords+"'")
-	# corpus = []
-	# descs = []
-	# cursor.execute('select answer from QA')
-	# for c in cursor.fetchall():
-	# 	corpus.append(c[0])
-	# cursor.execute('select descs from QA')
-	# for c in cursor.fetchall():
-	# 	descs.append(c[0])
-	# data = []
-	# data.append(corpus)
-	# data.append(descs)
-	# output = open('bm25.model', 'wb')
-	# pickle.dump(data,output)
+@app.route('/feedback', methods=['GET','POST'])
+def feedback():
 
+	args = list(request.args.to_dict().values())
+	title = args[1]
+	keywords = args[0][0]
+	keywords = keywords.split(' ')
+	print(title)	
+	print(keywords)
+	keywords = keywords.split('-')
+	print(keywords)
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	cursor = db.cursor()
+	print('select descs from QA where normal_question = "'+title+'"')
+	cursor.execute('select descs from QA where normal_question = "'+title+'"')
+	result = cursor.fetchall()[0]
+	new_result = result
+	print(result)
+	for keyword in keywords:
+		print(keyword[0])
+		print(new_result)
+
+		if keyword not in result:
+			new_result += '-' + keyword
+	if new_result != result:
+		print("update QA set descs='"+new_result+"' where normal_question='"+title+"'")			 
+		cursor.execute("update QA set descs='"+new_result+"' where normal_question='"+title+"'")
+		corpus = []
+		descs = []
+		cursor.execute('select answer from QA')
+		for c in cursor.fetchall():
+			corpus.append(c[0])
+		cursor.execute('select descs from QA')
+		for c in cursor.fetchall():
+			descs.append(c[0])
+		data = []
+		data.append(corpus)
+		data.append(descs)
+		output = open('bm25.model', 'wb')
+		pickle.dump(data,output)
+		return 'update'
+	return 'did not update'	
 
 
 @app.route('/chat', methods=['GET', 'POST'])
@@ -173,13 +196,14 @@ def chat():
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	question = request.args['question']
 	query = question
 
 	keywords = get_keywords(query)
-	
+	print(keywords)
+	keys = '-'.join(keywords)
 	questionword = get_questionword(query)
 	if questionword != None:
 		print(questionword)
@@ -231,14 +255,14 @@ def getanswer():
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		title = result[0][0]
-		answer = '<h2>' + title + '</h2><d>' + result[0][1]
+		answer = '<h2>' + title + '</h2>' + result[0][1]
 		# 当答案中只有一个<a>时,需要加上'链接'让其显示
 		if del_tag(answer) == title:
-			answer = '<h2>' + title + '</h2><d>' + find_a(answer) + '链接'
+			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
 		else:
 			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
-		answer =  answer + '<key style="color:#fff">' +  str(keywords) + '</key>' 
+		answer = '<div>' + answer + '<key>' +  keys + '</key>' + '</div>'
 		answer = answer.replace(']','') + '<split>'
 
 		# print(answer)
@@ -322,11 +346,11 @@ def getanswer():
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		title = result[0][0]
-		answer = '<h2>' + title + '</h2><d>' + result[0][1]
+		answer = '<h2>' + title + '</h2>' + result[0][1]
 		# print(cursor.fetchone())
 		if del_tag(answer) == title:
-			answer = '<h2>' + title + '</h2><d>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + answer + '<key style="color:#fff">' +  str(keywords) + '</key>' + '<split>'
+			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
+		totalanswer = totalanswer + answer + '<key>' + keys + '</key>' + '<split>'
 
 	totalanswer = del_div(totalanswer)
 	totalanswer = totalanswer.replace('</div>','')
@@ -342,6 +366,6 @@ if __name__ == '__main__':
 	questionwords = similar_dict.keys()
 	questionwords = list(questionwords)
 #	questionwords.remove('')
-	app.run(host='0.0.0.0',port=8800)
+	app.run(host='0.0.0.0',port=5000,debug=True)
 
 
