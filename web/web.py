@@ -155,7 +155,7 @@ def feedback():
 	keywords = keywords.split('-')
 	print(title)	
 	print(keywords)
-	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
 	cursor = db.cursor()
 	print('select descs from QA where normal_question = "'+title+'"')
 	cursor.execute('select descs from QA where normal_question = "'+title+'"')
@@ -199,7 +199,7 @@ def chat():
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
 	cursor = db.cursor()
 	question = request.args['question']
 	query = question
@@ -258,14 +258,14 @@ def getanswer():
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		title = result[0][0]
-		answer = '<h2>' + title + '</h2>' + result[0][1]
+		answer = '<h2>' + title + '</h2><d>' + result[0][1]
 		# 当答案中只有一个<a>时,需要加上'链接'让其显示
 		if del_tag(answer) == title:
-			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
+			answer = '<h2>' + title + '</h2><d>' + find_a(answer) + '链接'
 		else:
 			answer = del_div(answer)	
 		answer = answer.replace('</div>','')
-		answer = '<div>' + answer + '<key>' +  keys + '</key>' + '</div>'
+		answer = answer + '<key style="color:#fff">' +  keys + '</key>'
 		answer = answer.replace(']','') + '<split>'
 
 		# print(answer)
@@ -349,11 +349,11 @@ def getanswer():
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		title = result[0][0]
-		answer = '<h2>' + title + '</h2>' + result[0][1]
+		answer = '<h2>' + title + '</h2><d>' + result[0][1]
 		# print(cursor.fetchone())
 		if del_tag(answer) == title:
-			answer = '<h2>' + title + '</h2>' + find_a(answer) + '链接'
-		totalanswer = totalanswer + answer + '<key>' + keys + '</key>' + '<split>'
+			answer = '<h2>' + title + '</h2><d>' + find_a(answer) + '链接'
+		totalanswer = totalanswer + answer + '<key style="color:#fff">' + keys + '</key>' + '<split>'
 
 	totalanswer = del_div(totalanswer)
 	totalanswer = totalanswer.replace('</div>','')
@@ -369,5 +369,5 @@ if __name__ == '__main__':
 	questionwords = similar_dict.keys()
 	questionwords = list(questionwords)
 #	questionwords.remove('')
-	app.run(host='0.0.0.0',port=5000,debug=True)
+	app.run(host='0.0.0.0',port=8800)
 

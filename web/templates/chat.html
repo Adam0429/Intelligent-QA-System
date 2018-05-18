@@ -109,6 +109,11 @@
  			var answer_array = new Array();
 			var key_array = new Array();
 
+			function boxToggle(x){
+                	//alert(x);
+                	$('#text-'+x).toggle();
+           	 	}
+
  			function goodReaction(x) {
 				$.ajax({
 			        type: "get",
@@ -161,10 +166,17 @@
 						            }
 						            else {
 						           		var result_list = result.split("<split>");
-						            	for (j=0;j<result_list.length-1;j++) {
-						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
-						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-						            		key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+						            		for (j=0;j<result_list.length-1;j++) {
+						            			var t = i+1;
+										if (j != 0){
+                                                                                	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
+                                                                                }
+										else{
+											result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
+										}
+										back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
+						            			answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
+						            			key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            }
 						        },
@@ -205,9 +217,16 @@
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
-						            		back_info('<div>' + result_list[j] + gen_info() + '</div>');
+						            		var t = i+1;
+                                                                        if (j != 0){
+                                                                        	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
+                                                                        }
+                                                                        else{
+                                                                                result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
+                                                                        }
+                                                                        back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
 						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
-									key_array.push(result_list[j].match(/<key>([\s\S]*?)<\/key>/)[1]);
+									key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            	//survey_info();
 						            }
@@ -279,7 +298,7 @@
 			    function back_info(info) {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
-			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
+			    	messages_inner.append('<div class="offline al" id="'+id+'" onclick="boxToggle('+ i +');">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    	window.location.hash = "#"+id;
 			    }
