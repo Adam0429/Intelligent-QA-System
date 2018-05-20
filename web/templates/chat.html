@@ -132,9 +132,11 @@
 			        error : function(XMLHttpRequest, textStatus, errorThrown) {
 			        }
 			      });
+				$('#feed-'+x).toggle();
 			}
 			function badReaction(x) {
 				// alert(x);
+				$('#feed-'+x).toggle();
 			}
 
  			$(document).ready(function(){
@@ -170,12 +172,14 @@
 						            			var t = i+1;
 										if (j != 0){
                                                                                 	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
-                                                                                }
+                                                                                	result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
+										}
 										else{
 											result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
+											result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
 										}
 										back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
-						            			answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
+						            			answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
 						            			key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            }
@@ -220,12 +224,14 @@
 						            		var t = i+1;
                                                                         if (j != 0){
                                                                         	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
+										result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
                                                                         }
                                                                         else{
                                                                                 result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
-                                                                        }
+                                                                        	result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
+									}
                                                                         back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
-						            		answer_array.push(result_list[j].match(/<h2>([\s\S]*?)<\/h2>/)[1]);
+						            		answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
 									key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            	//survey_info();
@@ -298,13 +304,13 @@
 			    function back_info(info) {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
-			    	messages_inner.append('<div class="offline al" id="'+id+'" onclick="boxToggle('+ i +');">'+info+'</div>');
+			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    	window.location.hash = "#"+id;
 			    }
 			    function gen_info() {
 			    	var id = 'sur-'+i;
-			    	return ('<h3 style="text-align:center;">你对这条结果是否满意？</h3><div style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="goodReaction('+ i +');">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="badReaction('+ i +');">不满意</button></div>');
+			    	return ('<h3 style="text-align:center;">你对这条结果是否满意？</h3><div id="' + 'feed-' + i +'" style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="goodReaction('+ i +');">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="badReaction('+ i +');">不满意</button></div>');
 			    }
 
 			});
