@@ -155,43 +155,40 @@ def feedback():
 	keywords = keywords.split('-')
 	print(title)	
 	print(keywords)
-	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	print('select descs from QA where normal_question = "'+title+'"')
 	cursor.execute('select descs from QA where normal_question = "'+title+'"')
-	try:
-		result = cursor.fetchall()[0][0]
-		print(result)
 
-		new_result = str(result)
-		print(result)
-		for keyword in keywords:
-			print(keyword[0])
-			print(new_result)
-			if keyword not in result:
-				new_result += ' ' + keyword
-		if new_result != result:
-			print("update QA set descs='"+new_result+"' where normal_question='"+title+"'")			 
-			cursor.execute("update QA set descs='"+new_result+"' where normal_question='"+title+"'")
-			db.commit()
-			corpus = []
-			descs = []
-			cursor.execute('select answer from QA')
-			for c in cursor.fetchall():
-				corpus.append(c[0])
-			cursor.execute('select descs from QA')
-			for c in cursor.fetchall():
-				descs.append(c[0])
-			data = []
-			data.append(corpus)
-			data.append(descs)
-			output = open('bm25.model', 'wb')
-			pickle.dump(data,output)
-			return 'update'
-		return 'did not update'	
-	except:
-		import IPython
-		IPython.embed()
+	result = cursor.fetchall()[0][0]
+	print(result)
+
+	new_result = str(result)
+	print(result)
+	for keyword in keywords:
+		print(keyword[0])
+		print(new_result)
+		if keyword not in result:
+			new_result += ' ' + keyword
+	if new_result != result:
+		print("update QA set descs='"+new_result+"' where normal_question='"+title+"'")			 
+		cursor.execute("update QA set descs='"+new_result+"' where normal_question='"+title+"'")
+		db.commit()
+		corpus = []
+		descs = []
+		cursor.execute('select answer from QA')
+		for c in cursor.fetchall():
+			corpus.append(c[0])
+		cursor.execute('select descs from QA')
+		for c in cursor.fetchall():
+			descs.append(c[0])
+		data = []
+		data.append(corpus)
+		data.append(descs)
+		output = open('bm25.model', 'wb')
+		pickle.dump(data,output)
+		return 'update'
+	return 'did not update'	
 
 @app.route('/chat', methods=['GET', 'POST'])
 def chat():
@@ -199,7 +196,7 @@ def chat():
 
 @app.route('/getanswer', methods=['GET', 'POST'])
 def getanswer():
-	db = pymysql.connect("localhost","root","jk123456","test",charset="utf8mb4")
+	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	question = request.args['question']
 	query = question
@@ -369,5 +366,5 @@ if __name__ == '__main__':
 	questionwords = similar_dict.keys()
 	questionwords = list(questionwords)
 #	questionwords.remove('')
-	app.run(host='0.0.0.0',port=8800)
+	app.run(host='0.0.0.0',port=5000,debug=True)
 
