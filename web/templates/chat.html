@@ -111,7 +111,7 @@
 			var messages;
 			function boxToggle(x){
                 	$('#text-'+x).toggle();
-                	// messages.getNiceScroll().resize();
+                	messages.getNiceScroll().resize();
            	 	}
 
  			function goodReaction(x) {
@@ -245,7 +245,7 @@
 						        }
 						      });
 							add_message('You','/static/img/demo/av1.jpg',$(this).val(),true);
-							// messages.getNiceScroll().resize();					
+												
 
 						} else {
 							$('.input-box').addClass('has-error');
