@@ -198,10 +198,12 @@ for file in tqdm(files):
 		for d in data['desc']:
 			# if d != data['desc'][len(data['desc'])-1]:
 			dd.append(d)
-		question = question.replace('\n','')
-		question = question.strip()
+
+		# question = question.replace('\n','')
+		# question = question.strip()
 		dd.append(question)
-		d = '-'.join(dd)
+		d = ' '.join(dd)
+		question = '-'.join(dd)
 		answer = answer.replace('\n','')
 		answer = answer.replace("'",'"')
 		answer = answer.replace(';','')
@@ -212,7 +214,7 @@ for file in tqdm(files):
 			# print(answer)
 			continue
 		# answer is null
-		sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"		
+		sql = 'insert into QA values("' + d + '","' + question +'",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"
 		try:
 			cursor.execute(sql)
 			db.commit()	
