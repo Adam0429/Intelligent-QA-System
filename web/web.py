@@ -1,4 +1,5 @@
 from flask import Flask,abort,request,redirect,render_template,jsonify  
+import copy
 from flask_script import Manager
 # from flask_bootstrap import Bootstrap
 # from wtforms import StringField,SubmitField
@@ -202,6 +203,8 @@ def getanswer():
 	query = question
 
 	keywords = get_keywords(query)
+	ky = keywords
+	# origin keywords
 	print(keywords)
 	keys = '-'.join(keywords)
 	questionword = get_questionword(query)
@@ -219,22 +222,27 @@ def getanswer():
 			kw.append(qw)
 			sql = andsearch(kw,'answer,descs','descs')
 			sql2 = orsearch(kw,'answer,descs','descs')
+			# print(sql)
+			# print(sql2)
 			cursor.execute(sql)
 			r1 = cursor.fetchall()
 			cursor.execute(sql2)
 			r2 = cursor.fetchall()
 			if len(r1) != 0:
 				result = r1
+				ky.append(qw)
 				break 
 			if len(r2) > num:
-				# print(r2)
+				ky = copy.copy(keywords)
+				ky.append(qw)
 				num = len(r2)
 				result = r2
 	
 	else:	
 		sql = andsearch(keywords,'answer,descs','descs')
 		sql2 = orsearch(keywords,'answer,descs','descs')
-		print(sql2)
+		# print(sql2)
+		# print(sql2)
 		cursor.execute(sql)
 		result = cursor.fetchall()
 		cursor.execute(sql2)
@@ -298,15 +306,14 @@ def getanswer():
 		corpus = data[0]
 		descs = data[1]
 
-
+	print('keywords')
+	print(ky)
 	# for d in descs:
 	# 	print(d)
-
 	bm25Model = bm25.BM25(corpus)
 	average_idf = sum(map(lambda k: float(bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
 
-
-	scores = bm25Model.get_scores(keywords,average_idf)
+	scores = bm25Model.get_scores(ky,average_idf)
 	_scores = list(set(scores))
 	_scores.sort(reverse=True)
 
@@ -319,7 +326,7 @@ def getanswer():
 	url = []
 	titles = []
 	for s in _scores[:3]:
-		print(s)
+		# print(s)
 		idx = scores.index(s)
 		cursor.execute('select url from QA where descs = "'+descs[idx]+'"') 
 		url.append(cursor.fetchall()[0][0])
@@ -327,10 +334,15 @@ def getanswer():
 	url = list(set(url))
 
 	if len(url) == 1:
-		print(url)
-		cursor.execute('select descs from QA where url = "'+url[0]+'"') 
-		for c in cursor.fetchall():
-			titles.append(c[0])
+		# print(url)
+		# cursor.execute('select descs from QA where url = "'+url[0]+'"') 
+		# for c in cursor.fetchall():
+		# 	titles.append(c[0])
+		for s in _scores[:3]:
+			idx = scores.index(s)
+			titles.append(descs[idx])
+			print(descs[idx])
+			print(scores[idx])
 
 	else:
 		for s in _scores[:3]:
