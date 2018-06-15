@@ -63,9 +63,9 @@ if __name__ == '__main__':
     words_lines = words.readlines()
     for line in words_lines:
         templist = line.strip().split('-')
-        tempStr = templist[len(templist)-2] + ' ' + templist[len(templist)-1]
+        tempStr = templist[len(templist)-2] + '的' + templist[len(templist)-1]
         if len(templist) > 2:
-            tempStr = templist[len(templist)-3] + ' ' + templist[len(templist)-2] + ' ' + templist[len(templist)-1]
+            tempStr = templist[len(templist)-3] + '' + templist[len(templist)-2] + '的' + templist[len(templist)-1]
         output.write(cnn_model.predict(tempStr) + '\t' + tempStr + '\n')
     output.close()
     # test_demo = ['云服务器好在哪',
