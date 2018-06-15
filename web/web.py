@@ -149,28 +149,23 @@ def f():
 
 @app.route('/feedback', methods=['GET','POST'])
 def feedback():
+	args = request.args.to_dict()
+	title = args['question']
+	keywords = args['keywords']
+	keywords = keywords.split(' ')
 
-	args = list(request.args.to_dict().values())
-	keywords = args[0]
-	title = args[1]
-	keywords = keywords.split('-')
-	print(title)	
-	print(keywords)
+	# print(keywords)
 	db = pymysql.connect("localhost","root","970429","test",charset="utf8mb4")
 	cursor = db.cursor()
 	print('select descs from QA where normal_question = "'+title+'"')
 	cursor.execute('select descs from QA where normal_question = "'+title+'"')
 
 	result = cursor.fetchall()[0][0]
-	print(result)
-
 	new_result = str(result)
-	print(result)
 	for keyword in keywords:
-		print(keyword[0])
-		print(new_result)
 		if keyword not in result:
 			new_result += ' ' + keyword
+			print('add '+ keyword +' to ' + title)
 	if new_result != result:
 		print("update QA set descs='"+new_result+"' where normal_question='"+title+"'")			 
 		cursor.execute("update QA set descs='"+new_result+"' where normal_question='"+title+"'")
