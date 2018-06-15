@@ -1,0 +1,20 @@
+cnn_model.py 调整参数
+run_cnn.py train 训练模型
+run_cnn.py test 测试模型
+preprocess.py 生成结构化训练集
+predict.py 根据生成模型预测问题类别
+data 文件夹
+	cnews 文件夹
+		train.txt 训练集
+		test.txt 测试集
+		val.txt 验证集
+		vocab.txt 字典
+		question.txt 原始问题集
+	数据生成 文件夹
+		make_traindata.txt 随机生成模板问句
+		model.txt 问句模板
+		words.txt 词典
+	cn_newsloader.py 预读取数据集数据
+tensorboard 文件夹
+	textcnn 文件夹
+		训练生成模型

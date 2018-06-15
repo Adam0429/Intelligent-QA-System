@@ -8,10 +8,10 @@ class TCNNConfig(object):
 
     embedding_dim = 64  
     seq_length = 600  
-    num_classes = 7 
+    num_classes = 6 
     num_filters = 256  
     kernel_size = 5  
-    vocab_size = 5000  
+    vocab_size = 8000  
     hidden_dim = 128  
     dropout_keep_prob = 0.5  
     learning_rate = 1e-3  

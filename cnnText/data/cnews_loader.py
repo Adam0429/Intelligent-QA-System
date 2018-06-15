@@ -74,7 +74,7 @@ def read_vocab(vocab_dir):
 
 
 def read_category():
-    categories = ['Person', 'Location', 'Organization', 'Definition', 'Number', 'Time', 'Object']
+    categories = ['定义', '数量', '原因', '时间', '功能', '特点']
     categories = [native_content(x) for x in categories]
 
     cat_to_id = dict(zip(categories, range(len(categories))))

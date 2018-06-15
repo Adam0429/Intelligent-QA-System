@@ -9,6 +9,15 @@ import tensorflow.contrib.keras as kr
 from cnn_model import TCNNConfig, TextCNN
 from data.cnews_loader import read_category, read_vocab
 
+f = open('traindata.txt', 'r', encoding='UTF-8')
+questionArray = []
+tempStr = f.readline()
+while tempStr:
+    tempStr = tempStr.strip()
+    questionArray.append(tempStr)
+    tempStr = f.readline()
+f.close()
+
 try:
     bool(type(unicode))
 except NameError:
@@ -49,9 +58,25 @@ class CnnModel:
 
 if __name__ == '__main__':
     cnn_model = CnnModel()
-    # 人工测试在此输入
-    test_demo = ['云服务器多少钱',
-                 '张钦源是谁',
-                 '智能问答系统是什么']
-    for i in test_demo:
-        print(cnn_model.predict(i))
+    words = open('traindata2.txt','r',encoding='UTF-8')
+    output = open('biaozhu.txt', 'w', encoding='UTF-8')
+    words_lines = words.readlines()
+    for line in words_lines:
+        templist = line.strip().split('-')
+        tempStr = templist[len(templist)-2] + ' ' + templist[len(templist)-1]
+        if len(templist) > 2:
+            tempStr = templist[len(templist)-3] + ' ' + templist[len(templist)-2] + ' ' + templist[len(templist)-1]
+        output.write(cnn_model.predict(tempStr) + '\t' + tempStr + '\n')
+    output.close()
+    # test_demo = ['云服务器好在哪',
+    #              '弹性伸缩云是什么原因？',
+    #             '功能介绍']
+    # for i in test_demo:
+    #     print(cnn_model.predict(i))
+    # test_demo = questionArray
+    # output = open('biaozhu.txt', 'w', encoding='UTF-8')
+
+    # for i in test_demo:
+    #     output.write(cnn_model.predict(i) + '\t' + i + '\n')
+    #     print(cnn_model.predict(i))
+    # output.close()
