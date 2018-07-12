@@ -6,7 +6,6 @@ import jieba.posseg as pseg
 import jieba
 
 # jieba.load_userdict('dict.txt')
-jieba.load_userdict('dict.txt')
 
 
 def del_tag(strings):
@@ -28,10 +27,11 @@ def tokenization(text):
     stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
     result = []
     words = pseg.cut(text)
+    allwords = ' '.join(jieba.cut(text, cut_all=True)).split()
     for word, flag in words:
-        if flag not in stop_flag:
-            result.append(word)
-    return result
+        if flag in stop_flag and word in allwords:
+            allwords.remove(word)
+    return allwords
 
 
 # f = open("bm25.model", "rb")
@@ -56,11 +56,14 @@ cursor = db.cursor()
 data = {}
 data['descs'] = []
 data['answers'] = []
+data['title'] = []
+
 cursor.execute('select answer from QA')
 for c in tqdm(cursor.fetchall()):
     data['answers'].append(tokenization(del_tag(c[0])))
 cursor.execute('select descs from QA')
 for c in cursor.fetchall():
+    data['title'].append(c[0])
     data['descs'].append(tokenization(c[0]))
 
 output = open('bm25.model', 'wb')

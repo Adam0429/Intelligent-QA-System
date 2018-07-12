@@ -9,8 +9,8 @@ import codecs
 import pymysql
 from tqdm import tqdm
 from gensim import corpora
-from gensim.summarization import bm25
-from gensim.summarization.bm25 import get_bm25_weights
+import bm25
+from bm25 import get_bm25_weights
 import os
 import re
 import pickle
@@ -211,12 +211,6 @@ def getanswer():
     print(keywords)
     keys = '-'.join(keywords)
     questionword = get_questionword(query)
-    # if questionword != None:
-    #     print(questionword)
-    #     if questionword in keywords:
-    #         keywords.remove(questionword)
-    #     qw_list = similar_dict[questionword]
-    #     num = 0
 
     descs = []
     corpus = []
@@ -226,53 +220,7 @@ def getanswer():
     data = pickle.loads(bin_data)
     answers = data['answers']
     descs = data['descs']
-    # if len(result) == 1:
-    #     sql = 'select normal_question,answer from QA where descs="' + \
-    #         result[0][1] + '"'
-    #     cursor.execute(sql)
-    #     result = cursor.fetchall()
-    #     title = result[0][0]
-    #     answer = '<h2>' + title + '</h2><d>' + result[0][1]
-    #     # 当答案中只有一个<a>时,需要加上'链接'让其显示
-    #     if del_tag(answer) == title:
-    #         answer = '<h2>' + title + '</h2><d>' + find_a(answer) + '链接'
-    #     else:
-    #         answer = del_div(answer)
-    #     answer = answer.replace('</div>', '')
-    #     answer = answer + '<key style="color:#fff">' + keys + '</key>'
-    #     answer = answer.replace(']', '') + '<split>'
-
-    #     # print(answer)
-    #     return answer
-
-    # elif len(result) != 0:
-    #     for r in  result):
-    #         text = del_tag(r[1])
-    #         # index为1是用标签搜索，改为0是用答案搜
-    #         terms = tokenization(text)
-    #         corpus.append(terms)
-    #         descs.append(r[1])
-
-    # # 如果标题都没出现,去答案里找
-    # else:
-    #     # corpus = []
-    #     # descs = []
-    #     # cursor.execute('select answer from QA')
-    #     # for c in cursor.fetchall():
-    #     #     corpus.append(c[0])
-    #     # cursor.execute('select descs from QA')
-    #     # for c in cursor.fetchall():
-    #     #     descs.append(c[0])
-    #     # data = []
-    #     # data.append(corpus)
-    #     # data.append(descs)
-    #     # output = open('bm25.model', 'wb')
-    #     # pickle.dump(data,output)
-    #     f = open("bm25.model", "rb")
-    #     bin_data = f.read()
-    #     data = pickle.loads(bin_data)
-    #     corpus = data[0]
-    #     descs = data[1]
+    origins = data['title']
 
     print('keywords')
     print(keywords)
@@ -286,11 +234,6 @@ def getanswer():
     _scores = list(set(scores))
     _scores.sort(reverse=True)
 
-    # idx = scores.index(max(scores))
-    # print(idx)
-    # print(corpus[idx])
-    # print(descs[idx])
-    # print(scores)
     answer = ''
     url = []
     titles = []
@@ -311,14 +254,14 @@ def getanswer():
         #   titles.append(c[0])
         for s in _scores[:3]:
             idx = scores.index(s)
-            titles.append(descs[idx])
+            titles.append(origins[idx])
             print(descs[idx])
             print(scores[idx])
 
     else:
         for s in _scores[:3]:
             idx = scores.index(s)
-            titles.append(descs[idx])
+            titles.append(origins[idx])
             print(descs[idx])
             print(scores[idx])
 
@@ -346,7 +289,7 @@ def getanswer():
 
 
 if __name__ == '__main__':
-    jieba.load_userdict('dict.txt')
+    # jieba.load_userdict('dict.txt')
     similar_dict = load_similardict('jinyici.txt')
     questionwords = similar_dict.keys()
     questionwords = list(questionwords)
