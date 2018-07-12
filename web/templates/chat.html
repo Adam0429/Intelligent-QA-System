@@ -110,8 +110,8 @@
 			var key_array = new Array();
 			var messages;
 			function boxToggle(x){
-                	$('#text-'+x).toggle();
-                	messages.getNiceScroll().resize();
+                		$('#text-'+x).toggle();
+                		messages.getNiceScroll().resize();
            	 	}
 
  			function goodReaction(x) {
@@ -163,24 +163,24 @@
 						        success: function (result) {
 						            if(result.length == 0){
 						            	back_info('没有相关结果');
-										answer_array.push('1');
-                                        key_array.push('1');
+								answer_array.push('1');
+                                        			key_array.push('1');
 						            }
 						            else {
-						           		var result_list = result.split("<split>");
-						            		for (j=0;j<result_list.length-1;j++) {
-						            			var t = i+1;
-										if (j != 0){
-                                        	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
-                                        	result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t  + ');">');
-										}
-										else{
-											result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
-											result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
-										}
-										back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
-						            			answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
-						            			key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
+						           	var result_list = result.split("<split>");
+						            	for (j=0;j<result_list.length-1;j++) {
+						            		var t = i+1;
+									if (j != 0){
+                                        					result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
+                                        					result_list[j] = result_list[j].replace('<h2>', '<h3 onclick = "boxToggle('+ t  + ');">');
+									}
+									else{
+										result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
+										result_list[j] = result_list[j].replace('<h2>', '<h3 onclick = "boxToggle('+ t + ');">');
+									}
+									back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
+						            		answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
+						            		key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            }
 						        },
@@ -194,6 +194,7 @@
 					} else {
 						$('.input-box').addClass('has-error');
 					}
+					messages.getNiceScroll().resize();
 				});
 				
 				messages.niceScroll({
@@ -215,24 +216,23 @@
 						        success: function (result) {
 						            if(result.length == 0){
 						            	back_info('<div><p>没有相关结果</p></div>');
-										answer_array.push('1');
-                                    	key_array.push('1');
+								answer_array.push('1');
+                                    				key_array.push('1');
 						            }
 						            else {
 						            	var result_list = result.split("<split>");
 						            	for (j=0;j<result_list.length-1;j++) {
 						            		var t = i+1;
-                                            if (j != 0){
-                                            	result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
-													result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
-                                            }
-                                            else{
-                                                result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
-                                            	result_list[j] = result_list[j].replace('<h2>', '<h2 onclick = "boxToggle('+ t + ');">');
-											}
-											messages.getNiceScroll().resize();
-                                        back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
-					            		answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
+                                            				if (j != 0){
+                                            					result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "display: none;border: none;margin-left:-10px">');
+										result_list[j] = result_list[j].replace('<h2>', '<h3 onclick = "boxToggle('+ t + ');">');
+                                            				}
+                                            				else{
+                                                				result_list[j] = result_list[j].replace('<d>', '<div class="text" id="text-'+t+'" style = "border: none;margin-left:-10px">');
+                                            					result_list[j] = result_list[j].replace('<h2>', '<h3 onclick = "boxToggle('+ t + ');">');
+									}
+                                        				back_info('<div class="box">' + result_list[j] + gen_info() + '</div></div>');
+					            			answer_array.push(result_list[j].match(/>([\s\S]*?)<\/h2>/)[1]);
 									key_array.push(result_list[j].match(/<key style="color:#fff">([\s\S]*?)<\/key>/)[1]);
 								}
 						            	//survey_info();
@@ -241,15 +241,14 @@
 						        error : function(XMLHttpRequest, textStatus, errorThrown) {
 						            back_info('<div><p>没有相关结果</p></div>');
 						            answer_array.push('1');
-                                    key_array.push('1');
+                                    				key_array.push('1');
 						        }
 						      });
 							add_message('You','/static/img/demo/av1.jpg',$(this).val(),true);
-												
-
 						} else {
 							$('.input-box').addClass('has-error');
-						}		
+						}
+						messages.getNiceScroll().resize();
 					}
 				});
 				
@@ -279,7 +278,7 @@
 					if(hours < 10) hours = '0' + hours;
 					if(minutes < 10) minutes = '0' + minutes;
 					var id = 'msg-'+i;
-			        var idname = name.replace(' ','-').toLowerCase();
+			        	var idname = name.replace(' ','-').toLowerCase();
 					messages_inner.append('<p id="'+id+'" class="user-'+idname+'"><img src="'+img+'" alt="" />'		
 													+'<span class="msg-block"><strong>'+name+'</strong> <span class="time">- '+hours+':'+minutes+'</span>'
 													+'<span class="msg">'+msg+'</span></span></p>');
@@ -289,11 +288,11 @@
 						message_box_input.val('').focus();
 
 					}
-					
 					messages.animate({ scrollTop: messages_inner.height() },1000);
 					console.log('111');
 					messages.getNiceScroll().resize();
 				}
+				
 			    function remove_user(userid,name) {
 			        i = i + 1;
 			        $('.contact-list li#user-'+userid).addClass('offline').delay(1000).slideUp(800,function(){
@@ -302,17 +301,21 @@
 			        var id = 'msg-'+i;
 			        messages_inner.append('<p class="offline al" id="'+id+'"><span>User <a href="#">@'+name+'</a> 离开</span></p>');
 			        $('#'+id).fadeOut(0).addClass('show');
+				messages.getNiceScroll().resize();
 			    }
+				
 			    function back_info(info) {
 			    	i = i + 1;
 			    	var id = 'msg-'+i;
 			    	messages_inner.append('<div class="offline al" id="'+id+'">'+info+'</div>');
 			    	$('#'+id).fadeOut(0).addClass('show');
 			    	window.location.hash = "#"+id;
+				messages.getNiceScroll().resize();
 			    }
+				
 			    function gen_info() {
 			    	var id = 'sur-'+i;
-			    	return ('<h3 style="text-align:center;">你对这条结果是否满意？</h3><div id="' + 'feed-' + i +'" style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="goodReaction('+ i +');">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="badReaction('+ i +');">不满意</button></div>');
+			    	return ('<h4 style="text-align:center;">你对这条结果是否满意？</h3><div id="' + 'feed-' + i +'" style="margin: auto;text-align:  center;border: none;box-shadow:  none;"><button type="button" class="btn btn-success" id="'+ i + '-1' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="goodReaction('+ i +');">满意</button><button type="button" class="btn btn-danger" id="'+ i + '-2' + '" style="margin:10px 10px 10px 10px; width: 200px" onclick="badReaction('+ i +');">不满意</button></div>');
 			    }
 
 			});

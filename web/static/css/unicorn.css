@@ -3880,7 +3880,7 @@ fieldset[disabled] .btn-yellow.active {
   transition: all 0.2s ease 0s;
   z-index: 1030;
   bottom: 0 !important;
-  height: 200% !important;
+  height: 100% !important;
 }
 .nicescroll-rails > div {
   background-color: rgba(140, 140, 140, 0.7) !important;

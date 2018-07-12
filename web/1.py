@@ -1,0 +1,67 @@
+import pickle
+import pymysql
+import re
+from tqdm import tqdm
+import jieba.posseg as pseg
+import jieba
+
+# jieba.load_userdict('dict.txt')
+jieba.load_userdict('dict.txt')
+
+
+def del_tag(strings):
+    dr = re.compile(r'<[^>]+>', re.S)
+    if type(strings) == type([]):
+        strs = []
+        for string in strings:
+            string = str(string)
+            s = dr.sub('', string)
+            strs.append(s)
+        return strs
+    else:
+        strings = str(strings)
+        s = dr.sub('', strings)
+        return s
+
+
+def tokenization(text):
+    stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
+    result = []
+    words = pseg.cut(text)
+    for word, flag in words:
+        if flag not in stop_flag:
+            result.append(word)
+    return result
+
+
+# f = open("bm25.model", "rb")
+# bin_data = f.read()
+# data = pickle.loads(bin_data)
+# for d in data['answers']:
+#     print(d)
+
+
+# from gensim.summarization.bm25 import get_bm25_weights
+# corpus = [
+#     ["black", "cat", "white", "cat"],
+#     ["cat", "outer", "space"],
+#     ["wag", "dog"]
+# ]
+# result = get_bm25_weights(corpus)
+# print(result)
+
+db = pymysql.connect("localhost", "root", "970429",
+                     "test", charset="utf8mb4")
+cursor = db.cursor()
+data = {}
+data['descs'] = []
+data['answers'] = []
+cursor.execute('select answer from QA')
+for c in tqdm(cursor.fetchall()):
+    data['answers'].append(tokenization(del_tag(c[0])))
+cursor.execute('select descs from QA')
+for c in cursor.fetchall():
+    data['descs'].append(tokenization(c[0]))
+
+output = open('bm25.model', 'wb')
+pickle.dump(data, output)
