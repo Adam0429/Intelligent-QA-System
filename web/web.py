@@ -231,11 +231,13 @@ def getanswer():
         keywords.remove('服务')
     print(keywords)
 
+    print(descs[0])
+    print(answers[0])
     descs_score = bm25_score(descs, keywords)
     answers_score = bm25_score(answers, keywords)
     total_score = []
     for i in range(0, len(answers)):
-        total_score.append(descs_score[i] * 15)
+        total_score.append(descs_score[i] * 15 + answers_score[i])
     _scores = list(set(total_score))
     _scores.sort(reverse=True)
 
@@ -303,15 +305,11 @@ if __name__ == '__main__':
     origins = []
     print('loading data...')
     cursor = db.cursor()
-    cursor.execute('select descs_words from QA')
+    cursor.execute('select descs_words,answer_words,descs from QA')
     for c in (cursor.fetchall()):
         descs.append(c[0])
-    cursor.execute('select answer_words from QA')
-    for c in (cursor.fetchall()):
-        answers.append(c[0])
-    cursor.execute('select descs from QA')
-    for c in (cursor.fetchall()):
-        origins.append(c[0])
+        answers.append(c[1])
+        origins.append(c[2])
     print('loading data finish')
     questionwords = similar_dict.keys()
     questionwords = list(questionwords)

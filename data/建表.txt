@@ -4,5 +4,7 @@ CREATE TABLE `QA` (
   `type` varchar(255) DEFAULT NULL,
   `url` varchar(1000) DEFAULT NULL,
   `answer` mediumtext,
+  `descs_words` mediumtext,
+  `answer_words` mediumtext,
   PRIMARY KEY (`normal_question`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8

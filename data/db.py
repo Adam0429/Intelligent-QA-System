@@ -217,7 +217,8 @@ for file in tqdm(files):
             continue
         # answer is null
         sql = 'insert into QA values("' + d + '","' + question + \
-            '",' + '"null"' + ",'" + data['url'] + "','" + answer + "')"
+            '",' + '"null"' + ",'" + \
+            data['url'] + "','" + answer + "','null'" + ",'null'" + ")"
         try:
             cursor.execute(sql)
             db.commit()
@@ -255,6 +256,7 @@ for file in tqdm(files):
                 answer = del_tag(answer)
                 sql = 'insert into QA values("' + d + '","' + question + \
                     '",' + '"null"' + ",'" + \
-                    data['url'] + "','" + answer + "')"
+                    data['url'] + "','" + answer + \
+                    "','null'" + ",'null'" + ")"
                 cursor.execute(sql)
                 db.commit()
