@@ -71,28 +71,28 @@ def find_a(strings):
         return ''
 
 
-def f1(result):
-    best_answer = [result[0]]
-    min_word = len(result[0][0].split('-'))
-    # print(result)
-    for r in result:
-        length = len(r[0].split('-'))
-        # print(r)
-        # print(length)
-        # 先取出字条数最少的，再在其中找到长度最短的
-        # 改成计算文本相似度
-        if length < min_word:
-            min_word = length
-            best_answer = [r]
-        if length == min_word:
-            best_answer.append(r)
-    best = best_answer[0]
-    num = len(best_answer[0])
-    for b in best_answer:
-        length = len(b[0])
-        if length < num:
-            best = b
-    return best
+# def f1(result):
+#     best_answer = [result[0]]
+#     min_word = len(result[0][0].split('-'))
+#     # print(result)
+#     for r in result:
+#         length = len(r[0].split('-'))
+#         # print(r)
+#         # print(length)
+#         # 先取出字条数最少的，再在其中找到长度最短的
+#         # 改成计算文本相似度
+#         if length < min_word:
+#             min_word = length
+#             best_answer = [r]
+#         if length == min_word:
+#             best_answer.append(r)
+#     best = best_answer[0]
+#     num = len(best_answer[0])
+#     for b in best_answer:
+#         length = len(b[0])
+#         if length < num:
+#             best = b
+#     return best
 
 
 def andsearch(keywords, attr, attr2):
@@ -148,6 +148,14 @@ def get_questionword(query):
         if qw in query:
             return qw
     return None
+
+
+def bm25_score(corpus, keywords):
+    bm25Model = bm25.BM25(corpus)
+    average_idf = sum(map(lambda k: float(
+        bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
+    scores = bm25Model.get_scores(keywords, average_idf)
+    return scores
 
 
 @app.route('/feedback', methods=['GET', 'POST'])
@@ -223,15 +231,16 @@ def getanswer():
     origins = data['title']
 
     print('keywords')
+    if '服务' in keywords and len(keywords) > 1:
+        keywords.remove('服务')
     print(keywords)
-    # for d in descs:
-    #   print(d)
-    bm25Model = bm25.BM25(descs)
-    average_idf = sum(map(lambda k: float(
-        bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
 
-    scores = bm25Model.get_scores(keywords, average_idf)
-    _scores = list(set(scores))
+    descs_score = bm25_score(descs, keywords)
+    answers_score = bm25_score(answers, keywords)
+    total_score = []
+    for i in range(0, len(answers)):
+        total_score.append(descs_score[i] * 10 + answers_score[i])
+    _scores = list(set(total_score))
     _scores.sort(reverse=True)
 
     answer = ''
@@ -247,23 +256,23 @@ def getanswer():
 
     url = list(set(url))
 
-    if len(url) == 1:
-        # print(url)
-        # cursor.execute('select descs from QA where url = "'+url[0]+'"')
-        # for c in cursor.fetchall():
-        #   titles.append(c[0])
-        for s in _scores[:3]:
-            idx = scores.index(s)
-            titles.append(origins[idx])
-            print(descs[idx])
-            print(scores[idx])
+    # if len(url) == 1:
+    #     # print(url)
+    #     # cursor.execute('select descs from QA where url = "'+url[0]+'"')
+    #     # for c in cursor.fetchall():
+    #     #   titles.append(c[0])
+    #     for s in _scores[:3]:
+    #         idx = total_score.index(s)
+    #         titles.append(origins[idx])
+    #         print(descs[idx])
+    #         print(total_score[idx])
 
-    else:
-        for s in _scores[:3]:
-            idx = scores.index(s)
-            titles.append(origins[idx])
-            print(descs[idx])
-            print(scores[idx])
+    # else:
+    for s in _scores[:3]:
+        idx = total_score.index(s)
+        titles.append(origins[idx])
+        print(descs[idx])
+        print(total_score[idx])
 
     totalanswer = ''
     for title in tqdm(titles):
