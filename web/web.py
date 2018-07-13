@@ -151,6 +151,8 @@ def get_questionword(query):
 
 
 def bm25_score(corpus, keywords):
+    if len(corpus) == 0:
+        corpus = ['$']
     bm25Model = bm25.BM25(corpus)
     average_idf = sum(map(lambda k: float(
         bm25Model.idf[k]), bm25Model.idf.keys())) / len(bm25Model.idf.keys())
@@ -220,15 +222,9 @@ def getanswer():
     keys = '-'.join(keywords)
     questionword = get_questionword(query)
 
-    descs = []
-    corpus = []
-
-    f = open("bm25.model", "rb")
-    bin_data = f.read()
-    data = pickle.loads(bin_data)
-    answers = data['answers']
-    descs = data['descs']
-    origins = data['title']
+    # f = open("bm25.model", "rb")
+    # bin_data = f.read()
+    # data = pickle.loads(bin_data)
 
     print('keywords')
     if '服务' in keywords and len(keywords) > 1:
@@ -239,7 +235,7 @@ def getanswer():
     answers_score = bm25_score(answers, keywords)
     total_score = []
     for i in range(0, len(answers)):
-        total_score.append(descs_score[i] * 10 + answers_score[i])
+        total_score.append(descs_score[i] * 15)
     _scores = list(set(total_score))
     _scores.sort(reverse=True)
 
@@ -300,6 +296,23 @@ def getanswer():
 if __name__ == '__main__':
     # jieba.load_userdict('dict.txt')
     similar_dict = load_similardict('jinyici.txt')
+    db = pymysql.connect("localhost", "root", "970429",
+                         "test", charset="utf8mb4")
+    answers = []
+    descs = []
+    origins = []
+    print('loading data...')
+    cursor = db.cursor()
+    cursor.execute('select descs_words from QA')
+    for c in (cursor.fetchall()):
+        descs.append(c[0])
+    cursor.execute('select answer_words from QA')
+    for c in (cursor.fetchall()):
+        answers.append(c[0])
+    cursor.execute('select descs from QA')
+    for c in (cursor.fetchall()):
+        origins.append(c[0])
+    print('loading data finish')
     questionwords = similar_dict.keys()
     questionwords = list(questionwords)
 #   questionwords.remove('')
