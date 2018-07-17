@@ -165,40 +165,34 @@ def feedback():
     args = request.args.to_dict()
     title = args['question']
     keywords = args['keywords']
-    keywords = keywords.split(' ')
+    keywords = keywords.split('-')
 
     # print(keywords)
     db = pymysql.connect("localhost", "root", "970429",
                          "test", charset="utf8mb4")
     cursor = db.cursor()
-    print('select descs from QA where normal_question = "' + title + '"')
+    print('select descs_words from QA where normal_question = "' + title + '"')
     cursor.execute(
-        'select descs from QA where normal_question = "' + title + '"')
+        'select descs_words from QA where normal_question = "' + title + '"')
 
     result = cursor.fetchall()[0][0]
     new_result = str(result)
     for keyword in keywords:
         if keyword not in result:
-            new_result += ' ' + keyword
+            new_result += ',' + keyword
             print('add ' + keyword + ' to ' + title)
     if new_result != result:
-        print("update QA set descs='" + new_result +
+        print("update QA set descs_words='" + new_result +
               "' where normal_question='" + title + "'")
-        cursor.execute("update QA set descs='" + new_result +
+        cursor.execute("update QA set descs_words='" + new_result +
                        "' where normal_question='" + title + "'")
         db.commit()
-        cursor = db.cursor()
-        data = {}
-        data['descs'] = []
-        data['answers'] = []
-        cursor.execute('select answer from QA')
-        for c in tqdm(cursor.fetchall()):
-            data['answers'].append(del_tag(c[0]))
-        cursor.execute('select descs from QA')
-        for c in cursor.fetchall():
-            data['descs'].append(c[0])
-        output = open('bm25.model', 'wb')
-        pickle.dump(data, output)
+        cursor.execute(
+            'select descs_words,answer_words,normal_question from QA')
+        for c in (cursor.fetchall()):
+            descs.append(c[0])
+            answers.append(c[1])
+            origins.append(c[2])
         return 'update'
     return 'did not update'
 
@@ -215,45 +209,39 @@ def getanswer():
     cursor = db.cursor()
     query = request.args['question']
     keywords = tokenization(query)
+    if len(keywords) == 0:
+        keywords = [query]
     # keywords = get_keywords(query)
     ky = keywords
     # origin keywords
-    print(keywords)
+    # print(keywords)
     keys = '-'.join(keywords)
     questionword = get_questionword(query)
-
-    # f = open("bm25.model", "rb")
-    # bin_data = f.read()
-    # data = pickle.loads(bin_data)
 
     print('keywords')
     if '服务' in keywords and len(keywords) > 1:
         keywords.remove('服务')
     print(keywords)
 
-    print(descs[0])
-    print(answers[0])
+    # print(descs[3])
+    # print(answers[3])
     descs_score = bm25_score(descs, keywords)
     answers_score = bm25_score(answers, keywords)
     total_score = []
-    for i in range(0, len(answers)):
+    for i in tqdm(range(0, len(answers))):
         total_score.append(descs_score[i] * 15 + answers_score[i])
     _scores = list(set(total_score))
     _scores.sort(reverse=True)
 
+    if _scores[0] == 0:
+        print('没有相关结果')
+        return '没有相关结果'
+
     answer = ''
     url = []
     titles = []
-    # for s in _scores[:13]:
-    #     print(s)
-    #     idx = scores.index(s)
-    #     print(scores[idx])
-    # idx = scores.index(s)
-    # cursor.execute('select url from QA where descs = "' + descs[idx] + '"')
-    # url.append(cursor.fetchall()[0][0])
 
     url = list(set(url))
-
     # if len(url) == 1:
     #     # print(url)
     #     # cursor.execute('select descs from QA where url = "'+url[0]+'"')
@@ -267,15 +255,16 @@ def getanswer():
 
     # else:
     for s in _scores[:3]:
-        idx = total_score.index(s)
-        titles.append(origins[idx])
-        print(descs[idx])
-        print(total_score[idx])
+        if s != 0:
+            idx = total_score.index(s)
+            titles.append(origins[idx])
+            print(origins[idx])
+            print(total_score[idx])
 
     totalanswer = ''
     for title in tqdm(titles):
         # print(title)
-        sql = 'select normal_question,answer from QA where descs="' + title + '"'
+        sql = 'select normal_question,answer from QA where normal_question="' + title + '"'
         cursor.execute(sql)
         result = cursor.fetchall()
         title = result[0][0]
@@ -305,7 +294,7 @@ if __name__ == '__main__':
     origins = []
     print('loading data...')
     cursor = db.cursor()
-    cursor.execute('select descs_words,answer_words,descs from QA')
+    cursor.execute('select descs_words,answer_words,normal_question from QA')
     for c in (cursor.fetchall()):
         descs.append(c[0])
         answers.append(c[1])

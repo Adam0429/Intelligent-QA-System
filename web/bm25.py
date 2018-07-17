@@ -48,6 +48,7 @@ class BM25(object):
         """Calculates frequencies of terms in documents and in corpus. Also computes inverse document frequencies."""
         for document in self.corpus:
             frequencies = {}
+            document = document.split(',')
             self.doc_len.append(len(document))
             for word in document:
                 if word not in frequencies:
@@ -79,10 +80,9 @@ class BM25(object):
         float
             BM25 score.
         """
-
         score = 0
         for word in document:
-            if word not in ''.join(self.f[index]):
+            if word not in self.f[index]:
                 continue
             # if word not in self.f[index]:
             #     continue
@@ -91,14 +91,16 @@ class BM25(object):
             score += (idf * 1 * (PARAM_K1 + 1)
                       / (1 + PARAM_K1 * (1 - PARAM_B + PARAM_B * self.doc_len[index] / self.avgdl)))
 
-        # score = 0
-        # for word in document:
-        #     if word not in self.f[index]:
-        #         continue
-        #     idf = 1
-        #     # idf = self.idf[word] if self.idf[word] >= 0 else EPSILON * average_idf
-        #     score += (idf * self.f[index][word] * (PARAM_K1 + 1)
-        #               / (self.f[index][word] + PARAM_K1 * (1 - PARAM_B + PARAM_B * self.doc_len[index] / self.avgdl)))
+    # score = 0
+    # for word in document:
+    #     if word not in self.f[index]:
+    #         continue
+    #     idf = 1
+    #     # idf = self.idf[word] if self.idf[word] >= 0 else EPSILON * average_idf
+    #     score += (idf * self.f[index][word] * (PARAM_K1 + 1)
+    #               / (self.f[index][word] + PARAM_K1 * (1 - PARAM_B + PARAM_B * self.doc_len[index] / self.avgdl)))
+    # if score > 20:
+
         return score
 
     def get_scores(self, document, average_idf):
