@@ -120,7 +120,7 @@ def orsearch(keywords, attr, attr2):
 
 
 def tokenization(text):
-    stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
+    stop_flag = ['x', 'c', 'u', 'p', 't', 'uj', 'm', 'f', 'r']
     result = []
     words = pseg.cut(text)
     for word, flag in words:
@@ -140,14 +140,6 @@ def get_keywords(query):
         keywords = '/'.join(keywords)
         keywords.split('/')
     return keywords
-
-
-def get_questionword(query):
-    questionword = ''
-    for qw in questionwords:
-        if qw in query:
-            return qw
-    return None
 
 
 def bm25_score(corpus, keywords):
@@ -211,20 +203,19 @@ def getanswer():
     keywords = tokenization(query)
     if len(keywords) == 0:
         keywords = [query]
-    # keywords = get_keywords(query)
-    ky = keywords
-    # origin keywords
-    # print(keywords)
+
     keys = '-'.join(keywords)
-    questionword = get_questionword(query)
 
     print('keywords')
     if '服务' in keywords and len(keywords) > 1:
         keywords.remove('服务')
+
+    kys = []
+    # for kw in keywords:
+    #     kys.append(model.most_similar(kw, topn=1)[0][0])
+    # keywords += kys
     print(keywords)
 
-    # print(descs[3])
-    # print(answers[3])
     descs_score = bm25_score(descs, keywords)
     answers_score = bm25_score(answers, keywords)
     total_score = []
@@ -299,8 +290,8 @@ if __name__ == '__main__':
         descs.append(c[0])
         answers.append(c[1])
         origins.append(c[2])
+    import gensim
+    model = gensim.models.Word2Vec.load('wordvec.model')
     print('loading data finish')
-    questionwords = similar_dict.keys()
-    questionwords = list(questionwords)
-#   questionwords.remove('')
+
     app.run(host='0.0.0.0', port=5000, debug=True)

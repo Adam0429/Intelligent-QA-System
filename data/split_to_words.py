@@ -24,7 +24,7 @@ def del_tag(strings):
 
 
 def tokenization(text):
-    stop_flag = ['x', 'c', 'u', 'd', 'p', 't', 'uj', 'm', 'f', 'r']
+    stop_flag = ['x', 'c', 'u', 'p', 't', 'uj', 'm', 'f', 'r']
     result = []
     words = pseg.cut(text)
     allwords = ' '.join(jieba.cut(text, cut_all=True)).split()
