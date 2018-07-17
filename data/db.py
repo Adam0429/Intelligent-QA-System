@@ -216,8 +216,7 @@ for file in tqdm(files):
             # print(answer)
             continue
         # answer is null
-        sql = 'insert into QA values("' + d + '","' + question + \
-            '",' + '"null"' + ",'" + \
+        sql = 'insert into QA values("' + question + '",' + '"null"' + ",'" + \
             data['url'] + "','" + answer + "','null'" + ",'null'" + ")"
         try:
             cursor.execute(sql)
@@ -227,7 +226,7 @@ for file in tqdm(files):
             e = e.split(',')[0][1:]
             if e == '1062':  # duplicate
                 # print(file)
-                sql = 'select answer,url from QA where descs="' + d + '"'
+                sql = 'select answer,url from QA where normal_question="' + question + '"'
                 cursor.execute(sql)
                 db.commit()
                 result = cursor.fetchall()[0]
@@ -243,8 +242,9 @@ for file in tqdm(files):
                     answer = answer.replace('“', '"')
                     answer = answer + result
                     # ~~~~~~~~~~~
-                sql = "update QA set answer='" + answer + "' where descs='" + d + "'"
-                sql2 = "update QA set url='" + url + "' where descs='" + d + "'"
+                sql = "update QA set answer='" + answer + \
+                    "' where normal_question='" + question + "'"
+                sql2 = "update QA set url='" + url + "' where normal_question='" + question + "'"
                 # print(sql2)
                 # have the same answer situation
                 cursor.execute(sql)
@@ -254,8 +254,7 @@ for file in tqdm(files):
             elif e == '1064':  # limit signals
                 # print(file)
                 answer = del_tag(answer)
-                sql = 'insert into QA values("' + d + '","' + question + \
-                    '",' + '"null"' + ",'" + \
+                sql = 'insert into QA values("' + question + '","' + '"null"' + ",'" + \
                     data['url'] + "','" + answer + \
                     "','null'" + ",'null'" + ")"
                 cursor.execute(sql)

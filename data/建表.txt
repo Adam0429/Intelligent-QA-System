@@ -1,6 +1,5 @@
 CREATE TABLE `QA` (
-  `descs` varchar(255) DEFAULT NULL,
-  `normal_question` varchar(255) NOT NULL,
+  `normal_question` varchar(255),
   `type` varchar(255) DEFAULT NULL,
   `url` varchar(1000) DEFAULT NULL,
   `answer` mediumtext,

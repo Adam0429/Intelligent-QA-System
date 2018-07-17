@@ -31,7 +31,8 @@ def tokenization(text):
     for word, flag in words:
         if flag in stop_flag and word in allwords:
             allwords.remove(word)
-    return allwords
+    allwords = list(set(allwords))
+    return ','.join(allwords)
 
 
 # f = open("bm25.model", "rb")
@@ -53,26 +54,29 @@ def tokenization(text):
 db = pymysql.connect("localhost", "root", "970429",
                      "test", charset="utf8mb4")
 cursor = db.cursor()
-cursor.execute('select descs from QA')
+cursor.execute('select normal_question from QA')
 for c in tqdm(cursor.fetchall()):
     cursor.execute('update QA set descs_words="' +
-                   str(tokenization(c[0])) + '" where descs="' + c[0] + '"')
+                   tokenization(c[0]) + '" where normal_question="' + c[0] + '"')
 
 cursor.execute('select answer from QA')
 for c in tqdm(cursor.fetchall()):
     cursor.execute('update QA set answer_words="' +
-                   str(tokenization(del_tag(c[0]))) + '"' + " where answer='" + c[0] + "'")
-
+                   tokenization(del_tag(c[0])) + '"' + " where answer='" + c[0] + "'")
 db.commit()
+
 # data = {}
 # data['descs'] = []
 # data['answers'] = []
 # data['title'] = []
 
+# db = pymysql.connect("localhost", "root", "970429",
+#                      "test", charset="utf8mb4")
+# cursor = db.cursor()
 # cursor.execute('select answer from QA')
 # for c in tqdm(cursor.fetchall()):
 #     data['answers'].append(tokenization(del_tag(c[0])))
-# cursor.execute('select descs from QA')
+# cursor.execute('select normal_question from QA')
 # for c in cursor.fetchall():
 #     data['title'].append(c[0])
 #     data['descs'].append(tokenization(c[0]))
