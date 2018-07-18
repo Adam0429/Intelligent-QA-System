@@ -123,10 +123,12 @@ def tokenization(text):
     stop_flag = ['x', 'c', 'u', 'p', 't', 'uj', 'm', 'f', 'r']
     result = []
     words = pseg.cut(text)
+    allwords = ' '.join(jieba.cut(text, cut_all=True)).split()
     for word, flag in words:
-        if flag not in stop_flag:
-            result.append(word)
-    return result
+        if flag in stop_flag and word in allwords:
+            allwords.remove(word)
+    allwords = list(set(allwords))
+    return allwords
 
 
 def get_keywords(query):
@@ -204,9 +206,9 @@ def getanswer():
     if len(keywords) == 0:
         keywords = [query]
 
+    print('query: ' + query)
     keys = '-'.join(keywords)
 
-    print('keywords')
     if '服务' in keywords and len(keywords) > 1:
         keywords.remove('服务')
 
@@ -214,7 +216,39 @@ def getanswer():
     # for kw in keywords:
     #     kys.append(model.most_similar(kw, topn=1)[0][0])
     # keywords += kys
-    print(keywords)
+    print('keywords: ' + str(keywords))
+    # for keyword in keywords:
+    #     if keyword in similar_words:
+    #         kys.append(keyword)
+    #         for i in model.most_similar(keyword):
+    #             kys.append(i[0])
+    # if len(kys) != 0:
+    #     scores = {}
+    #     titles = []
+    #     for ky in kys:
+    #         newkeywords = keywords
+    #         newkeywords.append(ky)
+    #         descs_score = bm25_score(descs, keywords)
+    #         answers_score = bm25_score(answers, keywords)
+    #         total_score = []
+    #         for i in range(0, len(answers)):
+    #             total_score.append(descs_score[i] * 15 + answers_score[i])
+    #         _scores = list(set(total_score))
+    #         _scores.sort(reverse=True)
+    #         for s in _scores[:3]:
+    #             if s != 0:
+    #                 idx = total_score.index(s)
+    #                 if idx not in scores.keys():
+    #                     scores[idx] = s
+    #                 else:
+    #                     if s > scores[idx]:
+    #                         scores[idx] = s
+    #         # z = list(zip(scores.values(), scores.keys()))
+    #     scores = sorted(zip(scores.values(), scores.keys()))
+    #     for score in scores[:3]:
+    #         titles.append(origins[score[1]])
+    #     print(titles)
+    # else:
 
     descs_score = bm25_score(descs, keywords)
     answers_score = bm25_score(answers, keywords)
@@ -232,18 +266,6 @@ def getanswer():
     url = []
     titles = []
 
-    url = list(set(url))
-    # if len(url) == 1:
-    #     # print(url)
-    #     # cursor.execute('select descs from QA where url = "'+url[0]+'"')
-    #     # for c in cursor.fetchall():
-    #     #   titles.append(c[0])
-    #     for s in _scores[:3]:
-    #         idx = total_score.index(s)
-    #         titles.append(origins[idx])
-    #         print(descs[idx])
-    #         print(total_score[idx])
-
     # else:
     for s in _scores[:3]:
         if s != 0:
@@ -253,7 +275,7 @@ def getanswer():
             print(total_score[idx])
 
     totalanswer = ''
-    for title in tqdm(titles):
+    for title in titles:
         # print(title)
         sql = 'select normal_question,answer from QA where normal_question="' + title + '"'
         cursor.execute(sql)
@@ -269,7 +291,7 @@ def getanswer():
     totalanswer = del_div(totalanswer)
     totalanswer = totalanswer.replace('</div>', '')
     totalanswer = totalanswer.replace(']', '')
-    #totalanswer = '<div>' + totalanswer + '</div>'
+    # totalanswer = '<div>' + totalanswer + '</div>'
     # print(totalanswer)
     return totalanswer
     # 取前3个排序,如来自同一网页则返回网页下所有内容,不是则都返回
@@ -292,6 +314,11 @@ if __name__ == '__main__':
         origins.append(c[2])
     import gensim
     model = gensim.models.Word2Vec.load('wordvec.model')
+    f = open('similar.txt')
+    similar_words = []
+    lines = f.readlines()
+    for line in lines:
+        similar_words.append(line.replace('\n', ''))
     print('loading data finish')
 
     app.run(host='0.0.0.0', port=5000, debug=True)
