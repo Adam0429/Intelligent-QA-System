@@ -260,7 +260,7 @@ def getanswer():
 
     if _scores[0] == 0:
         print('没有相关结果')
-        return '没有相关结果'
+        return ''
 
     answer = ''
     url = []
